@@ -1,0 +1,379 @@
+extends Node
+class_name ActionExecutor
+
+# Action Execution System
+# Manages action lifecycle, progress tracking, interruption handling, and completion effects
+
+signal action_started(action_data: Dictionary, npc_id: String)
+signal action_progress(action_data: Dictionary, npc_id: String, progress: float)
+signal action_completed(action_data: Dictionary, npc_id: String, results: Dictionary)
+signal action_interrupted(action_data: Dictionary, npc_id: String, reason: String)
+signal action_failed(action_data: Dictionary, npc_id: String, error: String)
+
+# Current action being executed
+var current_action: Dictionary = {}
+var npc_id: String = ""
+var action_start_time: float = 0.0
+var action_progress: float = 0.0
+var is_executing: bool = false
+var is_paused: bool = false
+var interruption_reason: String = ""
+
+# Action state management
+enum ActionState {
+	IDLE,
+	PREPARING,
+	EXECUTING,
+	PAUSED,
+	INTERRUPTED,
+	COMPLETED,
+	FAILED
+}
+
+var current_state: ActionState = ActionState.IDLE
+
+# Progress tracking
+var progress_timer: Timer
+var progress_update_interval: float = 0.1  # Update progress every 100ms
+
+# Interruption handling
+var interruption_priority: int = 0  # Higher priority actions can interrupt lower ones
+var can_be_interrupted: bool = true
+var interruption_cooldown: float = 0.0
+
+# Completion effects tracking
+var need_satisfaction_cache: Dictionary = {}
+var skill_gain_cache: Dictionary = {}
+var inventory_changes_cache: Dictionary = {}
+
+# Dependencies
+var status_component: StatusComponent
+var action_planner: ActionPlanner
+
+func _ready():
+	# Initialize progress timer
+	progress_timer = Timer.new()
+	progress_timer.wait_time = progress_update_interval
+	progress_timer.timeout.connect(_on_progress_timer_timeout)
+	progress_timer.autostart = false
+	add_child(progress_timer)
+	
+	# Get dependencies
+	status_component = get_parent().get_node_or_null("StatusComponent")
+	action_planner = get_parent().get_node_or_null("ActionPlanner")
+
+# Start executing an action
+func start_action(action_data: Dictionary, npc_identifier: String) -> Dictionary:
+	if is_executing:
+		return {"success": false, "message": "Already executing an action"}
+	
+	if not _validate_action(action_data):
+		return {"success": false, "message": "Invalid action data"}
+	
+	# Set up action execution
+	current_action = action_data.duplicate()
+	npc_id = npc_identifier
+	action_start_time = Time.get_time_dict_from_system()["unix"]
+	action_progress = 0.0
+	is_executing = true
+	is_paused = false
+	interruption_reason = ""
+	
+	# Initialize caches
+	need_satisfaction_cache.clear()
+	skill_gain_cache.clear()
+	inventory_changes_cache.clear()
+	
+	# Change state
+	_change_state(ActionState.PREPARING)
+	
+	# Emit start signal
+	action_started.emit(current_action, npc_id)
+	
+	# Start progress tracking
+	progress_timer.start()
+	
+	# Apply initial costs
+	_apply_action_costs()
+	
+	# Change to executing state
+	_change_state(ActionState.EXECUTING)
+	
+	return {"success": true, "message": "Action started: " + current_action.get("name", "Unknown")}
+
+# Pause current action
+func pause_action() -> Dictionary:
+	if not is_executing:
+		return {"success": false, "message": "No action to pause"}
+	
+	if is_paused:
+		return {"success": false, "message": "Action already paused"}
+	
+	is_paused = true
+	progress_timer.stop()
+	_change_state(ActionState.PAUSED)
+	
+	return {"success": true, "message": "Action paused"}
+
+# Resume paused action
+func resume_action() -> Dictionary:
+	if not is_executing:
+		return {"success": false, "message": "No action to resume"}
+	
+	if not is_paused:
+		return {"success": false, "message": "Action not paused"}
+	
+	is_paused = false
+	progress_timer.start()
+	_change_state(ActionState.EXECUTING)
+	
+	return {"success": true, "message": "Action resumed"}
+
+# Interrupt current action
+func interrupt_action(reason: String, priority: int = 0) -> Dictionary:
+	if not is_executing:
+		return {"success": false, "message": "No action to interrupt"}
+	
+	if not can_be_interrupted:
+		return {"success": false, "message": "Action cannot be interrupted"}
+	
+	if priority < interruption_priority:
+		return {"success": false, "message": "Insufficient priority to interrupt"}
+	
+	# Stop execution
+	progress_timer.stop()
+	is_executing = false
+	is_paused = false
+	interruption_reason = reason
+	
+	# Change state
+	_change_state(ActionState.INTERRUPTED)
+	
+	# Emit interruption signal
+	action_interrupted.emit(current_action, npc_id, reason)
+	
+	# Apply interruption effects
+	_apply_interruption_effects()
+	
+	return {"success": true, "message": "Action interrupted: " + reason}
+
+# Complete current action
+func complete_action() -> Dictionary:
+	if not is_executing:
+		return {"success": false, "message": "No action to complete"}
+	
+	# Stop progress tracking
+	progress_timer.stop()
+	is_executing = false
+	is_paused = false
+	
+	# Set progress to 100%
+	action_progress = 1.0
+	
+	# Change state
+	_change_state(ActionState.COMPLETED)
+	
+	# Apply completion effects
+	var results = _apply_completion_effects()
+	
+	# Emit completion signal
+	action_completed.emit(current_action, npc_id, results)
+	
+	# Reset state
+	_reset_state()
+	
+	return {"success": true, "message": "Action completed", "results": results}
+
+# Fail current action
+func fail_action(error: String) -> Dictionary:
+	if not is_executing:
+		return {"success": false, "message": "No action to fail"}
+	
+	# Stop progress tracking
+	progress_timer.stop()
+	is_executing = false
+	is_paused = false
+	
+	# Change state
+	_change_state(ActionState.FAILED)
+	
+	# Emit failure signal
+	action_failed.emit(current_action, npc_id, error)
+	
+	# Apply failure effects
+	_apply_failure_effects()
+	
+	# Reset state
+	_reset_state()
+	
+	return {"success": true, "message": "Action failed: " + error}
+
+# Get current action status
+func get_action_status() -> Dictionary:
+	return {
+		"is_executing": is_executing,
+		"is_paused": is_paused,
+		"current_action": current_action,
+		"npc_id": npc_id,
+		"progress": action_progress,
+		"state": ActionState.keys()[current_state],
+		"start_time": action_start_time,
+		"elapsed_time": Time.get_time_dict_from_system()["unix"] - action_start_time if action_start_time > 0 else 0.0,
+		"interruption_reason": interruption_reason
+	}
+
+# Get action progress
+func get_progress() -> float:
+	return action_progress
+
+# Check if action can be interrupted
+func can_interrupt(priority: int) -> bool:
+	return can_be_interrupted and priority >= interruption_priority
+
+# Set interruption settings
+func set_interruption_settings(can_interrupt: bool, priority: int = 0):
+	can_be_interrupted = can_interrupt
+	interruption_priority = priority
+
+# Console command interface
+func console_command(command: String, args: Array) -> Dictionary:
+	match command:
+		"start":
+			if args.size() < 1:
+				return {"success": false, "message": "Usage: start <action_id> [npc_id]"}
+			var action_id = args[0]
+			var npc_identifier = args[1] if args.size() > 1 else npc_id
+			
+			# Get action data from ActionPlanner
+			if action_planner:
+				var action_data = action_planner.get_action_by_id(action_id)
+				if action_data.is_empty():
+					return {"success": false, "message": "Action not found: " + action_id}
+				return start_action(action_data, npc_identifier)
+			else:
+				return {"success": false, "message": "ActionPlanner not available"}
+		
+		"pause":
+			return pause_action()
+		
+		"resume":
+			return resume_action()
+		
+		"interrupt":
+			var reason = args[0] if args.size() > 0 else "Manual interruption"
+			var priority = int(args[1]) if args.size() > 1 else 100
+			return interrupt_action(reason, priority)
+		
+		"complete":
+			return complete_action()
+		
+		"fail":
+			var error = args[0] if args.size() > 0 else "Manual failure"
+			return fail_action(error)
+		
+		"status":
+			return {"success": true, "data": get_action_status()}
+		
+		"progress":
+			return {"success": true, "data": {"progress": action_progress}}
+		
+		_:
+			return {"success": false, "message": "Unknown command: " + command}
+
+# Private methods
+
+func _validate_action(action_data: Dictionary) -> bool:
+	var required_fields = ["id", "name", "duration"]
+	for field in required_fields:
+		if not action_data.has(field):
+			return false
+	return true
+
+func _change_state(new_state: ActionState):
+	current_state = new_state
+
+func _reset_state():
+	current_action.clear()
+	npc_id = ""
+	action_start_time = 0.0
+	action_progress = 0.0
+	is_executing = false
+	is_paused = false
+	interruption_reason = ""
+	_change_state(ActionState.IDLE)
+
+func _on_progress_timer_timeout():
+	if not is_executing or is_paused:
+		return
+	
+	# Calculate progress increment based on action duration
+	var duration = current_action.get("duration", 1.0)
+	var increment = progress_update_interval / duration
+	
+	# Update progress
+	action_progress = min(action_progress + increment, 1.0)
+	
+	# Emit progress signal
+	action_progress.emit(current_action, npc_id, action_progress)
+	
+	# Check if action is complete
+	if action_progress >= 1.0:
+		complete_action()
+
+func _apply_action_costs():
+	if not status_component:
+		return
+	
+	var costs = current_action.get("costs", {})
+	for need_type in costs:
+		var amount = costs[need_type]
+		status_component.modify_need(need_type, -amount)
+
+func _apply_completion_effects() -> Dictionary:
+	var results = {}
+	
+	# Apply need satisfaction
+	if status_component:
+		var satisfies_needs = current_action.get("satisfies_needs", {})
+		for need_type in satisfies_needs:
+			var amount = satisfies_needs[need_type]
+			status_component.modify_need(need_type, amount)
+			need_satisfaction_cache[need_type] = amount
+		
+		results["needs_satisfied"] = need_satisfaction_cache
+	
+	# Apply skill gains
+	var skill_gains = current_action.get("skill_gains", {})
+	for skill in skill_gains:
+		var amount = skill_gains[skill]
+		skill_gain_cache[skill] = amount
+		results["skills_gained"] = skill_gain_cache
+	
+	# Apply inventory changes
+	var inventory_changes = current_action.get("inventory_changes", {})
+	for item in inventory_changes:
+		var change = inventory_changes[item]
+		inventory_changes_cache[item] = change
+		results["inventory_changes"] = inventory_changes_cache
+	
+	# Apply other effects
+	var effects = current_action.get("effects", {})
+	results["other_effects"] = effects
+	
+	return results
+
+func _apply_interruption_effects():
+	# Apply partial need satisfaction based on progress
+	if status_component and action_progress > 0:
+		var satisfies_needs = current_action.get("satisfies_needs", {})
+		for need_type in satisfies_needs:
+			var amount = satisfies_needs[need_type] * action_progress
+			status_component.modify_need(need_type, amount)
+
+func _apply_failure_effects():
+	# Apply failure penalties
+	if status_component:
+		var failure_penalties = current_action.get("failure_penalties", {})
+		for need_type in failure_penalties:
+			var amount = failure_penalties[need_type]
+			status_component.modify_need(need_type, -amount)

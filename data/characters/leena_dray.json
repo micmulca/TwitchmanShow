@@ -1,0 +1,122 @@
+{
+  "character_id": "leena_dray",
+  "name": "Leena Dray",
+  "description": "A talented baker who runs the village bakery and buys honey from Rowan Sedge. Leena is Varo's cousin and has ambitious plans to expand the bakery into a café, but needs Bram Wynn's help to remodel.",
+  "occupation": "Baker",
+  "specialization": "Bread and Pastry Making",
+  "age": 28,
+  "gender": "Female",
+  "home_location": "dray_carpentry",
+  "workplace": "village_bakery",
+  "personality": {
+    "openness": 0.7,
+    "conscientiousness": 0.8,
+    "extraversion": 0.6,
+    "agreeableness": 0.8,
+    "neuroticism": 0.4,
+    "custom_traits": {
+      "ambition": 0.8,
+      "creativity": 0.7,
+      "business_sense": 0.6,
+      "community_spirit": 0.8
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.6,
+      "hunger": 0.3,
+      "thirst": 0.4,
+      "health": 0.8
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.7,
+      "comfort": 0.5
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.6,
+      "achievement_need": 0.8
+    },
+    "economic": {
+      "wealth_satisfaction": 0.5,
+      "material_need": 0.4,
+      "security_need": 0.3
+    },
+    "social": {
+      "social_need": 0.6,
+      "social_fatigue": 0.3
+    }
+  },
+  "inventory": {
+    "money": 85,
+    "items": [
+      "baking_tools",
+      "recipe_book",
+      "quality_ingredients",
+      "business_ledger",
+      "cafe_plans"
+    ],
+    "clothing": [
+      "baker_uniform",
+      "apron",
+      "comfortable_shoes",
+      "hair_net"
+    ]
+  },
+  "relationships": {
+    "rowan_sedge": {
+      "affection": 0.6,
+      "trust": 0.7,
+      "interaction_frequency": "business"
+    },
+    "varo_dray": {
+      "affection": 0.8,
+      "trust": 0.9,
+      "interaction_frequency": "daily"
+    },
+    "bram_wynn": {
+      "affection": 0.5,
+      "trust": 0.6,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "expand_bakery",
+      "description": "Expand the bakery into a full café with seating and expanded menu",
+      "priority": 0.9,
+      "progress": 0.3,
+      "requirements": ["bram_wynn_help", "financial_investment", "customer_support"]
+    },
+    {
+      "goal_id": "improve_recipes",
+      "description": "Develop new recipes and improve existing ones to attract more customers",
+      "priority": 0.7,
+      "progress": 0.6,
+      "requirements": ["ingredient_experimentation", "customer_feedback", "time_for_testing"]
+    },
+    {
+      "goal_id": "build_reputation",
+      "description": "Build the bakery's reputation as the best food establishment on the island",
+      "priority": 0.8,
+      "progress": 0.5,
+      "requirements": ["quality_consistency", "marketing_efforts", "community_engagement"]
+    }
+  ],
+  "drama_hooks": [
+    "Wants to expand the bakery into a café but needs Bram Wynn's help to remodel",
+    "Relies on Rowan Sedge's honey for her best-selling honey bread",
+    "Ambitious plans that may put her at odds with other village businesses",
+    "Needs to balance expansion dreams with current financial realities"
+  ],
+  "schedule": {
+    "sleep_pattern": "very_early_riser",
+    "work_times": "pre_dawn_to_afternoon",
+    "meal_preferences": "tasting_own_creations",
+    "social_times": "afternoons_and_evenings"
+  },
+  "reputation": "Talented baker with ambitious plans, known for quality bread and friendly service",
+  "current_location": "village_bakery",
+  "status": "active"
+}

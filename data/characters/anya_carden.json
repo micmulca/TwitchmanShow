@@ -1,0 +1,122 @@
+{
+  "character_id": "anya_carden",
+  "name": "Anya Carden",
+  "description": "A talented potter who creates beautiful ceramic wares and is married to Thom Carden. Anya sells her pottery through Selene Marek but is frustrated that Selene takes too large a cut from her sales.",
+  "occupation": "Potter",
+  "specialization": "Ceramic Art and Pottery Making",
+  "age": 35,
+  "gender": "Female",
+  "home_location": "carden_pottery",
+  "workplace": "carden_pottery",
+  "personality": {
+    "openness": 0.8,
+    "conscientiousness": 0.7,
+    "extraversion": 0.5,
+    "agreeableness": 0.6,
+    "neuroticism": 0.5,
+    "custom_traits": {
+      "artistic_talent": 0.9,
+      "creative_vision": 0.8,
+      "business_frustration": 0.7,
+      "perfectionism": 0.7
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.6,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.8
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.6,
+      "comfort": 0.5
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.7,
+      "achievement_need": 0.8
+    },
+    "economic": {
+      "wealth_satisfaction": 0.4,
+      "material_need": 0.4,
+      "security_need": 0.5
+    },
+    "social": {
+      "social_need": 0.5,
+      "social_fatigue": 0.4
+    }
+  },
+  "inventory": {
+    "money": 55,
+    "items": [
+      "pottery_wheel",
+      "clay_supplies",
+      "glazes",
+      "kiln_tools",
+      "finished_pottery"
+    ],
+    "clothing": [
+      "work_smock",
+      "comfortable_shoes",
+      "protective_apron",
+      "creative_accessories"
+    ]
+  },
+  "relationships": {
+    "thom_carden": {
+      "affection": 0.8,
+      "trust": 0.9,
+      "interaction_frequency": "daily"
+    },
+    "selene_marek": {
+      "affection": 0.3,
+      "trust": 0.4,
+      "interaction_frequency": "business"
+    },
+    "leena_dray": {
+      "affection": 0.6,
+      "trust": 0.6,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "improve_pottery",
+      "description": "Improve pottery techniques and create more sophisticated ceramic pieces",
+      "priority": 0.8,
+      "progress": 0.6,
+      "requirements": ["practice_time", "new_techniques", "quality_materials"]
+    },
+    {
+      "goal_id": "better_business",
+      "description": "Find better business arrangements to reduce Selene's cut and increase profits",
+      "priority": 0.9,
+      "progress": 0.2,
+      "requirements": ["alternative_markets", "direct_sales", "business_negotiation"]
+    },
+    {
+      "goal_id": "artistic_recognition",
+      "description": "Gain recognition for artistic talent and establish a unique pottery style",
+      "priority": 0.7,
+      "progress": 0.5,
+      "requirements": ["style_development", "exhibition_opportunities", "customer_appreciation"]
+    }
+  ],
+  "drama_hooks": [
+    "Frustrated that Selene takes too large a cut from her pottery sales",
+    "Wants to find alternative markets and reduce dependency on Selene",
+    "Balances artistic passion with business necessity",
+    "Feels undervalued for her artistic contributions to the village"
+  ],
+  "schedule": {
+    "sleep_pattern": "regular",
+    "work_times": "flexible_creative_hours",
+    "meal_preferences": "creative_meals",
+    "social_times": "evenings_and_market_days"
+  },
+  "reputation": "Talented potter with artistic vision, known for quality ceramics but frustrated with business arrangements",
+  "current_location": "carden_pottery",
+  "status": "active"
+}

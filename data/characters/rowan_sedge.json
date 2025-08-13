@@ -1,0 +1,122 @@
+{
+  "character_id": "rowan_sedge",
+  "name": "Rowan Sedge",
+  "description": "A dedicated beekeeper who supplies honey to the village bakery. Rowan is Kellen's sibling and works in Bee Hollow, currently suspicious that someone has been stealing honey from their hives.",
+  "occupation": "Beekeeper",
+  "specialization": "Honey Production and Bee Management",
+  "age": 32,
+  "gender": "Non-binary",
+  "home_location": "sedge_farm",
+  "workplace": "bee_hollow",
+  "personality": {
+    "openness": 0.6,
+    "conscientiousness": 0.8,
+    "extraversion": 0.4,
+    "agreeableness": 0.7,
+    "neuroticism": 0.5,
+    "custom_traits": {
+      "attention_to_detail": 0.9,
+      "protective_nature": 0.7,
+      "connection_to_nature": 0.8,
+      "suspicious_mind": 0.6
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.7,
+      "hunger": 0.3,
+      "thirst": 0.4,
+      "health": 0.8
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.5,
+      "comfort": 0.4
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.6,
+      "achievement_need": 0.6
+    },
+    "economic": {
+      "wealth_satisfaction": 0.5,
+      "material_need": 0.4,
+      "security_need": 0.6
+    },
+    "social": {
+      "social_need": 0.5,
+      "social_fatigue": 0.4
+    }
+  },
+  "inventory": {
+    "money": 65,
+    "items": [
+      "bee_smoker",
+      "hive_tools",
+      "honey_extractor",
+      "protective_suit",
+      "honey_jars"
+    ],
+    "clothing": [
+      "beekeeper_suit",
+      "protective_veil",
+      "work_boots",
+      "leather_gloves"
+    ]
+  },
+  "relationships": {
+    "kellen_sedge": {
+      "affection": 0.9,
+      "trust": 0.9,
+      "interaction_frequency": "daily"
+    },
+    "leena_dray": {
+      "affection": 0.6,
+      "trust": 0.7,
+      "interaction_frequency": "business"
+    },
+    "pip_hale": {
+      "affection": 0.4,
+      "trust": 0.3,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "protect_hives",
+      "description": "Protect the bee hives from theft and ensure honey production continues",
+      "priority": 0.9,
+      "progress": 0.3,
+      "requirements": ["security_measures", "investigation", "community_awareness"]
+    },
+    {
+      "goal_id": "expand_production",
+      "description": "Expand honey production to meet growing village demand",
+      "priority": 0.7,
+      "progress": 0.5,
+      "requirements": ["new_hives", "better_techniques", "market_development"]
+    },
+    {
+      "goal_id": "educate_village",
+      "description": "Teach the village about the importance of bees and sustainable beekeeping",
+      "priority": 0.6,
+      "progress": 0.4,
+      "requirements": ["educational_materials", "workshop_opportunities", "community_interest"]
+    }
+  ],
+  "drama_hooks": [
+    "Suspects someone has been stealing honey from their hives",
+    "Worried about the impact of theft on their business relationship with Leena",
+    "Feeling protective of their bees and the natural environment",
+    "Concerned about Pip Hale's unauthorized visits to Bee Hollow"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "dawn_to_afternoon",
+    "meal_preferences": "light_meals_during_work",
+    "social_times": "afternoons_and_evenings"
+  },
+  "reputation": "Dedicated beekeeper who produces the best honey on the island, but can be overly protective of their hives",
+  "current_location": "bee_hollow",
+  "status": "active"
+}

@@ -1,0 +1,1011 @@
+{
+  "version": "1.0",
+  "description": "Basic actions available to NPCs in the TwitchMan Autonomous World",
+  "actions": [
+    {
+      "id": "eat_meal",
+      "name": "Eat a Meal",
+      "description": "Consume a full meal to satisfy hunger and provide energy",
+      "category": "Physical",
+      "satisfies_needs": {
+        "hunger": 80,
+        "energy": 30
+      },
+      "costs": {
+        "energy": 5
+      },
+      "duration": 15.0,
+      "location_tags": ["kitchen", "dining_room", "restaurant", "indoor"],
+      "skill_requirements": {},
+      "base_score": 100,
+      "skill_gains": {
+        "cooking": 1,
+        "social_skills": 1
+      },
+      "inventory_changes": {
+        "food": -1
+      },
+      "failure_penalties": {
+        "hunger": -10,
+        "energy": -5
+      },
+      "effects": {
+        "mood_boost": 10,
+        "social_opportunity": true
+      }
+    },
+    {
+      "id": "drink_water",
+      "name": "Drink Water",
+      "description": "Hydrate to satisfy thirst",
+      "category": "Physical",
+      "satisfies_needs": {
+        "thirst": 60
+      },
+      "costs": {},
+      "duration": 2.0,
+      "location_tags": ["kitchen", "bathroom", "outdoors", "indoor"],
+      "skill_requirements": {},
+      "base_score": 80,
+      "skill_gains": {},
+      "inventory_changes": {
+        "water": -1
+      },
+      "failure_penalties": {},
+      "effects": {
+        "hydration_boost": true
+      }
+    },
+    {
+      "id": "sleep",
+      "name": "Sleep",
+      "description": "Rest to recover energy and health",
+      "category": "Physical",
+      "satisfies_needs": {
+        "energy": 100,
+        "health": 20
+      },
+      "costs": {
+        "hunger": 10,
+        "thirst": 15
+      },
+      "duration": 480.0,
+      "location_tags": ["bedroom", "bed", "indoor"],
+      "skill_requirements": {},
+      "base_score": 120,
+      "skill_gains": {},
+      "inventory_changes": {},
+      "failure_penalties": {
+        "energy": -20,
+        "health": -5
+      },
+      "effects": {
+        "dreams": true,
+        "recovery_boost": true
+      }
+    },
+    {
+      "id": "take_bath",
+      "name": "Take a Bath",
+      "description": "Clean oneself to improve comfort and cleanliness",
+      "category": "Comfort",
+      "satisfies_needs": {
+        "cleanliness": 80,
+        "comfort": 40
+      },
+      "costs": {
+        "energy": 10,
+        "water": 20
+      },
+      "duration": 30.0,
+      "location_tags": ["bathroom", "indoor"],
+      "skill_requirements": {},
+      "base_score": 90,
+      "skill_gains": {},
+      "inventory_changes": {
+        "soap": -1
+      },
+      "failure_penalties": {
+        "comfort": -10
+      },
+      "effects": {
+        "relaxation": 15,
+        "clean_feeling": true
+      }
+    },
+    {
+      "id": "read_book",
+      "name": "Read a Book",
+      "description": "Read to satisfy curiosity and reduce boredom",
+      "category": "Activity",
+      "satisfies_needs": {
+        "curiosity": 50,
+        "boredom": -30
+      },
+      "costs": {
+        "energy": 5
+      },
+      "duration": 60.0,
+      "location_tags": ["living_room", "library", "bedroom", "indoor"],
+      "skill_requirements": {
+        "literacy": 1
+      },
+      "base_score": 85,
+      "skill_gains": {
+        "knowledge": 2,
+        "literacy": 1
+      },
+      "inventory_changes": {},
+      "failure_penalties": {
+        "boredom": 10
+      },
+      "effects": {
+        "mental_stimulation": true,
+        "knowledge_gain": true
+      }
+    },
+    {
+      "id": "work_job",
+      "name": "Work at Job",
+      "description": "Perform work to earn money and satisfy achievement needs",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 60,
+        "wealth_satisfaction": 40
+      },
+      "costs": {
+        "energy": 40,
+        "time": 240
+      },
+      "duration": 240.0,
+      "location_tags": ["office", "workshop", "indoor"],
+      "skill_requirements": {
+        "work_skill": 1
+      },
+      "base_score": 95,
+      "skill_gains": {
+        "work_skill": 3,
+        "experience": 5
+      },
+      "inventory_changes": {
+        "money": 50
+      },
+      "failure_penalties": {
+        "energy": -20,
+        "achievement_need": -15
+      },
+      "effects": {
+        "income": 50,
+        "career_progress": true
+      }
+    },
+    {
+      "id": "socialize",
+      "name": "Socialize",
+      "description": "Interact with others to satisfy social needs",
+      "category": "Social",
+      "satisfies_needs": {
+        "social_need": 70,
+        "boredom": -20
+      },
+      "costs": {
+        "energy": 15,
+        "social_fatigue": 10
+      },
+      "duration": 45.0,
+      "location_tags": ["living_room", "park", "cafe", "indoor", "outdoors"],
+      "skill_requirements": {
+        "social_skills": 1
+      },
+      "base_score": 88,
+      "skill_gains": {
+        "social_skills": 2,
+        "charisma": 1
+      },
+      "inventory_changes": {},
+      "failure_penalties": {
+        "social_need": -10,
+        "energy": -5
+      },
+      "effects": {
+        "relationship_building": true,
+        "mood_improvement": 15
+      }
+    },
+    {
+      "id": "exercise",
+      "name": "Exercise",
+      "description": "Physical activity to improve health and reduce boredom",
+      "category": "Physical",
+      "satisfies_needs": {
+        "health": 30,
+        "boredom": -25,
+        "achievement_need": 20
+      },
+      "costs": {
+        "energy": 35,
+        "hunger": 15,
+        "thirst": 20
+      },
+      "duration": 60.0,
+      "location_tags": ["gym", "park", "outdoors", "indoor"],
+      "skill_requirements": {
+        "fitness": 1
+      },
+      "base_score": 92,
+      "skill_gains": {
+        "fitness": 3,
+        "strength": 2,
+        "endurance": 2
+      },
+      "inventory_changes": {},
+      "failure_penalties": {
+        "energy": -25,
+        "health": -5
+      },
+      "effects": {
+        "endorphin_rush": true,
+        "fitness_progress": true
+      }
+    },
+    {
+      "id": "cook_meal",
+      "name": "Cook a Meal",
+      "description": "Prepare food to satisfy hunger and improve cooking skills",
+      "category": "Activity",
+      "satisfies_needs": {
+        "hunger": 60,
+        "achievement_need": 30,
+        "curiosity": 20
+      },
+      "costs": {
+        "energy": 20,
+        "time": 45
+      },
+      "duration": 45.0,
+      "location_tags": ["kitchen", "indoor"],
+      "skill_requirements": {
+        "cooking": 1
+      },
+      "base_score": 87,
+      "skill_gains": {
+        "cooking": 4,
+        "creativity": 2
+      },
+      "inventory_changes": {
+        "ingredients": -3,
+        "cooked_food": 1
+      },
+      "failure_penalties": {
+        "energy": -15,
+        "hunger": -5
+      },
+      "effects": {
+        "culinary_achievement": true,
+        "food_quality": "homemade"
+      }
+    },
+    {
+      "id": "shop",
+      "name": "Go Shopping",
+      "description": "Purchase items to satisfy material needs",
+      "category": "Economic",
+      "satisfies_needs": {
+        "material_need": 50,
+        "curiosity": 20
+      },
+      "costs": {
+        "energy": 15,
+        "money": 25
+      },
+      "duration": 90.0,
+      "location_tags": ["store", "market", "mall", "indoor"],
+      "skill_requirements": {
+        "shopping": 1
+      },
+      "base_score": 82,
+      "skill_gains": {
+        "shopping": 2,
+        "negotiation": 1
+      },
+      "inventory_changes": {
+        "money": -25,
+        "various_items": 3
+      },
+      "failure_penalties": {
+        "energy": -10,
+        "money": -5
+      },
+      "effects": {
+        "retail_therapy": true,
+        "inventory_expansion": true
+      }
+    },
+    {
+      "id": "go_fishing",
+      "name": "Go Fishing",
+      "description": "Fish from the docks or boat to catch fish for food and sale",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 40,
+        "wealth_satisfaction": 30,
+        "curiosity": 20,
+        "boredom": -15
+      },
+      "costs": {
+        "energy": 25,
+        "time": 180
+      },
+      "duration": 180.0,
+      "location_tags": ["fishing_docks", "boat", "netshed", "crescent_bay", "outdoors"],
+      "skill_requirements": {
+        "fishing": 2
+      },
+      "base_score": 88,
+      "skill_gains": {
+        "fishing": 3,
+        "patience": 2,
+        "survival": 1
+      },
+      "inventory_changes": {
+        "fish": 2,
+        "money": 15
+      },
+      "failure_penalties": {
+        "energy": -15,
+        "achievement_need": -10
+      },
+      "effects": {
+        "fishing_skill_progress": true,
+        "outdoor_experience": true
+      }
+    },
+    {
+      "id": "build_boat",
+      "name": "Build Boat",
+      "description": "Construct or repair boats in the shipworks",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 60,
+        "wealth_satisfaction": 40,
+        "curiosity": 15
+      },
+      "costs": {
+        "energy": 50,
+        "time": 720
+      },
+      "duration": 720.0,
+      "location_tags": ["shipworks", "workshop", "indoor"],
+      "skill_requirements": {
+        "crafting": 3,
+        "work": 2
+      },
+      "base_score": 95,
+      "skill_gains": {
+        "crafting": 5,
+        "work": 3,
+        "engineering": 2
+      },
+      "inventory_changes": {
+        "wood": -10,
+        "tools": -1,
+        "money": 100
+      },
+      "failure_penalties": {
+        "energy": -30,
+        "achievement_need": -20
+      },
+      "effects": {
+        "boat_building_progress": true,
+        "craftsmanship_development": true
+      }
+    },
+    {
+      "id": "weave_cloth",
+      "name": "Weave Cloth",
+      "description": "Create fabric and textiles using a loom",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 45,
+        "wealth_satisfaction": 35,
+        "curiosity": 20
+      },
+      "costs": {
+        "energy": 30,
+        "time": 120
+      },
+      "duration": 120.0,
+      "location_tags": ["home", "workshop", "indoor"],
+      "skill_requirements": {
+        "crafting": 2
+      },
+      "base_score": 87,
+      "skill_gains": {
+        "crafting": 4,
+        "patience": 2,
+        "creativity": 1
+      },
+      "inventory_changes": {
+        "wool": -2,
+        "woven_cloth": 1,
+        "money": 25
+      },
+      "failure_penalties": {
+        "energy": -20,
+        "achievement_need": -15
+      },
+      "effects": {
+        "textile_creation": true,
+        "artisan_skill_progress": true
+      }
+    },
+    {
+      "id": "tend_bees",
+      "name": "Tend Beehives",
+      "description": "Care for beehives and harvest honey",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 35,
+        "curiosity": 25,
+        "boredom": -10
+      },
+      "costs": {
+        "energy": 20,
+        "time": 60
+      },
+      "duration": 60.0,
+      "location_tags": ["bee_hollow", "outdoors"],
+      "skill_requirements": {
+        "survival": 2
+      },
+      "base_score": 85,
+      "skill_gains": {
+        "survival": 3,
+        "patience": 2,
+        "nature_knowledge": 1
+      },
+      "inventory_changes": {
+        "honey": 1,
+        "beeswax": 1
+      },
+      "failure_penalties": {
+        "energy": -10,
+        "health": -5
+      },
+      "effects": {
+        "honey_production": true,
+        "nature_connection": true
+      }
+    },
+    {
+      "id": "make_pottery",
+      "name": "Make Pottery",
+      "description": "Create ceramic vessels and decorative items",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 50,
+        "wealth_satisfaction": 30,
+        "curiosity": 25
+      },
+      "costs": {
+        "energy": 35,
+        "time": 150
+      },
+      "duration": 150.0,
+      "location_tags": ["pottery_workshop", "workshop", "indoor"],
+      "skill_requirements": {
+        "crafting": 2
+      },
+      "base_score": 89,
+      "skill_gains": {
+        "crafting": 4,
+        "creativity": 3,
+        "patience": 2
+      },
+      "inventory_changes": {
+        "clay": -3,
+        "pottery": 1,
+        "money": 30
+      },
+      "failure_penalties": {
+        "energy": -25,
+        "achievement_need": -15
+      },
+      "effects": {
+        "pottery_creation": true,
+        "artistic_development": true
+      }
+    },
+    {
+      "id": "carpentry_work",
+      "name": "Carpentry Work",
+      "description": "Build and repair wooden structures and furniture",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 55,
+        "wealth_satisfaction": 35,
+        "curiosity": 20
+      },
+      "costs": {
+        "energy": 40,
+        "time": 200
+      },
+      "duration": 200.0,
+      "location_tags": ["carpentry_workshop", "workshop", "indoor"],
+      "skill_requirements": {
+        "crafting": 3,
+        "work": 2
+      },
+      "base_score": 92,
+      "skill_gains": {
+        "crafting": 4,
+        "work": 3,
+        "engineering": 2
+      },
+      "inventory_changes": {
+        "wood": -5,
+        "tools": -1,
+        "money": 45
+      },
+      "failure_penalties": {
+        "energy": -30,
+        "achievement_need": -20
+      },
+      "effects": {
+        "carpentry_progress": true,
+        "construction_skill": true
+      }
+    },
+    {
+      "id": "blacksmith_work",
+      "name": "Blacksmith Work",
+      "description": "Forge metal tools, weapons, and decorative items",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 60,
+        "wealth_satisfaction": 40,
+        "curiosity": 15
+      },
+      "costs": {
+        "energy": 45,
+        "time": 240
+      },
+      "duration": 240.0,
+      "location_tags": ["blacksmith", "forge", "workshop", "indoor"],
+      "skill_requirements": {
+        "crafting": 4,
+        "work": 3
+      },
+      "base_score": 94,
+      "skill_gains": {
+        "crafting": 5,
+        "work": 3,
+        "strength": 2
+      },
+      "inventory_changes": {
+        "iron": -3,
+        "coal": -2,
+        "tools": 1,
+        "money": 60
+      },
+      "failure_penalties": {
+        "energy": -35,
+        "achievement_need": -25
+      },
+      "effects": {
+        "metalworking_progress": true,
+        "strength_development": true
+      }
+    },
+    {
+      "id": "gather_herbs",
+      "name": "Gather Herbs",
+      "description": "Collect medicinal and culinary herbs from the woods",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 30,
+        "curiosity": 40,
+        "boredom": -20
+      },
+      "costs": {
+        "energy": 25,
+        "time": 90
+      },
+      "duration": 90.0,
+      "location_tags": ["whispering_woods", "outdoors"],
+      "skill_requirements": {
+        "survival": 1,
+        "herbalism": 1
+      },
+      "base_score": 86,
+      "skill_gains": {
+        "herbalism": 3,
+        "survival": 2,
+        "nature_knowledge": 2
+      },
+      "inventory_changes": {
+        "herbs": 3,
+        "mushrooms": 1
+      },
+      "failure_penalties": {
+        "energy": -15,
+        "health": -5
+      },
+      "effects": {
+        "herb_collection": true,
+        "nature_exploration": true
+      }
+    },
+    {
+      "id": "brew_medicine",
+      "name": "Brew Medicine",
+      "description": "Create healing potions and remedies from herbs",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 50,
+        "curiosity": 30,
+        "wealth_satisfaction": 25
+      },
+      "costs": {
+        "energy": 35,
+        "time": 180
+      },
+      "duration": 180.0,
+      "location_tags": ["herbalist_shop", "workshop", "indoor"],
+      "skill_requirements": {
+        "herbalism": 3,
+        "crafting": 2
+      },
+      "base_score": 91,
+      "skill_gains": {
+        "herbalism": 4,
+        "crafting": 2,
+        "knowledge": 2
+      },
+      "inventory_changes": {
+        "herbs": -2,
+        "medicine": 1,
+        "money": 35
+      },
+      "failure_penalties": {
+        "energy": -25,
+        "achievement_need": -20
+      },
+      "effects": {
+        "medicine_creation": true,
+        "healing_knowledge": true
+      }
+    },
+    {
+      "id": "cook_for_guests",
+      "name": "Cook for Inn Guests",
+      "description": "Prepare meals for inn visitors and travelers",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 40,
+        "social_need": 20,
+        "wealth_satisfaction": 30
+      },
+      "costs": {
+        "energy": 45,
+        "time": 120
+      },
+      "duration": 120.0,
+      "location_tags": ["inn_kitchen", "indoor"],
+      "skill_requirements": {
+        "cooking": 3,
+        "work": 2
+      },
+      "base_score": 90,
+      "skill_gains": {
+        "cooking": 4,
+        "work": 2,
+        "social_skills": 1
+      },
+      "inventory_changes": {
+        "ingredients": -4,
+        "cooked_food": 2,
+        "money": 25
+      },
+      "failure_penalties": {
+        "energy": -30,
+        "achievement_need": -20
+      },
+      "effects": {
+        "guest_satisfaction": true,
+        "culinary_skill_progress": true
+      }
+    },
+    {
+      "id": "serve_guests",
+      "name": "Serve Inn Guests",
+      "description": "Provide hospitality and service to inn visitors",
+      "category": "Economic",
+      "satisfies_needs": {
+        "social_need": 40,
+        "achievement_need": 25,
+        "wealth_satisfaction": 20
+      },
+      "costs": {
+        "energy": 30,
+        "social_fatigue": 15
+      },
+      "duration": 90.0,
+      "location_tags": ["inn_common_room", "indoor"],
+      "skill_requirements": {
+        "social_skills": 2,
+        "work": 1
+      },
+      "base_score": 88,
+      "skill_gains": {
+        "social_skills": 3,
+        "work": 2,
+        "charisma": 1
+      },
+      "inventory_changes": {
+        "money": 15
+      },
+      "failure_penalties": {
+        "social_need": -15,
+        "energy": -10
+      },
+      "effects": {
+        "guest_happiness": true,
+        "hospitality_skill": true
+      }
+    },
+    {
+      "id": "bake_bread",
+      "name": "Bake Bread",
+      "description": "Create fresh bread and pastries for the village",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 45,
+        "wealth_satisfaction": 30,
+        "curiosity": 20
+      },
+      "costs": {
+        "energy": 35,
+        "time": 150
+      },
+      "duration": 150.0,
+      "location_tags": ["bakery", "kitchen", "indoor"],
+      "skill_requirements": {
+        "cooking": 3
+      },
+      "base_score": 89,
+      "skill_gains": {
+        "cooking": 4,
+        "patience": 2,
+        "creativity": 1
+      },
+      "inventory_changes": {
+        "flour": -2,
+        "yeast": -1,
+        "bread": 3,
+        "money": 20
+      },
+      "failure_penalties": {
+        "energy": -25,
+        "achievement_need": -15
+      },
+      "effects": {
+        "bread_production": true,
+        "baking_skill_progress": true
+      }
+    },
+    {
+      "id": "farm_work",
+      "name": "Farm Work",
+      "description": "Tend to crops and maintain farmland",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 40,
+        "wealth_satisfaction": 25,
+        "boredom": -15
+      },
+      "costs": {
+        "energy": 40,
+        "time": 180
+      },
+      "duration": 180.0,
+      "location_tags": ["farm", "outdoors"],
+      "skill_requirements": {
+        "farming": 2,
+        "work": 2
+      },
+      "base_score": 87,
+      "skill_gains": {
+        "farming": 3,
+        "work": 2,
+        "survival": 1
+      },
+      "inventory_changes": {
+        "crops": 2,
+        "money": 20
+      },
+      "failure_penalties": {
+        "energy": -30,
+        "achievement_need": -20
+      },
+      "effects": {
+        "crop_production": true,
+        "farming_skill_progress": true
+      }
+    },
+    {
+      "id": "trade_goods",
+      "name": "Trade Goods",
+      "description": "Buy and sell goods at the trade post",
+      "category": "Economic",
+      "satisfies_needs": {
+        "wealth_satisfaction": 45,
+        "social_need": 25,
+        "curiosity": 20
+      },
+      "costs": {
+        "energy": 20,
+        "time": 120
+      },
+      "duration": 120.0,
+      "location_tags": ["trade_post", "market", "indoor", "outdoors"],
+      "skill_requirements": {
+        "trading": 2,
+        "social_skills": 1
+      },
+      "base_score": 86,
+      "skill_gains": {
+        "trading": 3,
+        "social_skills": 2,
+        "negotiation": 2
+      },
+      "inventory_changes": {
+        "money": 30
+      },
+      "failure_penalties": {
+        "energy": -15,
+        "wealth_satisfaction": -10
+      },
+      "effects": {
+        "trade_progress": true,
+        "business_skill": true
+      }
+    },
+    {
+      "id": "explore_island",
+      "name": "Explore Island",
+      "description": "Discover new areas and secrets of the island",
+      "category": "Activity",
+      "satisfies_needs": {
+        "curiosity": 60,
+        "boredom": -30,
+        "achievement_need": 25
+      },
+      "costs": {
+        "energy": 30,
+        "time": 120
+      },
+      "duration": 120.0,
+      "location_tags": ["outdoors", "new_area"],
+      "skill_requirements": {
+        "survival": 1
+      },
+      "base_score": 85,
+      "skill_gains": {
+        "survival": 2,
+        "exploration": 2,
+        "nature_knowledge": 1
+      },
+      "inventory_changes": {
+        "discovered_items": 1
+      },
+      "failure_penalties": {
+        "energy": -20,
+        "health": -5
+      },
+      "effects": {
+        "island_discovery": true,
+        "adventure_experience": true
+      }
+    },
+    {
+      "id": "visit_stone_circle",
+      "name": "Visit Stone Circle",
+      "description": "Meditate and explore the ancient ruins",
+      "category": "Activity",
+      "satisfies_needs": {
+        "curiosity": 50,
+        "boredom": -20,
+        "comfort": 30
+      },
+      "costs": {
+        "energy": 15,
+        "time": 60
+      },
+      "duration": 60.0,
+      "location_tags": ["stone_circle", "outdoors"],
+      "skill_requirements": {},
+      "base_score": 83,
+      "skill_gains": {
+        "spirituality": 2,
+        "knowledge": 1
+      },
+      "inventory_changes": {},
+      "failure_penalties": {
+        "comfort": -10
+      },
+      "effects": {
+        "spiritual_connection": true,
+        "ancient_knowledge": true
+      }
+    },
+    {
+      "id": "lighthouse_maintenance",
+      "name": "Lighthouse Maintenance",
+      "description": "Maintain and operate the lighthouse",
+      "category": "Economic",
+      "satisfies_needs": {
+        "achievement_need": 45,
+        "wealth_satisfaction": 30,
+        "curiosity": 15
+      },
+      "costs": {
+        "energy": 35,
+        "time": 90
+      },
+      "duration": 90.0,
+      "location_tags": ["lighthouse", "outdoors"],
+      "skill_requirements": {
+        "maintenance": 2,
+        "work": 1
+      },
+      "base_score": 87,
+      "skill_gains": {
+        "maintenance": 3,
+        "work": 2,
+        "engineering": 1
+      },
+      "inventory_changes": {
+        "money": 25
+      },
+      "failure_penalties": {
+        "energy": -25,
+        "achievement_need": -15
+      },
+      "effects": {
+        "lighthouse_operation": true,
+        "safety_maintenance": true
+      }
+    }
+  ],
+  "location_types": {
+    "indoor": ["home", "workplace", "shop", "library", "workshop", "bedroom", "kitchen", "bathroom", "closet", "office"],
+    "outdoors": ["gym", "market", "trading_post", "public", "social_area", "exercise_area", "new_area"],
+    "comfortable": ["home", "bedroom", "indoor"],
+    "safe": ["home", "indoor"],
+    "quiet": ["library", "home", "bedroom"],
+    "dark": ["bedroom"],
+    "food_available": ["kitchen", "dining"],
+    "water_available": ["kitchen", "bathroom", "shower"],
+    "materials": ["workshop", "crafting_area"],
+    "social_area": ["public", "market", "trading_post"],
+    "exercise_area": ["gym", "outdoors"],
+    "new_area": ["outdoors"],
+    "fishing": ["fishing_docks", "boat", "netshed", "crescent_bay"],
+    "crafting": ["shipworks", "blacksmith", "carpentry_workshop", "pottery_workshop", "workshop"],
+    "herbalism": ["herbalist_shop", "whispering_woods", "garden"],
+    "hospitality": ["inn_kitchen", "inn_common_room", "inn_bedrooms"],
+    "agriculture": ["farm", "bee_hollow", "garden"],
+    "commerce": ["trade_post", "market_stalls", "bakery"],
+    "recreation": ["village_green", "pebble_beach", "high_bluff", "tide_pools", "stone_circle"],
+    "maritime": ["fishing_docks", "shipworks", "crescent_bay", "lighthouse"],
+    "nature": ["whispering_woods", "bee_hollow", "high_bluff", "tide_pools", "pebble_beach"]
+  },
+  "need_categories": {
+    "physical": ["energy", "hunger", "thirst", "health"],
+    "comfort": ["temp_comfort", "cleanliness", "comfort"],
+    "activity": ["boredom", "curiosity", "achievement_need"],
+    "economic": ["wealth_satisfaction", "material_need", "security_need"],
+    "social": ["social_need", "social_fatigue"]
+  }
+}

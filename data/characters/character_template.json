@@ -1,0 +1,86 @@
+{
+  "character_id": "template_npc",
+  "name": "Template NPC",
+  "description": "Base template for all NPCs",
+  
+  "personality": {
+    "big_five": {
+      "openness": 0.5,
+      "conscientiousness": 0.5,
+      "extraversion": 0.5,
+      "agreeableness": 0.5,
+      "neuroticism": 0.5
+    },
+    "traits": {
+      "risk_tolerance": 0.5,
+      "work_ethic": 0.5,
+      "creativity": 0.5,
+      "patience": 0.5
+    }
+  },
+  
+  "needs": {
+    "physical": {
+      "energy": {"current": 0.8, "decay_rate": 0.02, "recovery_rate": 0.05, "min": 0.0, "max": 1.0},
+      "hunger": {"current": 0.3, "decay_rate": 0.01, "recovery_rate": 0.1, "min": 0.0, "max": 1.0},
+      "thirst": {"current": 0.4, "decay_rate": 0.015, "recovery_rate": 0.12, "min": 0.0, "max": 1.0},
+      "health": {"current": 1.0, "decay_rate": 0.001, "recovery_rate": 0.02, "min": 0.0, "max": 1.0}
+    },
+    "comfort": {
+      "temp_comfort": {"current": 0.0, "decay_rate": 0.02, "recovery_rate": 0.03, "min": -1.0, "max": 1.0},
+      "cleanliness": {"current": 0.7, "decay_rate": 0.008, "recovery_rate": 0.15, "min": 0.0, "max": 1.0},
+      "comfort": {"current": 0.6, "decay_rate": 0.01, "recovery_rate": 0.08, "min": 0.0, "max": 1.0}
+    },
+    "activity": {
+      "boredom": {"current": 0.4, "decay_rate": 0.005, "recovery_rate": 0.1, "min": 0.0, "max": 1.0},
+      "curiosity": {"current": 0.6, "decay_rate": 0.003, "recovery_rate": 0.05, "min": 0.0, "max": 1.0},
+      "achievement_need": {"current": 0.5, "decay_rate": 0.002, "recovery_rate": 0.08, "min": 0.0, "max": 1.0}
+    },
+    "economic": {
+      "wealth_satisfaction": {"current": 0.5, "decay_rate": 0.001, "recovery_rate": 0.01, "min": 0.0, "max": 1.0},
+      "material_need": {"current": 0.3, "decay_rate": 0.001, "recovery_rate": 0.05, "min": 0.0, "max": 1.0},
+      "security_need": {"current": 0.2, "decay_rate": 0.001, "recovery_rate": 0.02, "min": 0.0, "max": 1.0}
+    },
+    "social": {
+      "social_need": {"current": 0.5, "decay_rate": 0.01, "recovery_rate": 0.08, "min": 0.0, "max": 1.0},
+      "social_fatigue": {"current": 0.0, "decay_rate": 0.02, "recovery_rate": 0.05, "min": 0.0, "max": 1.0}
+    }
+  },
+  
+
+  
+  "inventory": {
+    "money": 100,
+    "items": [],
+    "clothing": ["basic_shirt", "basic_pants"],
+    "tools": [],
+    "food": [],
+    "drinks": [],
+    "capacity": 20,
+    "max_weight": 50.0
+  },
+  
+  "schedule": {
+    "sleep_time": {"start": 22, "end": 6},
+    "work_time": {"start": 8, "end": 17},
+    "meal_times": [7, 12, 19],
+    "preferences": {
+      "morning_activity": "work",
+      "afternoon_activity": "social",
+      "evening_activity": "leisure"
+    },
+    "flexibility": 0.5
+  },
+  
+  "relationships": {},
+  "memories": [],
+  "goals": [],
+  "current_action": null,
+  "location": "home",
+  
+  "metadata": {
+    "created": "2024-01-15T00:00:00",
+    "version": "1.0",
+    "template_type": "base"
+  }
+}

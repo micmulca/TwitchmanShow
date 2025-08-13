@@ -1,0 +1,51 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqxvh8yqxqxqx"]
+
+[ext_resource type="Script" path="res://scenes/World.gd" id="1_world"]
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_world")
+
+[node name="Camera2D" type="Camera2D" parent="."]
+position = Vector2(640, 360)
+
+[node name="Console" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="ConsoleInstance" parent="Console" instance=ExtResource("res://ui/Console.tscn")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="DebugUI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="FPSLabel" type="Label" parent="DebugUI"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -100.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 36.0
+text = "FPS: 60"
+horizontal_alignment = 2
+
+[node name="StatusLabel" type="Label" parent="DebugUI"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -200.0
+offset_top = 40.0
+offset_right = -10.0
+offset_bottom = 66.0
+text = "LLM: Healthy | Events: 0"
+horizontal_alignment = 2

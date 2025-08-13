@@ -1,0 +1,122 @@
+{
+  "character_id": "fen_barrow",
+  "name": "Fen Barrow",
+  "description": "A lonely lighthouse keeper who maintains the beacon on Lighthouse Point. Fen is friends with Tamsin Vale and nephew to Agatha Barrow, currently considering selling the lighthouse cottage due to isolation.",
+  "occupation": "Lighthouse Keeper",
+  "specialization": "Maritime Safety and Beacon Maintenance",
+  "age": 26,
+  "gender": "Male",
+  "home_location": "fens_lighthouse",
+  "workplace": "fens_lighthouse",
+  "personality": {
+    "openness": 0.5,
+    "conscientiousness": 0.9,
+    "extraversion": 0.3,
+    "agreeableness": 0.7,
+    "neuroticism": 0.6,
+    "custom_traits": {
+      "duty_bound": 0.9,
+      "loneliness": 0.7,
+      "introspection": 0.8,
+      "maritime_pride": 0.7
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.7,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.8
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.6,
+      "comfort": 0.4
+    },
+    "activity": {
+      "boredom": 0.6,
+      "curiosity": 0.4,
+      "achievement_need": 0.6
+    },
+    "economic": {
+      "wealth_satisfaction": 0.5,
+      "material_need": 0.3,
+      "security_need": 0.3
+    },
+    "social": {
+      "social_need": 0.7,
+      "social_fatigue": 0.2
+    }
+  },
+  "inventory": {
+    "money": 55,
+    "items": [
+      "lighthouse_keys",
+      "maintenance_tools",
+      "weather_journal",
+      "signal_flags",
+      "oil_lanterns"
+    ],
+    "clothing": [
+      "keeper_uniform",
+      "warm_coat",
+      "sturdy_boots",
+      "protective_gear"
+    ]
+  },
+  "relationships": {
+    "tamsin_vale": {
+      "affection": 0.7,
+      "trust": 0.6,
+      "interaction_frequency": "frequent"
+    },
+    "agatha_barrow": {
+      "affection": 0.8,
+      "trust": 0.9,
+      "interaction_frequency": "weekly"
+    },
+    "elias_thorn": {
+      "affection": 0.5,
+      "trust": 0.6,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "maintain_lighthouse",
+      "description": "Keep the lighthouse beacon functioning perfectly for maritime safety",
+      "priority": 0.9,
+      "progress": 0.8,
+      "requirements": ["regular_maintenance", "quality_supplies", "attention_to_detail"]
+    },
+    {
+      "goal_id": "find_connection",
+      "description": "Find meaningful connection and reduce feelings of isolation",
+      "priority": 0.8,
+      "progress": 0.3,
+      "requirements": ["social_opportunities", "community_involvement", "personal_growth"]
+    },
+    {
+      "goal_id": "decide_future",
+      "description": "Decide whether to keep the lighthouse or sell it for a change of life",
+      "priority": 0.7,
+      "progress": 0.2,
+      "requirements": ["self_reflection", "alternatives_exploration", "family_consultation"]
+    }
+  ],
+  "drama_hooks": [
+    "Lonely on Lighthouse Point and considering selling the lighthouse cottage",
+    "Feels isolated from the village community despite his important role",
+    "Struggles with the weight of responsibility for maritime safety",
+    "Wants to find connection but doesn't know how to integrate with village life"
+  ],
+  "schedule": {
+    "sleep_pattern": "irregular",
+    "work_times": "24_hour_rotation",
+    "meal_preferences": "simple_meals",
+    "social_times": "when_visitors_arrive"
+  },
+  "reputation": "Reliable lighthouse keeper who maintains the beacon perfectly, but keeps to himself and rarely visits the village",
+  "current_location": "fens_lighthouse",
+  "status": "active"
+}

@@ -1,0 +1,64 @@
+{
+  "conversation_limits": {
+    "max_active_groups": 5,
+    "max_participants_per_group": 4,
+    "min_conversation_duration": 10.0,
+    "max_conversation_duration": 300.0,
+    "conversation_cooldown": 30.0,
+    "conversation_jitter": 15.0
+  },
+  "llm_limits": {
+    "max_tokens_per_request": 500,
+    "max_tokens_per_response": 200,
+    "request_timeout": 30.0,
+    "max_concurrent_requests": 3,
+    "request_cooldown": 2.0,
+    "fallback_probability": 0.1
+  },
+  "npc_limits": {
+    "max_npcs": 20,
+    "max_actions_per_tick": 5,
+    "action_cooldown": 1.0,
+    "action_jitter": 0.5,
+    "max_movement_speed": 100.0,
+    "min_idle_duration": 5.0,
+    "max_idle_duration": 60.0
+  },
+  "memory_limits": {
+    "max_conversation_history": 50,
+    "max_relationship_memory": 100,
+    "max_event_memory": 200,
+    "memory_compression_interval": 300.0,
+    "summary_length_limit": 100
+  },
+  "performance_limits": {
+    "max_fps": 60,
+    "min_fps": 30,
+    "tick_rate": 0.1,
+    "max_entities_per_chunk": 50,
+    "culling_distance": 1000.0
+  },
+  "social_simulation": {
+    "max_social_need": 100.0,
+    "max_social_fatigue": 100.0,
+    "social_need_decay_rate": 1.0,
+    "social_fatigue_decay_rate": 0.5,
+    "relationship_change_limit": 0.2,
+    "mood_change_limit": 0.3
+  },
+  "world_events": {
+    "max_active_events": 10,
+    "event_duration_range": [60.0, 600.0],
+    "event_cooldown": 120.0,
+    "weather_change_interval": 300.0,
+    "time_scale": 1.0
+  },
+  "debug_settings": {
+    "log_level": "INFO",
+    "show_fps": true,
+    "show_debug_ui": true,
+    "log_conversations": true,
+    "log_events": true,
+    "log_performance": false
+  }
+}

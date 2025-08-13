@@ -1,0 +1,126 @@
+{
+  "character_id": "kellen_sedge",
+  "name": "Kellen Sedge",
+  "description": "A hardworking farmer struggling with a bad harvest season. Kellen is Rowan's brother and works the family farm, currently facing financial difficulties that have led him to seek a risky loan from Selene Marek.",
+  "occupation": "Farmer",
+  "specialization": "Crop Rotation and Soil Management",
+  "age": 35,
+  "gender": "Male",
+  "home_location": "sedge_farm",
+  "workplace": "sedge_farm",
+  "personality": {
+    "openness": 0.4,
+    "conscientiousness": 0.9,
+    "extraversion": 0.3,
+    "agreeableness": 0.7,
+    "neuroticism": 0.6,
+    "custom_traits": {
+      "work_ethic": 0.9,
+      "family_responsibility": 0.8,
+      "financial_worry": 0.7,
+      "practical_thinking": 0.8
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.6,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.7
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.4,
+      "comfort": 0.3
+    },
+    "activity": {
+      "boredom": 0.2,
+      "curiosity": 0.3,
+      "achievement_need": 0.8
+    },
+    "economic": {
+      "wealth_satisfaction": 0.2,
+      "material_need": 0.6,
+      "security_need": 0.7
+    },
+    "social": {
+      "social_need": 0.4,
+      "social_fatigue": 0.3
+    }
+  },
+  "inventory": {
+    "money": 15,
+    "items": [
+      "farming_tools",
+      "seed_stock",
+      "harvest_basket",
+      "weather_journal"
+    ],
+    "clothing": [
+      "work_clothes",
+      "sturdy_boots",
+      "wide_hat",
+      "leather_gloves"
+    ]
+  },
+  "relationships": {
+    "rowan_sedge": {
+      "affection": 0.9,
+      "trust": 0.9,
+      "interaction_frequency": "daily"
+    },
+    "jessa_pike": {
+      "affection": 0.8,
+      "trust": 0.9,
+      "interaction_frequency": "frequent"
+    },
+    "elias_thorn": {
+      "affection": 0.6,
+      "trust": 0.5,
+      "interaction_frequency": "occasional"
+    },
+    "selene_marek": {
+      "affection": 0.3,
+      "trust": 0.4,
+      "interaction_frequency": "business_only"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "recover_farm",
+      "description": "Recover from the bad harvest and restore farm productivity",
+      "priority": 0.9,
+      "progress": 0.2,
+      "requirements": ["better_weather", "new_seeds", "financial_stability"]
+    },
+    {
+      "goal_id": "repay_loan",
+      "description": "Successfully repay the loan from Selene Marek without losing the farm",
+      "priority": 0.8,
+      "progress": 0.1,
+      "requirements": ["good_harvest", "crop_sales", "financial_planning"]
+    },
+    {
+      "goal_id": "improve_soil",
+      "description": "Implement better soil management techniques to prevent future crop failures",
+      "priority": 0.7,
+      "progress": 0.4,
+      "requirements": ["soil_analysis", "new_techniques", "time_investment"]
+    }
+  ],
+  "drama_hooks": [
+    "Struggling with a bad harvest that threatens the family farm",
+    "Quietly negotiating with Selene Marek for a risky loan",
+    "Feeling pressure to succeed to support Rowan and the family",
+    "Worried about losing the farm that has been in the family for generations"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "sunrise_to_sunset",
+    "meal_preferences": "hearty_farm_meals",
+    "social_times": "evenings_and_market_days"
+  },
+  "reputation": "Hardworking farmer facing tough times, but known for his determination and family loyalty",
+  "current_location": "sedge_farm",
+  "status": "active"
+}

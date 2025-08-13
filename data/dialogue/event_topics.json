@@ -1,0 +1,67 @@
+{
+  "weather": {
+    "rain": ["weather", "mood", "activities", "comfort", "indoor_activities"],
+    "sunny": ["weather", "mood", "outdoor_activities", "energy", "plans"],
+    "storm": ["weather", "safety", "indoor_activities", "concern", "preparation"],
+    "snow": ["weather", "season", "activities", "warmth", "traditions"],
+    "fog": ["weather", "atmosphere", "visibility", "mystery", "caution"],
+    "wind": ["weather", "energy", "movement", "nature", "change"]
+  },
+  "economy": {
+    "prosperity": ["business", "opportunities", "future_plans", "optimism", "growth"],
+    "recession": ["concerns", "budget", "community_support", "caution", "helping_others"],
+    "market_day": ["commerce", "community", "bargains", "socializing", "local_business"],
+    "trade_deal": ["business", "relationships", "opportunities", "trust", "partnerships"],
+    "price_change": ["economics", "budget", "value", "adaptation", "planning"]
+  },
+  "social": {
+    "festival": ["celebration", "community", "traditions", "joy", "togetherness"],
+    "gossip": ["relationships", "news", "social_dynamics", "curiosity", "community"],
+    "wedding": ["celebration", "love", "family", "traditions", "future"],
+    "birthday": ["celebration", "age", "milestones", "gifts", "appreciation"],
+    "funeral": ["loss", "memory", "support", "reflection", "community"],
+    "graduation": ["achievement", "education", "future", "pride", "opportunities"]
+  },
+  "civic": {
+    "election": ["politics", "community", "leadership", "voting", "democracy"],
+    "town_meeting": ["community", "decisions", "participation", "concerns", "solutions"],
+    "new_building": ["development", "progress", "community", "change", "excitement"],
+    "road_repair": ["infrastructure", "convenience", "taxes", "patience", "improvement"],
+    "festival_announcement": ["celebration", "planning", "community", "excitement", "participation"]
+  },
+  "personal": {
+    "new_job": ["career", "opportunities", "excitement", "nervousness", "support"],
+    "illness": ["health", "concern", "support", "recovery", "wellness"],
+    "travel": ["adventure", "excitement", "planning", "experiences", "stories"],
+    "new_baby": ["family", "joy", "responsibility", "change", "support"],
+    "retirement": ["change", "reflection", "freedom", "planning", "celebration"]
+  },
+  "seasonal": {
+    "spring": ["renewal", "growth", "energy", "plans", "nature"],
+    "summer": ["warmth", "activities", "vacation", "energy", "outdoors"],
+    "autumn": ["change", "harvest", "preparation", "beauty", "reflection"],
+    "winter": ["cold", "coziness", "traditions", "patience", "reflection"],
+    "harvest": ["abundance", "work", "celebration", "gratitude", "community"]
+  },
+  "emergency": {
+    "fire": ["danger", "safety", "help", "concern", "community"],
+    "flood": ["disaster", "safety", "help", "recovery", "support"],
+    "theft": ["crime", "safety", "concern", "justice", "community"],
+    "accident": ["concern", "help", "safety", "recovery", "support"],
+    "storm_damage": ["destruction", "recovery", "help", "concern", "community"]
+  },
+  "entertainment": {
+    "performance": ["art", "entertainment", "talent", "appreciation", "culture"],
+    "game": ["fun", "competition", "skill", "socializing", "enjoyment"],
+    "story": ["narrative", "imagination", "entertainment", "wisdom", "sharing"],
+    "music": ["art", "emotion", "entertainment", "mood", "culture"],
+    "dance": ["movement", "joy", "expression", "celebration", "energy"]
+  },
+  "nature": {
+    "animal_sighting": ["wildlife", "nature", "excitement", "beauty", "observation"],
+    "plant_growth": ["nature", "growth", "beauty", "patience", "care"],
+    "sunset": ["beauty", "nature", "reflection", "peace", "appreciation"],
+    "rainbow": ["beauty", "nature", "wonder", "hope", "appreciation"],
+    "seasonal_change": ["nature", "change", "cycles", "adaptation", "beauty"]
+  }
+}

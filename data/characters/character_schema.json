@@ -1,0 +1,262 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Character Schema",
+  "description": "Schema for validating character data files",
+  "type": "object",
+  "required": ["character_id", "name", "personality", "needs", "skills", "inventory", "schedule", "location"],
+  "properties": {
+    "character_id": {
+      "type": "string",
+      "description": "Unique identifier for the character",
+      "pattern": "^[a-zA-Z0-9_]+$"
+    },
+    "name": {
+      "type": "string",
+      "description": "Display name for the character",
+      "minLength": 1,
+      "maxLength": 50
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description of the character",
+      "maxLength": 200
+    },
+    "personality": {
+      "type": "object",
+      "required": ["big_five", "traits"],
+      "properties": {
+        "big_five": {
+          "type": "object",
+          "required": ["openness", "conscientiousness", "extraversion", "agreeableness", "neuroticism"],
+          "properties": {
+            "openness": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "conscientiousness": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "extraversion": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "agreeableness": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "neuroticism": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+          }
+        },
+        "traits": {
+          "type": "object",
+          "properties": {
+            "risk_tolerance": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "work_ethic": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "creativity": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+            "patience": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+          }
+        }
+      }
+    },
+    "needs": {
+      "type": "object",
+      "required": ["physical", "comfort", "activity", "economic", "social"],
+      "properties": {
+        "physical": {
+          "type": "object",
+          "required": ["energy", "hunger", "thirst", "health"],
+          "properties": {
+            "energy": {"$ref": "#/definitions/need_data"},
+            "hunger": {"$ref": "#/definitions/need_data"},
+            "thirst": {"$ref": "#/definitions/need_data"},
+            "health": {"$ref": "#/definitions/need_data"}
+          }
+        },
+        "comfort": {
+          "type": "object",
+          "required": ["temp_comfort", "cleanliness", "comfort"],
+          "properties": {
+            "temp_comfort": {"$ref": "#/definitions/need_data_temp"},
+            "cleanliness": {"$ref": "#/definitions/need_data"},
+            "comfort": {"$ref": "#/definitions/need_data"}
+          }
+        },
+        "activity": {
+          "type": "object",
+          "required": ["boredom", "curiosity", "achievement_need"],
+          "properties": {
+            "boredom": {"$ref": "#/definitions/need_data"},
+            "curiosity": {"$ref": "#/definitions/need_data"},
+            "achievement_need": {"$ref": "#/definitions/need_data"}
+          }
+        },
+        "economic": {
+          "type": "object",
+          "required": ["wealth_satisfaction", "material_need", "security_need"],
+          "properties": {
+            "wealth_satisfaction": {"$ref": "#/definitions/need_data"},
+            "material_need": {"$ref": "#/definitions/need_data"},
+            "security_need": {"$ref": "#/definitions/need_data"}
+          }
+        },
+        "social": {
+          "type": "object",
+          "required": ["social_need", "social_fatigue"],
+          "properties": {
+            "social_need": {"$ref": "#/definitions/need_data"},
+            "social_fatigue": {"$ref": "#/definitions/need_data"}
+          }
+        }
+      }
+    },
+    "skills": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/definitions/skill_data"}
+    },
+    "inventory": {
+      "type": "object",
+      "required": ["money", "items", "clothing", "tools", "capacity", "max_weight"],
+      "properties": {
+        "money": {"type": "number", "minimum": 0},
+        "items": {"type": "array", "items": {"type": "string"}},
+        "clothing": {"type": "array", "items": {"type": "string"}},
+        "tools": {"type": "array", "items": {"type": "string"}},
+        "food": {"type": "array", "items": {"type": "string"}},
+        "drinks": {"type": "array", "items": {"type": "string"}},
+        "capacity": {"type": "integer", "minimum": 1, "maximum": 100},
+        "max_weight": {"type": "number", "minimum": 0.1}
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "required": ["sleep_time", "work_time", "meal_times", "preferences"],
+      "properties": {
+        "sleep_time": {
+          "type": "object",
+          "required": ["start", "end"],
+          "properties": {
+            "start": {"type": "integer", "minimum": 0, "maximum": 23},
+            "end": {"type": "integer", "minimum": 0, "maximum": 23}
+          }
+        },
+        "work_time": {
+          "type": "object",
+          "required": ["start", "end"],
+          "properties": {
+            "start": {"type": "integer", "minimum": 0, "maximum": 23},
+            "end": {"type": "integer", "minimum": 0, "maximum": 23}
+          }
+        },
+        "meal_times": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0, "maximum": 23},
+          "minItems": 1,
+          "maxItems": 5
+        },
+        "preferences": {
+          "type": "object",
+          "properties": {
+            "morning_activity": {"type": "string"},
+            "afternoon_activity": {"type": "string"},
+            "evening_activity": {"type": "string"}
+          }
+        },
+        "flexibility": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "additionalProperties": {"$ref": "#/definitions/relationship_data"}
+    },
+    "memories": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/memory_data"}
+    },
+    "goals": {
+      "type": "array",
+      "items": {"$ref": "#/definitions/goal_data"}
+    },
+    "current_action": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/definitions/action_data"}
+      ]
+    },
+    "location": {
+      "type": "string",
+      "description": "Current location of the character"
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "created": {"type": "string", "format": "date-time"},
+        "version": {"type": "string"},
+        "template_type": {"type": "string", "enum": ["base", "instance"]},
+        "base_template": {"type": "string"}
+      }
+    }
+  },
+  "definitions": {
+    "need_data": {
+      "type": "object",
+      "required": ["current", "decay_rate", "recovery_rate", "min", "max"],
+      "properties": {
+        "current": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "decay_rate": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "recovery_rate": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "min": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "max": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+      }
+    },
+    "need_data_temp": {
+      "type": "object",
+      "required": ["current", "decay_rate", "recovery_rate", "min", "max"],
+      "properties": {
+        "current": {"type": "number", "minimum": -1.0, "maximum": 1.0},
+        "decay_rate": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "recovery_rate": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "min": {"type": "number", "minimum": -1.0, "maximum": 1.0},
+        "max": {"type": "number", "minimum": -1.0, "maximum": 1.0}
+      }
+    },
+    "skill_data": {
+      "type": "object",
+      "required": ["level", "experience", "max_level"],
+      "properties": {
+        "level": {"type": "integer", "minimum": 1, "maximum": 20},
+        "experience": {"type": "integer", "minimum": 0},
+        "max_level": {"type": "integer", "minimum": 1, "maximum": 20}
+      }
+    },
+    "relationship_data": {
+      "type": "object",
+      "required": ["affection", "trust", "last_interaction"],
+      "properties": {
+        "affection": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "trust": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "last_interaction": {"type": "string", "format": "date-time"}
+      }
+    },
+    "memory_data": {
+      "type": "object",
+      "required": ["type", "content", "timestamp"],
+      "properties": {
+        "type": {"type": "string"},
+        "content": {"type": "string"},
+        "timestamp": {"type": "string", "format": "date-time"},
+        "emotional_impact": {"type": "number", "minimum": -1.0, "maximum": 1.0}
+      }
+    },
+    "goal_data": {
+      "type": "object",
+      "required": ["type", "target", "priority"],
+      "properties": {
+        "type": {"type": "string"},
+        "target": {"type": "string"},
+        "target_level": {"type": "integer"},
+        "priority": {"type": "number", "minimum": 0.0, "maximum": 1.0},
+        "progress": {"type": "number", "minimum": 0.0, "maximum": 1.0}
+      }
+    },
+    "action_data": {
+      "type": "object",
+      "required": ["type", "start_time"],
+      "properties": {
+        "type": {"type": "string"},
+        "start_time": {"type": "string", "format": "date-time"},
+        "estimated_duration": {"type": "integer", "minimum": 0},
+        "satisfies_needs": {"type": "array", "items": {"type": "string"}},
+        "costs": {"type": "array", "items": {"type": "string"}}
+      }
+    }
+  }
+}

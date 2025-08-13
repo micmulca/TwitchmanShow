@@ -1,0 +1,120 @@
+{
+  "character_id": "jessa_pike",
+  "name": "Jessa Pike",
+  "description": "A young, ambitious apprentice boatwright with innovative ideas and a restless spirit. Jessa is Orin Pike's niece and works alongside him in the family shipworks, but often feels constrained by traditional methods.",
+  "occupation": "Apprentice Boatwright",
+  "specialization": "Ship Design and Innovation",
+  "age": 22,
+  "gender": "Female",
+  "home_location": "pike_shipworks",
+  "workplace": "pike_shipworks",
+  "personality": {
+    "openness": 0.8,
+    "conscientiousness": 0.7,
+    "extraversion": 0.6,
+    "agreeableness": 0.8,
+    "neuroticism": 0.3,
+    "custom_traits": {
+      "innovation_drive": 0.9,
+      "family_loyalty": 0.7,
+      "restlessness": 0.6,
+      "learning_enthusiasm": 0.8
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.8,
+      "hunger": 0.3,
+      "thirst": 0.4,
+      "health": 0.9
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.6,
+      "comfort": 0.5
+    },
+    "activity": {
+      "boredom": 0.4,
+      "curiosity": 0.8,
+      "achievement_need": 0.7
+    },
+    "economic": {
+      "wealth_satisfaction": 0.4,
+      "material_need": 0.3,
+      "security_need": 0.2
+    },
+    "social": {
+      "social_need": 0.6,
+      "social_fatigue": 0.2
+    }
+  },
+  "inventory": {
+    "money": 45,
+    "items": [
+      "apprentice_tools",
+      "design_sketches",
+      "woodworking_manual",
+      "measuring_tools"
+    ],
+    "clothing": [
+      "work_overalls",
+      "sturdy_boots",
+      "leather_apron"
+    ]
+  },
+  "relationships": {
+    "orin_pike": {
+      "affection": 0.7,
+      "trust": 0.6,
+      "interaction_frequency": "daily"
+    },
+    "kellen_sedge": {
+      "affection": 0.8,
+      "trust": 0.9,
+      "interaction_frequency": "frequent"
+    },
+    "elias_thorn": {
+      "affection": 0.6,
+      "trust": 0.5,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "master_boatbuilding",
+      "description": "Master traditional boatbuilding techniques under Orin's guidance",
+      "priority": 0.8,
+      "progress": 0.6,
+      "requirements": ["time", "practice", "orin_approval"]
+    },
+    {
+      "goal_id": "innovative_designs",
+      "description": "Develop and implement innovative ship design concepts",
+      "priority": 0.9,
+      "progress": 0.3,
+      "requirements": ["design_skills", "materials", "creative_freedom"]
+    },
+    {
+      "goal_id": "prove_independence",
+      "description": "Prove to Orin that she can work independently and bring value to the business",
+      "priority": 0.7,
+      "progress": 0.4,
+      "requirements": ["successful_projects", "reliability", "innovation_results"]
+    }
+  ],
+  "drama_hooks": [
+    "Feels stifled by Orin's traditional ways and wants to modernize the shipworks",
+    "Dreams of designing innovative ships that could revolutionize island fishing",
+    "Struggles to balance family loyalty with her desire for creative freedom",
+    "Wants to prove her worth beyond just being 'Orin's niece'"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "dawn_to_dusk",
+    "meal_preferences": "quick_meals_during_work",
+    "social_times": "evenings_and_weekends"
+  },
+  "reputation": "Innovative apprentice with good ideas but sometimes too eager to change things",
+  "current_location": "pike_shipworks",
+  "status": "active"
+}

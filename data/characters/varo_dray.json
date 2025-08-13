@@ -1,0 +1,122 @@
+{
+  "character_id": "varo_dray",
+  "name": "Varo Dray",
+  "description": "A skilled carpenter who works with Orin Pike and is cousin to Leena Dray. Varo is torn between helping Leena with her café expansion dream and finishing Orin's overdue commission.",
+  "occupation": "Carpenter",
+  "specialization": "Furniture Making and Construction",
+  "age": 30,
+  "gender": "Male",
+  "home_location": "dray_carpentry",
+  "workplace": "dray_carpentry",
+  "personality": {
+    "openness": 0.5,
+    "conscientiousness": 0.8,
+    "extraversion": 0.4,
+    "agreeableness": 0.7,
+    "neuroticism": 0.5,
+    "custom_traits": {
+      "craftsmanship": 0.9,
+      "family_loyalty": 0.8,
+      "work_commitment": 0.8,
+      "conflict_avoidance": 0.6
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.7,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.8
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.6,
+      "comfort": 0.5
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.4,
+      "achievement_need": 0.7
+    },
+    "economic": {
+      "wealth_satisfaction": 0.5,
+      "material_need": 0.4,
+      "security_need": 0.4
+    },
+    "social": {
+      "social_need": 0.5,
+      "social_fatigue": 0.4
+    }
+  },
+  "inventory": {
+    "money": 75,
+    "items": [
+      "carpentry_tools",
+      "quality_wood",
+      "project_plans",
+      "measurement_tools",
+      "finishing_supplies"
+    ],
+    "clothing": [
+      "work_clothes",
+      "tool_belt",
+      "sturdy_boots",
+      "protective_glasses"
+    ]
+  },
+  "relationships": {
+    "leena_dray": {
+      "affection": 0.8,
+      "trust": 0.9,
+      "interaction_frequency": "daily"
+    },
+    "orin_pike": {
+      "affection": 0.6,
+      "trust": 0.7,
+      "interaction_frequency": "frequent"
+    },
+    "bram_wynn": {
+      "affection": 0.5,
+      "trust": 0.6,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "complete_commission",
+      "description": "Finish Orin Pike's overdue boat commission to maintain professional reputation",
+      "priority": 0.8,
+      "progress": 0.6,
+      "requirements": ["dedicated_time", "quality_materials", "focus"]
+    },
+    {
+      "goal_id": "help_leena",
+      "description": "Help Leena expand her bakery into a café with custom furniture and remodeling",
+      "priority": 0.7,
+      "progress": 0.2,
+      "requirements": ["free_time", "materials", "planning"]
+    },
+    {
+      "goal_id": "expand_business",
+      "description": "Expand carpentry business to take on larger projects and hire apprentices",
+      "priority": 0.6,
+      "progress": 0.4,
+      "requirements": ["reputation_building", "financial_stability", "time_management"]
+    }
+  ],
+  "drama_hooks": [
+    "Torn between helping Leena with her café expansion and finishing Orin's overdue commission",
+    "Feels pressure from both family and professional obligations",
+    "Worried about disappointing either Leena or Orin",
+    "Struggling to balance work commitments with family support"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "dawn_to_dusk",
+    "meal_preferences": "quick_meals_during_work",
+    "social_times": "evenings_and_weekends"
+  },
+  "reputation": "Skilled carpenter known for quality work, but sometimes struggles with deadlines due to family commitments",
+  "current_location": "dray_carpentry",
+  "status": "active"
+}

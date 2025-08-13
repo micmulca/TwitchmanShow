@@ -1,0 +1,122 @@
+{
+  "character_id": "thom_carden",
+  "name": "Thom Carden",
+  "description": "A farmer who partners with Kellen Sedge in crop rotation and is married to Anya Carden. Thom believes there's a hidden freshwater spring on the island and wants to find it to improve farming conditions.",
+  "occupation": "Farmer",
+  "specialization": "Crop Rotation and Water Management",
+  "age": 37,
+  "gender": "Male",
+  "home_location": "carden_pottery",
+  "workplace": "farm",
+  "personality": {
+    "openness": 0.7,
+    "conscientiousness": 0.8,
+    "extraversion": 0.5,
+    "agreeableness": 0.7,
+    "neuroticism": 0.4,
+    "custom_traits": {
+      "exploration_drive": 0.8,
+      "farming_knowledge": 0.9,
+      "optimism": 0.7,
+      "community_spirit": 0.6
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.6,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.8
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.4,
+      "comfort": 0.4
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.7,
+      "achievement_need": 0.6
+    },
+    "economic": {
+      "wealth_satisfaction": 0.5,
+      "material_need": 0.4,
+      "security_need": 0.4
+    },
+    "social": {
+      "social_need": 0.5,
+      "social_fatigue": 0.4
+    }
+  },
+  "inventory": {
+    "money": 65,
+    "items": [
+      "farming_tools",
+      "water_testing_equipment",
+      "crop_journal",
+      "exploration_gear",
+      "seed_collection"
+    ],
+    "clothing": [
+      "work_clothes",
+      "sturdy_boots",
+      "wide_hat",
+      "leather_gloves"
+    ]
+  },
+  "relationships": {
+    "anya_carden": {
+      "affection": 0.8,
+      "trust": 0.9,
+      "interaction_frequency": "daily"
+    },
+    "kellen_sedge": {
+      "affection": 0.7,
+      "trust": 0.8,
+      "interaction_frequency": "frequent"
+    },
+    "elias_thorn": {
+      "affection": 0.6,
+      "trust": 0.6,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "find_spring",
+      "description": "Discover the hidden freshwater spring on the island to improve farming conditions",
+      "priority": 0.9,
+      "progress": 0.3,
+      "requirements": ["exploration_time", "water_detection_skills", "island_knowledge"]
+    },
+    {
+      "goal_id": "improve_farming",
+      "description": "Improve farming techniques and crop yields through better water management",
+      "priority": 0.8,
+      "progress": 0.6,
+      "requirements": ["water_source", "new_techniques", "community_cooperation"]
+    },
+    {
+      "goal_id": "support_anya",
+      "description": "Support Anya's pottery business and help her succeed despite Selene's pricing",
+      "priority": 0.7,
+      "progress": 0.5,
+      "requirements": ["financial_support", "business_advice", "market_alternatives"]
+    }
+  ],
+  "drama_hooks": [
+    "Believes there's a hidden freshwater spring on the island and wants to find it",
+    "Partners with Kellen in crop rotation, sharing farming knowledge and resources",
+    "Wants to improve farming conditions for the entire village",
+    "Supports Anya's pottery business despite Selene's pricing challenges"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "sunrise_to_sunset",
+    "meal_preferences": "hearty_farm_meals",
+    "social_times": "evenings_and_market_days"
+  },
+  "reputation": "Innovative farmer who experiments with new techniques and believes in the island's hidden potential",
+  "current_location": "farm",
+  "status": "active"
+}

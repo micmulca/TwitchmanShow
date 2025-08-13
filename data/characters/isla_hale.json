@@ -1,0 +1,122 @@
+{
+  "character_id": "isla_hale",
+  "name": "Isla Hale",
+  "description": "The cook at The Driftwood Inn, wife to Corvin Hale and mother to Pip. Isla hears gossip in the kitchen and subtly uses it to influence village politics and relationships.",
+  "occupation": "Cook",
+  "specialization": "Culinary Arts and Kitchen Management",
+  "age": 38,
+  "gender": "Female",
+  "home_location": "driftwood_inn",
+  "workplace": "driftwood_inn",
+  "personality": {
+    "openness": 0.5,
+    "conscientiousness": 0.8,
+    "extraversion": 0.6,
+    "agreeableness": 0.6,
+    "neuroticism": 0.5,
+    "custom_traits": {
+      "culinary_skill": 0.9,
+      "social_awareness": 0.8,
+      "political_savvy": 0.7,
+      "family_protection": 0.8
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.6,
+      "hunger": 0.3,
+      "thirst": 0.4,
+      "health": 0.8
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.7,
+      "comfort": 0.5
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.6,
+      "achievement_need": 0.7
+    },
+    "economic": {
+      "wealth_satisfaction": 0.4,
+      "material_need": 0.4,
+      "security_need": 0.5
+    },
+    "social": {
+      "social_need": 0.6,
+      "social_fatigue": 0.4
+    }
+  },
+  "inventory": {
+    "money": 45,
+    "items": [
+      "cooking_tools",
+      "recipe_book",
+      "quality_ingredients",
+      "kitchen_ledger",
+      "gossip_notes"
+    ],
+    "clothing": [
+      "cook_uniform",
+      "apron",
+      "comfortable_shoes",
+      "hair_net"
+    ]
+  },
+  "relationships": {
+    "corvin_hale": {
+      "affection": 0.7,
+      "trust": 0.5,
+      "interaction_frequency": "daily"
+    },
+    "pip_hale": {
+      "affection": 0.9,
+      "trust": 0.8,
+      "interaction_frequency": "daily"
+    },
+    "leena_dray": {
+      "affection": 0.6,
+      "trust": 0.6,
+      "interaction_frequency": "frequent"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "maintain_kitchen",
+      "description": "Maintain the inn's kitchen as the best food establishment on the island",
+      "priority": 0.8,
+      "progress": 0.7,
+      "requirements": ["quality_ingredients", "skill_maintenance", "staff_training"]
+    },
+    {
+      "goal_id": "influence_politics",
+      "description": "Use kitchen gossip and social connections to subtly influence village politics",
+      "priority": 0.7,
+      "progress": 0.6,
+      "requirements": ["information_gathering", "relationship_building", "strategic_communication"]
+    },
+    {
+      "goal_id": "protect_family",
+      "description": "Protect her family's interests and reputation in the village",
+      "priority": 0.9,
+      "progress": 0.8,
+      "requirements": ["family_communication", "reputation_management", "community_engagement"]
+    }
+  ],
+  "drama_hooks": [
+    "Hears gossip in the kitchen and subtly uses it to influence village politics",
+    "Concerned about Corvin's financial decisions and their impact on the family",
+    "Uses her position as cook to gather information and build social influence",
+    "Protective of Pip and worried about his adventures in Bee Hollow"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "pre_dawn_to_afternoon",
+    "meal_preferences": "tasting_own_creations",
+    "social_times": "afternoons_and_evenings"
+  },
+  "reputation": "Excellent cook who runs the inn's kitchen with skill, known for gathering and sharing village information",
+  "current_location": "driftwood_inn",
+  "status": "active"
+}

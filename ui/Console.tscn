@@ -1,0 +1,42 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqxvh8yqxqxqx"]
+
+[ext_resource type="Script" path="res://ui/Console.gd" id="1_console"]
+
+[node name="Console" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_console")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="OutputPanel" type="TextEdit" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+editable = false
+placeholder_text = "Console output will appear here..."
+
+[node name="InputPanel" type="HBoxContainer" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="CommandInput" type="LineEdit" parent="VBoxContainer/InputPanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter command (e.g., :event weather rain, :topic politics, :move npc1 100 200)"
+
+[node name="SendButton" type="Button" parent="VBoxContainer/InputPanel"]
+layout_mode = 2
+text = "Send"
+
+[node name="ClearButton" type="Button" parent="VBoxContainer/InputPanel"]
+layout_mode = 2
+text = "Clear"
+
+[node name="HelpButton" type="Button" parent="VBoxContainer/InputPanel"]
+layout_mode = 2
+text = "Help"

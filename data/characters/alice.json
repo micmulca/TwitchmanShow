@@ -1,0 +1,122 @@
+{
+  "character_id": "alice",
+  "name": "Alice",
+  "description": "A hardworking baker with a curious nature",
+  
+  "personality": {
+    "big_five": {
+      "openness": 0.7,
+      "conscientiousness": 0.8,
+      "extraversion": 0.6,
+      "agreeableness": 0.7,
+      "neuroticism": 0.3
+    },
+    "traits": {
+      "risk_tolerance": 0.4,
+      "work_ethic": 0.9,
+      "creativity": 0.8,
+      "patience": 0.7
+    }
+  },
+  
+  "needs": {
+    "physical": {
+      "energy": {"current": 0.9, "decay_rate": 0.02, "recovery_rate": 0.05, "min": 0.0, "max": 1.0},
+      "hunger": {"current": 0.2, "decay_rate": 0.01, "recovery_rate": 0.1, "min": 0.0, "max": 1.0},
+      "thirst": {"current": 0.3, "decay_rate": 0.015, "recovery_rate": 0.12, "min": 0.0, "max": 1.0},
+      "health": {"current": 1.0, "decay_rate": 0.001, "recovery_rate": 0.02, "min": 0.0, "max": 1.0}
+    },
+    "comfort": {
+      "temp_comfort": {"current": 0.0, "decay_rate": 0.02, "recovery_rate": 0.03, "min": -1.0, "max": 1.0},
+      "cleanliness": {"current": 0.8, "decay_rate": 0.008, "recovery_rate": 0.15, "min": 0.0, "max": 1.0},
+      "comfort": {"current": 0.7, "decay_rate": 0.01, "recovery_rate": 0.08, "min": 0.0, "max": 1.0}
+    },
+    "activity": {
+      "boredom": {"current": 0.2, "decay_rate": 0.005, "recovery_rate": 0.1, "min": 0.0, "max": 1.0},
+      "curiosity": {"current": 0.8, "decay_rate": 0.003, "recovery_rate": 0.05, "min": 0.0, "max": 1.0},
+      "achievement_need": {"current": 0.7, "decay_rate": 0.002, "recovery_rate": 0.08, "min": 0.0, "max": 1.0}
+    },
+    "economic": {
+      "wealth_satisfaction": {"current": 0.6, "decay_rate": 0.001, "recovery_rate": 0.01, "min": 0.0, "max": 1.0},
+      "material_need": {"current": 0.4, "decay_rate": 0.001, "recovery_rate": 0.05, "min": 0.0, "max": 1.0},
+      "security_need": {"current": 0.3, "decay_rate": 0.001, "recovery_rate": 0.02, "min": 0.0, "max": 1.0}
+    },
+    "social": {
+      "social_need": {"current": 0.6, "decay_rate": 0.01, "recovery_rate": 0.08, "min": 0.0, "max": 1.0},
+      "social_fatigue": {"current": 0.1, "decay_rate": 0.02, "recovery_rate": 0.05, "min": 0.0, "max": 1.0}
+    }
+  },
+  
+  "skills": {
+    "cooking": {"level": 3, "experience": 150, "max_level": 10},
+    "crafting": {"level": 2, "experience": 80, "max_level": 10},
+    "social": {"level": 2, "experience": 120, "max_level": 10},
+    "work": {"level": 3, "experience": 200, "max_level": 10},
+    "movement": {"level": 2, "experience": 45, "max_level": 5},
+    "survival": {"level": 1, "experience": 20, "max_level": 10}
+  },
+  
+  "inventory": {
+    "money": 250,
+    "items": ["flour", "yeast", "rolling_pin"],
+    "clothing": ["baker_apron", "work_shoes"],
+    "tools": ["oven", "mixing_bowl"],
+    "food": ["bread", "pastries"],
+    "drinks": ["water", "tea"],
+    "capacity": 25,
+    "max_weight": 55.0
+  },
+  
+  "schedule": {
+    "sleep_time": {"start": 23, "end": 7},
+    "work_time": {"start": 6, "end": 15},
+    "meal_times": [8, 13, 20],
+    "preferences": {
+      "morning_activity": "work",
+      "afternoon_activity": "social",
+      "evening_activity": "leisure"
+    },
+    "flexibility": 0.6
+  },
+  
+  "relationships": {
+    "bob": {"affection": 0.7, "trust": 0.8, "last_interaction": "2024-01-15T10:30:00"},
+    "charlie": {"affection": 0.5, "trust": 0.6, "last_interaction": "2024-01-14T16:45:00"}
+  },
+  
+  "memories": [
+    {
+      "type": "conversation",
+      "content": "Had a great chat with Bob about new bread recipes",
+      "timestamp": "2024-01-15T10:30:00",
+      "emotional_impact": 0.3
+    }
+  ],
+  
+  "goals": [
+    {
+      "type": "skill",
+      "target": "cooking",
+      "target_level": 4,
+      "priority": 0.8,
+      "progress": 0.6
+    }
+  ],
+  
+  "current_action": {
+    "type": "baking",
+    "start_time": "2024-01-15T06:00:00",
+    "estimated_duration": 1800,
+    "satisfies_needs": ["achievement_need", "boredom"],
+    "costs": ["energy", "time"]
+  },
+  
+  "location": "bakery",
+  
+  "metadata": {
+    "created": "2024-01-15T00:00:00",
+    "version": "1.0",
+    "template_type": "instance",
+    "base_template": "character_template"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "character_id": "selene_marek",
+  "name": "Selene Marek",
+  "description": "A shrewd trader who runs the trade post and has a monopoly on certain imports. Selene is cousin to Orin Pike and uses her position to quietly manipulate prices, affecting multiple villagers including Leena, Anya, and Kellen.",
+  "occupation": "Trader",
+  "specialization": "Import/Export and Price Manipulation",
+  "age": 34,
+  "gender": "Female",
+  "home_location": "mareks_trade_post",
+  "workplace": "mareks_trade_post",
+  "personality": {
+    "openness": 0.6,
+    "conscientiousness": 0.7,
+    "extraversion": 0.7,
+    "agreeableness": 0.4,
+    "neuroticism": 0.4,
+    "custom_traits": {
+      "business_acumen": 0.9,
+      "manipulation_skill": 0.8,
+      "risk_tolerance": 0.7,
+      "social_awareness": 0.8
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.7,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.8
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.7,
+      "comfort": 0.6
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.6,
+      "achievement_need": 0.8
+    },
+    "economic": {
+      "wealth_satisfaction": 0.8,
+      "material_need": 0.2,
+      "security_need": 0.3
+    },
+    "social": {
+      "social_need": 0.6,
+      "social_fatigue": 0.4
+    }
+  },
+  "inventory": {
+    "money": 250,
+    "items": [
+      "trade_ledger",
+      "import_goods",
+      "price_charts",
+      "business_contacts",
+      "quality_merchandise"
+    ],
+    "clothing": [
+      "business_attire",
+      "quality_fabric",
+      "comfortable_shoes",
+      "accessories"
+    ]
+  },
+  "relationships": {
+    "orin_pike": {
+      "affection": 0.5,
+      "trust": 0.6,
+      "interaction_frequency": "frequent"
+    },
+    "leena_dray": {
+      "affection": 0.4,
+      "trust": 0.5,
+      "interaction_frequency": "business"
+    },
+    "anya_carden": {
+      "affection": 0.3,
+      "trust": 0.4,
+      "interaction_frequency": "business"
+    },
+    "kellen_sedge": {
+      "affection": 0.3,
+      "trust": 0.4,
+      "interaction_frequency": "business"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "maintain_monopoly",
+      "description": "Maintain monopoly control over key imports to maximize profits",
+      "priority": 0.9,
+      "progress": 0.8,
+      "requirements": ["exclusive_contracts", "price_control", "customer_dependency"]
+    },
+    {
+      "goal_id": "expand_business",
+      "description": "Expand trade operations to include more villages and goods",
+      "priority": 0.8,
+      "progress": 0.6,
+      "requirements": ["new_contacts", "investment_capital", "market_research"]
+    },
+    {
+      "goal_id": "manage_relationships",
+      "description": "Manage business relationships to maintain profitable arrangements",
+      "priority": 0.7,
+      "progress": 0.7,
+      "requirements": ["customer_satisfaction", "fair_dealing", "reputation_management"]
+    }
+  ],
+  "drama_hooks": [
+    "Has a monopoly on certain imports and uses it to quietly manipulate prices",
+    "Affects multiple villagers including Leena, Anya, and Kellen through pricing",
+    "Balances family loyalty to Orin with business interests",
+    "Worried about villagers finding alternatives to her monopoly goods"
+  ],
+  "schedule": {
+    "sleep_pattern": "regular",
+    "work_times": "business_hours",
+    "meal_preferences": "quality_meals",
+    "social_times": "business_meetings_and_social_events"
+  },
+  "reputation": "Shrewd trader with excellent business sense, but some villagers resent her pricing practices",
+  "current_location": "mareks_trade_post",
+  "status": "active"
+}

@@ -1,0 +1,122 @@
+{
+  "character_id": "niko_wynn",
+  "name": "Niko Wynn",
+  "description": "A young fisher's apprentice who is friends with Pip Hale and grandson of Bram Wynn. Niko accidentally damaged a net and is hiding it from Elias Thorn, fearing the consequences.",
+  "occupation": "Fisher's Apprentice",
+  "specialization": "Fishing Techniques and Net Repair",
+  "age": 12,
+  "gender": "Male",
+  "home_location": "wynn_forge",
+  "workplace": "fishing_docks",
+  "personality": {
+    "openness": 0.6,
+    "conscientiousness": 0.5,
+    "extraversion": 0.7,
+    "agreeableness": 0.6,
+    "neuroticism": 0.6,
+    "custom_traits": {
+      "learning_enthusiasm": 0.7,
+      "fear_of_disappointment": 0.8,
+      "loyalty": 0.8,
+      "adventure_spirit": 0.6
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.8,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.9
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.5,
+      "comfort": 0.5
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.6,
+      "achievement_need": 0.6
+    },
+    "economic": {
+      "wealth_satisfaction": 0.6,
+      "material_need": 0.3,
+      "security_need": 0.4
+    },
+    "social": {
+      "social_need": 0.7,
+      "social_fatigue": 0.3
+    }
+  },
+  "inventory": {
+    "money": 20,
+    "items": [
+      "fishing_tools",
+      "damaged_net",
+      "learning_manual",
+      "small_catches",
+      "repair_supplies"
+    ],
+    "clothing": [
+      "fisher_clothes",
+      "waterproof_boots",
+      "warm_jacket",
+      "fishing_hat"
+    ]
+  },
+  "relationships": {
+    "bram_wynn": {
+      "affection": 0.8,
+      "trust": 0.7,
+      "interaction_frequency": "daily"
+    },
+    "pip_hale": {
+      "affection": 0.8,
+      "trust": 0.7,
+      "interaction_frequency": "frequent"
+    },
+    "elias_thorn": {
+      "affection": 0.5,
+      "trust": 0.4,
+      "interaction_frequency": "frequent"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "learn_fishing",
+      "description": "Learn fishing techniques and become a skilled fisher under Elias's guidance",
+      "priority": 0.8,
+      "progress": 0.5,
+      "requirements": ["practice_time", "elias_approval", "net_repair"]
+    },
+    {
+      "goal_id": "repair_net",
+      "description": "Secretly repair the damaged net before Elias discovers the damage",
+      "priority": 0.9,
+      "progress": 0.2,
+      "requirements": ["repair_materials", "repair_skills", "time_to_fix"]
+    },
+    {
+      "goal_id": "prove_worth",
+      "description": "Prove to Elias and Bram that he's a responsible and skilled apprentice",
+      "priority": 0.7,
+      "progress": 0.4,
+      "requirements": ["good_behavior", "skill_improvement", "reliability"]
+    }
+  ],
+  "drama_hooks": [
+    "Accidentally damaged a net and is hiding it from Elias Thorn",
+    "Fears disappointing both his grandfather Bram and his mentor Elias",
+    "Struggles with the weight of family expectations and apprenticeship pressure",
+    "Wants to prove himself but made a mistake that could ruin his reputation"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "dawn_to_afternoon",
+    "meal_preferences": "hearty_meals",
+    "social_times": "afternoons_and_weekends"
+  },
+  "reputation": "Young fisher's apprentice with potential, but sometimes makes mistakes due to inexperience",
+  "current_location": "fishing_docks",
+  "status": "active"
+}

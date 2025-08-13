@@ -1,0 +1,38 @@
+{
+  "conversation_start": {
+    "greeting": "You're starting a conversation with {target_name}. Consider your current mood ({mood}), relationship with them ({relationship}), and the current topic ({topic}). How do you greet them?",
+    "topic_continuation": "The conversation is continuing about {topic}. You feel {mood_description} and your relationship with {target_name} is {relationship_description}. What do you want to say next?",
+    "topic_change": "You want to change the topic from {current_topic} to something new. What would you like to talk about and how do you transition?",
+    "question_asking": "You want to ask {target_name} a question about {topic}. What would you like to know and how do you phrase it naturally?"
+  },
+  "conversation_response": {
+    "agree": "You agree with what {target_name} just said about {topic}. How do you express your agreement?",
+    "disagree": "You disagree with {target_name}'s point about {topic}. How do you respectfully express your different opinion?",
+    "clarify": "You're not sure you understood what {target_name} meant. How do you ask for clarification?",
+    "share_experience": "What {target_name} said reminds you of a personal experience. How do you share it naturally?",
+    "show_interest": "You want to show interest in what {target_name} is saying. How do you engage with their story?"
+  },
+  "conversation_end": {
+    "natural_close": "The conversation is winding down naturally. How do you gracefully end it?",
+    "excuse_leave": "You need to leave the conversation. How do you politely excuse yourself?",
+    "invite_continue": "You'd like to continue talking later. How do you suggest meeting up again?"
+  },
+  "emotional_response": {
+    "happy": "Something made you happy. How do you express your joy to {target_name}?",
+    "concerned": "You're concerned about something {target_name} mentioned. How do you show your concern?",
+    "excited": "You're excited about {topic}. How do you share your enthusiasm?",
+    "thoughtful": "You're thinking deeply about what was said. How do you express your thoughts?"
+  },
+  "relationship_building": {
+    "compliment": "You want to give {target_name} a genuine compliment. What do you say?",
+    "support": "{target_name} seems to need support. How do you offer encouragement?",
+    "shared_interests": "You discovered you both like {interest}. How do you bond over this common ground?",
+    "future_plans": "You'd like to make plans with {target_name} for the future. How do you suggest it?"
+  },
+  "context_specific": {
+    "weather": "The weather is {weather_condition}. How does this affect your mood and what do you want to talk about?",
+    "location": "You're at {location}. How does this setting influence your conversation?",
+    "time_of_day": "It's {time_of_day}. How does this time affect what you want to discuss?",
+    "recent_event": "Recently, {recent_event} happened. How does this impact your conversation?"
+  }
+}

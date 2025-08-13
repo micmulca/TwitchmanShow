@@ -1,0 +1,127 @@
+{
+  "character_id": "pip_hale",
+  "name": "Pip Hale",
+  "description": "A young child who runs errands for the village and plays with Niko Wynn. Pip has been sneaking into Bee Hollow for fun, unaware of Rowan Sedge's suspicion about honey theft.",
+  "occupation": "Errand Runner",
+  "specialization": "Village Errands and Child's Play",
+  "age": 10,
+  "gender": "Male",
+  "home_location": "driftwood_inn",
+  "workplace": "village_wide",
+  "personality": {
+    "openness": 0.8,
+    "conscientiousness": 0.4,
+    "extraversion": 0.9,
+    "agreeableness": 0.7,
+    "neuroticism": 0.3,
+    "custom_traits": {
+      "curiosity": 0.9,
+      "adventure_seeking": 0.8,
+      "innocence": 0.9,
+      "energy": 0.9
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.9,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.9
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.4,
+      "comfort": 0.6
+    },
+    "activity": {
+      "boredom": 0.2,
+      "curiosity": 0.9,
+      "achievement_need": 0.5
+    },
+    "economic": {
+      "wealth_satisfaction": 0.7,
+      "material_need": 0.3,
+      "security_need": 0.2
+    },
+    "social": {
+      "social_need": 0.8,
+      "social_fatigue": 0.2
+    }
+  },
+  "inventory": {
+    "money": 15,
+    "items": [
+      "errand_bag",
+      "small_toy",
+      "collected_shells",
+      "treasure_map",
+      "friendship_bracelet"
+    ],
+    "clothing": [
+      "play_clothes",
+      "sturdy_shoes",
+      "warm_jacket",
+      "adventure_hat"
+    ]
+  },
+  "relationships": {
+    "corvin_hale": {
+      "affection": 0.9,
+      "trust": 0.8,
+      "interaction_frequency": "daily"
+    },
+    "isla_hale": {
+      "affection": 0.9,
+      "trust": 0.8,
+      "interaction_frequency": "daily"
+    },
+    "niko_wynn": {
+      "affection": 0.8,
+      "trust": 0.7,
+      "interaction_frequency": "frequent"
+    },
+    "rowan_sedge": {
+      "affection": 0.4,
+      "trust": 0.3,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "explore_village",
+      "description": "Explore all the interesting places in the village and discover new adventures",
+      "priority": 0.9,
+      "progress": 0.7,
+      "requirements": ["free_time", "curiosity", "adventure_spirit"]
+    },
+    {
+      "goal_id": "help_village",
+      "description": "Help the village by running errands and being useful to adults",
+      "priority": 0.7,
+      "progress": 0.6,
+      "requirements": ["errand_opportunities", "adult_trust", "helpful_attitude"]
+    },
+    {
+      "goal_id": "find_treasure",
+      "description": "Find hidden treasures and secret places around the island",
+      "priority": 0.8,
+      "progress": 0.4,
+      "requirements": ["exploration_time", "treasure_hunting_skills", "luck"]
+    }
+  ],
+  "drama_hooks": [
+    "Has been sneaking into Bee Hollow for fun, unaware of Rowan's suspicion",
+    "Loves exploring and may stumble upon village secrets",
+    "Innocent actions that could have unintended consequences",
+    "Caught between childhood curiosity and adult concerns"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "school_hours_and_errands",
+    "meal_preferences": "kid_friendly_meals",
+    "social_times": "all_day_play"
+  },
+  "reputation": "Energetic and helpful child who runs errands for the village, always curious and ready for adventure",
+  "current_location": "village_green",
+  "status": "active"
+}

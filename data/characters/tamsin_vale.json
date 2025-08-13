@@ -1,0 +1,122 @@
+{
+  "character_id": "tamsin_vale",
+  "name": "Tamsin Vale",
+  "description": "A young apprentice herbalist learning under her aunt Liora Vale. Tamsin is eager to prove herself and dreams of discovering a new medicinal herb in the Whispering Woods.",
+  "occupation": "Apprentice Herbalist",
+  "specialization": "Herb Identification and Medicine Making",
+  "age": 19,
+  "gender": "Female",
+  "home_location": "lioras_garden",
+  "workplace": "lioras_garden",
+  "personality": {
+    "openness": 0.9,
+    "conscientiousness": 0.7,
+    "extraversion": 0.6,
+    "agreeableness": 0.8,
+    "neuroticism": 0.4,
+    "custom_traits": {
+      "learning_enthusiasm": 0.9,
+      "natural_curiosity": 0.8,
+      "proving_desire": 0.8,
+      "adventure_spirit": 0.7
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.8,
+      "hunger": 0.3,
+      "thirst": 0.4,
+      "health": 0.9
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.6,
+      "comfort": 0.5
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.9,
+      "achievement_need": 0.8
+    },
+    "economic": {
+      "wealth_satisfaction": 0.4,
+      "material_need": 0.3,
+      "security_need": 0.2
+    },
+    "social": {
+      "social_need": 0.6,
+      "social_fatigue": 0.3
+    }
+  },
+  "inventory": {
+    "money": 25,
+    "items": [
+      "herb_guide",
+      "gathering_basket",
+      "drying_racks",
+      "mortar_and_pestle",
+      "field_notes"
+    ],
+    "clothing": [
+      "practical_clothes",
+      "sturdy_boots",
+      "gathering_satchel",
+      "protective_gloves"
+    ]
+  },
+  "relationships": {
+    "liora_vale": {
+      "affection": 0.9,
+      "trust": 0.9,
+      "interaction_frequency": "daily"
+    },
+    "fen_barrow": {
+      "affection": 0.7,
+      "trust": 0.6,
+      "interaction_frequency": "frequent"
+    },
+    "maren_thorn": {
+      "affection": 0.6,
+      "trust": 0.5,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "master_herbalism",
+      "description": "Master the art of herbalism under Liora's guidance",
+      "priority": 0.8,
+      "progress": 0.5,
+      "requirements": ["study_time", "practical_experience", "liora_approval"]
+    },
+    {
+      "goal_id": "discover_new_herb",
+      "description": "Discover a new medicinal herb in the Whispering Woods to prove her worth",
+      "priority": 0.9,
+      "progress": 0.2,
+      "requirements": ["exploration_time", "herb_knowledge", "luck"]
+    },
+    {
+      "goal_id": "gain_independence",
+      "description": "Gain enough knowledge and confidence to work independently",
+      "priority": 0.7,
+      "progress": 0.4,
+      "requirements": ["skill_mastery", "self_confidence", "liora_trust"]
+    }
+  ],
+  "drama_hooks": [
+    "Wants to prove herself by discovering a new medicinal herb in the Whispering Woods",
+    "Eager to gain Liora's approval and recognition",
+    "Feels pressure to live up to the Vale family's herbalist reputation",
+    "Dreams of making a significant contribution to the village's medical knowledge"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "dawn_to_afternoon",
+    "meal_preferences": "light_meals_during_study",
+    "social_times": "afternoons_and_evenings"
+  },
+  "reputation": "Eager young apprentice with natural talent for herb identification, but sometimes too adventurous for her own good",
+  "current_location": "lioras_garden",
+  "status": "active"
+}

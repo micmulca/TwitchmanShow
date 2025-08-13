@@ -1,0 +1,127 @@
+{
+  "character_id": "corvin_hale",
+  "name": "Corvin Hale",
+  "description": "The innkeeper of The Driftwood Inn, married to Isla Hale and father to Pip. Corvin secretly overspent on imported wine, causing tension with his wife and financial strain on the business.",
+  "occupation": "Innkeeper",
+  "specialization": "Hospitality Management and Guest Relations",
+  "age": 42,
+  "gender": "Male",
+  "home_location": "driftwood_inn",
+  "workplace": "driftwood_inn",
+  "personality": {
+    "openness": 0.6,
+    "conscientiousness": 0.5,
+    "extraversion": 0.8,
+    "agreeableness": 0.7,
+    "neuroticism": 0.6,
+    "custom_traits": {
+      "hospitality": 0.9,
+      "financial_optimism": 0.4,
+      "social_charm": 0.8,
+      "stress_management": 0.3
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.6,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.7
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.6,
+      "comfort": 0.5
+    },
+    "activity": {
+      "boredom": 0.3,
+      "curiosity": 0.5,
+      "achievement_need": 0.6
+    },
+    "economic": {
+      "wealth_satisfaction": 0.3,
+      "material_need": 0.5,
+      "security_need": 0.6
+    },
+    "social": {
+      "social_need": 0.7,
+      "social_fatigue": 0.4
+    }
+  },
+  "inventory": {
+    "money": 35,
+    "items": [
+      "inn_keys",
+      "guest_ledger",
+      "wine_inventory",
+      "maintenance_tools",
+      "business_records"
+    ],
+    "clothing": [
+      "innkeeper_uniform",
+      "apron",
+      "comfortable_shoes",
+      "waistcoat"
+    ]
+  },
+  "relationships": {
+    "isla_hale": {
+      "affection": 0.7,
+      "trust": 0.5,
+      "interaction_frequency": "daily"
+    },
+    "pip_hale": {
+      "affection": 0.9,
+      "trust": 0.8,
+      "interaction_frequency": "daily"
+    },
+    "bram_wynn": {
+      "affection": 0.6,
+      "trust": 0.7,
+      "interaction_frequency": "frequent"
+    },
+    "agatha_barrow": {
+      "affection": 0.6,
+      "trust": 0.7,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "recover_finances",
+      "description": "Recover from the wine overspending and restore financial stability",
+      "priority": 0.9,
+      "progress": 0.2,
+      "requirements": ["reduced_spending", "increased_revenue", "isla_approval"]
+    },
+    {
+      "goal_id": "repair_marriage",
+      "description": "Repair the tension with Isla caused by financial decisions",
+      "priority": 0.8,
+      "progress": 0.3,
+      "requirements": ["honest_communication", "financial_transparency", "trust_rebuilding"]
+    },
+    {
+      "goal_id": "improve_inn",
+      "description": "Improve the inn's reputation and attract more guests",
+      "priority": 0.7,
+      "progress": 0.5,
+      "requirements": ["service_quality", "facility_maintenance", "marketing_efforts"]
+    }
+  ],
+  "drama_hooks": [
+    "Secretly overspent on imported wine, causing tension with Isla",
+    "Financial strain on the inn business from poor decisions",
+    "Struggles to balance hospitality instincts with financial responsibility",
+    "Worried about the inn's reputation and future success"
+  ],
+  "schedule": {
+    "sleep_pattern": "late_night",
+    "work_times": "early_morning_to_late_night",
+    "meal_preferences": "guest_meals",
+    "social_times": "all_day_with_guests"
+  },
+  "reputation": "Charming innkeeper who provides excellent hospitality but has made some questionable financial decisions",
+  "current_location": "driftwood_inn",
+  "status": "active"
+}

@@ -1,0 +1,122 @@
+{
+  "character_id": "agatha_barrow",
+  "name": "Agatha Barrow",
+  "description": "A retired midwife who lives in a small cottage and is aunt to Fen Barrow. Agatha keeps a chest of mysterious letters from someone long gone and worries they'll be discovered.",
+  "occupation": "Retired Midwife",
+  "specialization": "Medical Knowledge and Community Wisdom",
+  "age": 68,
+  "gender": "Female",
+  "home_location": "agathas_hearth",
+  "workplace": "retired",
+  "personality": {
+    "openness": 0.6,
+    "conscientiousness": 0.8,
+    "extraversion": 0.4,
+    "agreeableness": 0.9,
+    "neuroticism": 0.5,
+    "custom_traits": {
+      "wisdom": 0.9,
+      "protective_nature": 0.7,
+      "nostalgia": 0.8,
+      "community_memory": 0.9
+    }
+  },
+  "needs": {
+    "physical": {
+      "energy": 0.5,
+      "hunger": 0.4,
+      "thirst": 0.5,
+      "health": 0.7
+    },
+    "comfort": {
+      "temp_comfort": 0.0,
+      "cleanliness": 0.7,
+      "comfort": 0.6
+    },
+    "activity": {
+      "boredom": 0.4,
+      "curiosity": 0.5,
+      "achievement_need": 0.3
+    },
+    "economic": {
+      "wealth_satisfaction": 0.6,
+      "material_need": 0.2,
+      "security_need": 0.4
+    },
+    "social": {
+      "social_need": 0.5,
+      "social_fatigue": 0.3
+    }
+  },
+  "inventory": {
+    "money": 120,
+    "items": [
+      "letter_chest",
+      "midwifery_books",
+      "herbal_remedies",
+      "family_heirlooms",
+      "knitting_supplies"
+    ],
+    "clothing": [
+      "comfortable_dresses",
+      "warm_shawls",
+      "practical_shoes",
+      "reading_glasses"
+    ]
+  },
+  "relationships": {
+    "fen_barrow": {
+      "affection": 0.8,
+      "trust": 0.9,
+      "interaction_frequency": "weekly"
+    },
+    "corvin_hale": {
+      "affection": 0.6,
+      "trust": 0.7,
+      "interaction_frequency": "occasional"
+    },
+    "liora_vale": {
+      "affection": 0.7,
+      "trust": 0.8,
+      "interaction_frequency": "occasional"
+    }
+  },
+  "goals": [
+    {
+      "goal_id": "protect_secrets",
+      "description": "Keep the contents of her letter chest private and undiscovered",
+      "priority": 0.9,
+      "progress": 0.8,
+      "requirements": ["discretion", "secure_storage", "trusted_confidants"]
+    },
+    {
+      "goal_id": "support_fen",
+      "description": "Support Fen in his decisions about the lighthouse and his future",
+      "priority": 0.8,
+      "progress": 0.6,
+      "requirements": ["family_communication", "emotional_support", "practical_advice"]
+    },
+    {
+      "goal_id": "preserve_memories",
+      "description": "Preserve the community's medical knowledge and family histories",
+      "priority": 0.7,
+      "progress": 0.5,
+      "requirements": ["knowledge_sharing", "record_keeping", "community_engagement"]
+    }
+  ],
+  "drama_hooks": [
+    "Keeps a chest of letters from someone long gone, worried they'll be discovered",
+    "Holds many village secrets from her years as a midwife",
+    "Worried about Fen's isolation and future decisions",
+    "Struggles with the weight of keeping others' secrets"
+  ],
+  "schedule": {
+    "sleep_pattern": "early_riser",
+    "work_times": "retired",
+    "meal_preferences": "traditional_meals",
+    "social_times": "mornings_and_afternoons"
+  },
+  "reputation": "Wise retired midwife who knows many village secrets, respected for her medical knowledge and discretion",
+  "current_location": "agathas_hearth",
+  "status": "active"
+}

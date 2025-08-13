@@ -1,0 +1,104 @@
+{
+  "greetings": [
+    "Hello there!",
+    "Hi, how are you doing?",
+    "Good to see you!",
+    "Hey, what's new?",
+    "Greetings!",
+    "Hi there, friend!"
+  ],
+  "responses": [
+    "That's interesting.",
+    "I see what you mean.",
+    "Tell me more about that.",
+    "That makes sense.",
+    "I understand.",
+    "Interesting point."
+  ],
+  "questions": [
+    "What do you think about that?",
+    "How do you feel about it?",
+    "What's your take on this?",
+    "Do you have any thoughts?",
+    "What's your opinion?",
+    "How do you see it?"
+  ],
+  "agreements": [
+    "I agree with you.",
+    "That's exactly right.",
+    "You're absolutely correct.",
+    "I think so too.",
+    "That makes perfect sense.",
+    "I'm with you on that."
+  ],
+  "disagreements": [
+    "I see it differently.",
+    "I'm not sure I agree.",
+    "That's an interesting perspective.",
+    "I have a different view.",
+    "I'm not convinced.",
+    "I think there's another side to this."
+  ],
+  "topic_changes": [
+    "Speaking of which...",
+    "That reminds me...",
+    "On a different note...",
+    "By the way...",
+    "Changing the subject...",
+    "That brings to mind..."
+  ],
+  "conversation_end": [
+    "Well, I should get going.",
+    "It's been nice talking with you.",
+    "I'll let you get back to what you were doing.",
+    "We should catch up again soon.",
+    "Thanks for the chat.",
+    "See you around!"
+  ],
+  "emotional": {
+    "happy": [
+      "That's wonderful!",
+      "I'm so happy about that!",
+      "That's fantastic news!",
+      "I'm thrilled to hear that!",
+      "That's amazing!"
+    ],
+    "concerned": [
+      "I'm sorry to hear that.",
+      "That's concerning.",
+      "I hope things get better.",
+      "That sounds difficult.",
+      "I'm here if you need to talk."
+    ],
+    "excited": [
+      "I'm excited about that too!",
+      "That sounds exciting!",
+      "I can't wait!",
+      "This is going to be great!",
+      "I'm looking forward to it!"
+    ]
+  },
+  "contextual": {
+    "weather": [
+      "The weather is quite something today.",
+      "It's a beautiful day, isn't it?",
+      "The weather really affects my mood.",
+      "I love days like this.",
+      "Weather can be so unpredictable."
+    ],
+    "location": [
+      "This is a nice place.",
+      "I like being here.",
+      "It's peaceful here.",
+      "This location has a good vibe.",
+      "I enjoy spending time here."
+    ],
+    "time": [
+      "Time flies, doesn't it?",
+      "It's getting late.",
+      "The day is going by quickly.",
+      "I can't believe how time passes.",
+      "It's a good time of day."
+    ]
+  }
+}

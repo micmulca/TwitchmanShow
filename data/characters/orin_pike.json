@@ -1,0 +1,112 @@
+{
+  "character_id": "orin_pike",
+  "name": "Orin Pike",
+  "description": "A skilled boatwright who has an old rivalry with Bram Wynn over a debt that was never repaid, friend of Elias Thorn.",
+  
+  "personality": {
+    "big_five": {
+      "openness": 0.4,
+      "conscientiousness": 0.8,
+      "extraversion": 0.6,
+      "agreeableness": 0.6,
+      "neuroticism": 0.5
+    },
+    "traits": {
+      "risk_tolerance": 0.5,
+      "work_ethic": 0.9,
+      "creativity": 0.6,
+      "patience": 0.7
+    }
+  },
+  
+  "needs": {
+    "physical": {
+      "energy": {"current": 0.6, "decay_rate": 0.02, "recovery_rate": 0.05},
+      "hunger": {"current": 0.5, "decay_rate": 0.01, "recovery_rate": 0.1},
+      "thirst": {"current": 0.6, "decay_rate": 0.015, "recovery_rate": 0.12},
+      "health": {"current": 0.8, "decay_rate": 0.001, "recovery_rate": 0.02}
+    },
+    "comfort": {
+      "temp_comfort": {"current": 0.0, "decay_rate": 0.02, "recovery_rate": 0.03},
+      "cleanliness": {"current": 0.5, "decay_rate": 0.008, "recovery_rate": 0.15},
+      "comfort": {"current": 0.6, "decay_rate": 0.01, "recovery_rate": 0.08}
+    },
+    "activity": {
+      "boredom": {"current": 0.3, "decay_rate": 0.005, "recovery_rate": 0.1},
+      "curiosity": {"current": 0.5, "decay_rate": 0.003, "recovery_rate": 0.05},
+      "achievement_need": {"current": 0.7, "decay_rate": 0.002, "recovery_rate": 0.08}
+    },
+    "economic": {
+      "wealth_satisfaction": {"current": 0.6, "decay_rate": 0.001, "recovery_rate": 0.01},
+      "material_need": {"current": 0.3, "decay_rate": 0.001, "recovery_rate": 0.05},
+      "security_need": {"current": 0.4, "decay_rate": 0.001, "recovery_rate": 0.02}
+    },
+    "social": {
+      "social_need": {"current": 0.5, "decay_rate": 0.01, "recovery_rate": 0.08},
+      "social_fatigue": {"current": 0.2, "decay_rate": 0.02, "recovery_rate": 0.05}
+    }
+  },
+  
+
+  
+  "inventory": {
+    "money": 300,
+    "items": ["wood", "nails", "rope", "sail_cloth"],
+    "clothing": ["work_overalls", "leather_apron", "work_boots"],
+    "tools": ["saw", "hammer", "chisel", "measuring_tools"]
+  },
+  
+  "schedule": {
+    "sleep_time": {"start": 22, "end": 6},
+    "work_time": {"start": 7, "end": 18},
+    "meal_times": [7, 12, 19],
+    "preferences": {
+      "morning_activity": "boat_building",
+      "afternoon_activity": "boat_building",
+      "evening_activity": "planning"
+    }
+  },
+  
+  "relationships": {
+    "elias_thorn": {"affection": 0.7, "trust": 0.8, "last_interaction": "2024-01-15T16:30:00"},
+    "jessa_pike": {"affection": 0.8, "trust": 0.7, "last_interaction": "2024-01-15T17:00:00"},
+    "bram_wynn": {"affection": 0.2, "trust": 0.3, "last_interaction": "2024-01-10T14:00:00"}
+  },
+  
+  "memories": [
+    {
+      "type": "conversation",
+      "content": "Discussed boat upgrades with Elias, reminded of old debt to Bram",
+      "timestamp": "2024-01-15T16:30:00",
+      "emotional_impact": -0.2
+    },
+    {
+      "type": "work",
+      "content": "Completed hull repairs on fishing boat",
+      "timestamp": "2024-01-15T15:00:00",
+      "emotional_impact": 0.4
+    }
+  ],
+  
+  "goals": [
+    {
+      "type": "economic",
+      "target": "repay_debt",
+      "description": "Settle the old debt with Bram Wynn",
+      "priority": 0.6,
+      "progress": 0.2,
+      "requires_money": 200
+    },
+
+  ],
+  
+  "current_action": null,
+  "location": "shipworks",
+  "home_location": "pike_shipworks",
+  "work_location": "shipworks",
+  
+  "drama_hook": "Has an old rivalry with Bram Wynn over a debt that was never repaid",
+  "occupation": "Boatwright",
+  "specialization": "Fishing boat construction and repair",
+  "reputation": "Craftsman but has financial disputes"
+}
