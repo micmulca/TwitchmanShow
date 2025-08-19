@@ -58,7 +58,7 @@ func _on_event_logged(category: EventCategory, data: Dictionary):
 
 # Utility functions for common event patterns
 func emit_conversation_event(participants: Array, event_type: String, data: Dictionary = {}):
-	var event_data = {
+	var _event_data = {
 		"participants": participants,
 		"event_type": event_type,
 		"data": data
@@ -91,10 +91,11 @@ func emit_proximity_event(npc_id: String, nearby_npcs: Array):
 	proximity_detected.emit(npc_id, nearby_npcs)
 
 # Debug functions
-func get_event_history(category: EventCategory = null, limit: int = 50) -> Array:
+func get_event_history(category: EventCategory = EventCategory.CONVERSATION, limit: int = 50) -> Array:
 	var filtered_history = event_history
 	
-	if category != null:
+	# If a specific category is requested, filter by it
+	if category != EventCategory.CONVERSATION:
 		filtered_history = event_history.filter(func(event): return event.category == category)
 	
 	# Return most recent events

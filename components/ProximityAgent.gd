@@ -48,11 +48,11 @@ func _ready():
 	if not conversation_controller:
 		print("[ProximityAgent] Warning: No ConversationController found")
 	
-	last_update_time = Time.get_time()
+	last_update_time = _get_current_time_seconds()
 	print("[ProximityAgent] Initialized for NPC: ", npc_id)
 
 func _process(delta: float):
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	if current_time - last_update_time >= update_interval:
 		_update_proximity()
 		_process_social_interactions()
@@ -78,7 +78,7 @@ func _update_proximity():
 				"position": npc.global_position,
 				"in_conversation": _is_npc_in_conversation(npc.id),
 				"social_drive": _get_npc_social_drive(npc.id),
-				"last_seen": Time.get_time()
+				"last_seen": _get_current_time_seconds()
 			}
 			
 			nearby_npcs.append(npc_data)
@@ -131,7 +131,7 @@ func _process_social_interactions():
 					invitations_sent += 1
 
 func _process_received_invitations():
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	var processed_invitations: Array[int] = []
 	
 	for i in range(received_invitations.size()):
@@ -162,7 +162,7 @@ func _should_invite_npc(npc_data: Dictionary) -> bool:
 		return false  # Too far to start conversation
 	
 	# Check invitation cooldown
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	if invited_npcs.has(npc_data.id):
 		if current_time - invited_npcs[npc_data.id] < invitation_cooldown:
 			return false
@@ -187,7 +187,7 @@ func _send_invitation(target_id: String) -> bool:
 	
 	if not conversation_id.is_empty():
 		# Record invitation
-		invited_npcs[target_id] = Time.get_time()
+		invited_npcs[target_id] = _get_current_time_seconds()
 		
 		# Emit signal
 		invitation_sent.emit(npc_id, target_id, conversation_id)
@@ -206,7 +206,7 @@ func _receive_invitation(from_id: String, conversation_id: String):
 	var invitation = {
 		"from_id": from_id,
 		"conversation_id": conversation_id,
-		"timestamp": Time.get_time(),
+		"timestamp": _get_current_time_seconds(),
 		"type": "proximity_invitation"
 	}
 	
@@ -343,3 +343,9 @@ func console_command(command: String, args: Array) -> Dictionary:
 		
 		_:
 			return {"success": false, "message": "Unknown command: " + command}
+
+
+# Helper function to get current time in seconds
+func _get_current_time_seconds() -> float:
+	var time_dict = Time.get_time_dict_from_system()
+	return time_dict.hour * 3600 + time_dict.minute * 60 + time_dict.second

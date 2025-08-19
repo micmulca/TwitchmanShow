@@ -86,14 +86,14 @@ func _ready():
 	if npc_id.is_empty():
 		npc_id = get_parent().name if get_parent() else "unknown"
 	
-	last_update_time = Time.get_time()
+	last_update_time = _get_current_time_seconds()
 	print("[StatusComponent] Initialized for NPC: ", npc_id)
 	
 	# Calculate initial action drive
 	_calculate_action_drive()
 
 func _process(delta: float):
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	if current_time - last_update_time >= update_interval:
 		_update_needs(delta)
 		_check_critical_needs()
@@ -475,3 +475,9 @@ func console_command(command: String, args: Array) -> Dictionary:
 		
 		_:
 			return {"success": false, "message": "Unknown command: " + command}
+
+
+# Helper function to get current time in seconds
+func _get_current_time_seconds() -> float:
+	var time_dict = Time.get_time_dict_from_system()
+	return time_dict.hour * 3600 + time_dict.minute * 60 + time_dict.second

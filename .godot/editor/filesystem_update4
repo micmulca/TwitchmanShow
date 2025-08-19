@@ -1,0 +1,6 @@
+res://default_test.tscn
+res://simple_test.tscn
+res://test_conversation_simulation.tscn
+res://autoload/LLMClient.gd
+res://test_conversation_simulation.gd
+res://data/characters/elias_thorn.json

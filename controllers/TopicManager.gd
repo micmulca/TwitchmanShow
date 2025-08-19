@@ -177,7 +177,7 @@ func _add_topic_suggestion(suggestion: Dictionary) -> void:
 func suggest_topics_for_group(group_id: String, current_topic: String = "", participant_count: int = 2) -> Array[Dictionary]:
 	# Suggest relevant topics for a conversation group
 	var suggestions = []
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	
 	for topic in active_topics.keys():
 		# Skip current topic
@@ -240,7 +240,7 @@ func change_topic_for_group(group_id: String, new_topic: String, reason: String 
 		return false
 	
 	# Update topic cooldown
-	topic_cooldowns[new_topic] = Time.get_time()
+	topic_cooldowns[new_topic] = _get_current_time_seconds()
 	
 	# Emit signal
 	topic_injected.emit(group_id, new_topic, reason)
@@ -352,7 +352,7 @@ func update_topic_relevance(topic: String, new_relevance: float) -> void:
 
 func decay_topics(delta_time: float) -> void:
 	# Decay topic relevance over time
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	var topics_to_remove = []
 	
 	for topic in active_topics.keys():
@@ -413,3 +413,9 @@ func get_topic_suggestions() -> Array[Dictionary]:
 
 func get_blacklisted_topics() -> Array[String]:
 	return topic_blacklist.duplicate()
+
+
+# Helper function to get current time in seconds
+func _get_current_time_seconds() -> float:
+	var time_dict = Time.get_time_dict_from_system()
+	return time_dict.hour * 3600 + time_dict.minute * 60 + time_dict.second

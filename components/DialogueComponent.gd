@@ -96,7 +96,7 @@ func start_dialogue(text: String, group_id: String, context: Dictionary = {}) ->
 	current_speaker = npc_id
 	current_text = text
 	current_group_id = group_id
-	dialogue_start_time = Time.get_time()
+			dialogue_start_time = _get_current_time_seconds()
 	dialogue_duration = 0.0
 	conversation_context = context.duplicate(true)
 	
@@ -200,7 +200,7 @@ func _process(delta: float) -> void:
 	# Process dialogue component logic
 	if current_speaker == npc_id:
 		# Update dialogue duration
-		dialogue_duration = Time.get_time() - dialogue_start_time
+		dialogue_duration = _get_current_time_seconds() - dialogue_start_time
 		
 		# Check for dialogue timeout
 		if dialogue_duration > max_dialogue_duration:
@@ -249,7 +249,7 @@ func _process_relationship_effects(effects: Array) -> void:
 				"target": target,
 				"delta": delta,
 				"tag": tag,
-				"timestamp": Time.get_time()
+				"timestamp": _get_current_time_seconds()
 			})
 			
 			# Emit relationship change event
@@ -266,7 +266,7 @@ func _process_mood_shift(mood_shift: Dictionary) -> void:
 		mood_effects = {
 			"valence": valence,
 			"arousal": arousal,
-			"timestamp": Time.get_time()
+			"timestamp": _get_current_time_seconds()
 		}
 		
 		# Emit mood change event
@@ -281,7 +281,7 @@ func _add_to_conversation_memory(response: Dictionary) -> void:
 		"utterance": response.get("utterance", ""),
 		"intent": response.get("intent", ""),
 		"summary_note": response.get("summary_note", ""),
-		"timestamp": Time.get_time(),
+		"timestamp": _get_current_time_seconds(),
 		"group_id": current_group_id
 	}
 	
@@ -335,3 +335,8 @@ func set_max_dialogue_duration(duration: float) -> void:
 func set_bubble_fade_time(fade_time: float) -> void:
 	# Set the bubble fade in/out time
 	bubble_fade_time = fade_time
+
+# Helper function to get current time in seconds
+func _get_current_time_seconds() -> float:
+	var time_dict = Time.get_time_dict_from_system()
+	return time_dict.hour * 3600 + time_dict.minute * 60 + time_dict.second

@@ -4,99 +4,99 @@
   "description": "A fisherman who secretly considers upgrading his boat without telling his wife Maren, risking their savings.",
   
   "personality": {
-    "big_five": {
-      "openness": 0.6,
-      "conscientiousness": 0.7,
-      "extraversion": 0.5,
-      "agreeableness": 0.8,
-      "neuroticism": 0.4
-    },
-    "traits": {
-      "risk_tolerance": 0.6,
-      "work_ethic": 0.8,
-      "creativity": 0.5,
-      "patience": 0.9
-    }
+	"big_five": {
+	  "openness": 0.6,
+	  "conscientiousness": 0.7,
+	  "extraversion": 0.5,
+	  "agreeableness": 0.8,
+	  "neuroticism": 0.4
+	},
+	"traits": {
+	  "risk_tolerance": 0.6,
+	  "work_ethic": 0.8,
+	  "creativity": 0.5,
+	  "patience": 0.9
+	}
   },
   
   "needs": {
-    "physical": {
-      "energy": {"current": 0.8, "decay_rate": 0.02, "recovery_rate": 0.05},
-      "hunger": {"current": 0.4, "decay_rate": 0.01, "recovery_rate": 0.1},
-      "thirst": {"current": 0.5, "decay_rate": 0.015, "recovery_rate": 0.12},
-      "health": {"current": 0.9, "decay_rate": 0.001, "recovery_rate": 0.02}
-    },
-    "comfort": {
-      "temp_comfort": {"current": 0.0, "decay_rate": 0.02, "recovery_rate": 0.03},
-      "cleanliness": {"current": 0.6, "decay_rate": 0.008, "recovery_rate": 0.15},
-      "comfort": {"current": 0.5, "decay_rate": 0.01, "recovery_rate": 0.08}
-    },
-    "activity": {
-      "boredom": {"current": 0.3, "decay_rate": 0.005, "recovery_rate": 0.1},
-      "curiosity": {"current": 0.7, "decay_rate": 0.003, "recovery_rate": 0.05},
-      "achievement_need": {"current": 0.6, "decay_rate": 0.002, "recovery_rate": 0.08}
-    },
-    "economic": {
-      "wealth_satisfaction": {"current": 0.4, "decay_rate": 0.001, "recovery_rate": 0.01},
-      "material_need": {"current": 0.6, "decay_rate": 0.001, "recovery_rate": 0.05},
-      "security_need": {"current": 0.3, "decay_rate": 0.001, "recovery_rate": 0.02}
-    },
-    "social": {
-      "social_need": {"current": 0.5, "decay_rate": 0.01, "recovery_rate": 0.08},
-      "social_fatigue": {"current": 0.2, "decay_rate": 0.02, "recovery_rate": 0.05}
-    }
+	"physical": {
+	  "energy": {"current": 0.8, "decay_rate": 0.02, "recovery_rate": 0.05},
+	  "hunger": {"current": 0.4, "decay_rate": 0.01, "recovery_rate": 0.1},
+	  "thirst": {"current": 0.5, "decay_rate": 0.015, "recovery_rate": 0.12},
+	  "health": {"current": 0.9, "decay_rate": 0.001, "recovery_rate": 0.02}
+	},
+	"comfort": {
+	  "temp_comfort": {"current": 0.0, "decay_rate": 0.02, "recovery_rate": 0.03},
+	  "cleanliness": {"current": 0.6, "decay_rate": 0.008, "recovery_rate": 0.15},
+	  "comfort": {"current": 0.5, "decay_rate": 0.01, "recovery_rate": 0.08}
+	},
+	"activity": {
+	  "boredom": {"current": 0.3, "decay_rate": 0.005, "recovery_rate": 0.1},
+	  "curiosity": {"current": 0.7, "decay_rate": 0.003, "recovery_rate": 0.05},
+	  "achievement_need": {"current": 0.6, "decay_rate": 0.002, "recovery_rate": 0.08}
+	},
+	"economic": {
+	  "wealth_satisfaction": {"current": 0.4, "decay_rate": 0.001, "recovery_rate": 0.01},
+	  "material_need": {"current": 0.6, "decay_rate": 0.001, "recovery_rate": 0.05},
+	  "security_need": {"current": 0.3, "decay_rate": 0.001, "recovery_rate": 0.02}
+	},
+	"social": {
+	  "social_need": {"current": 0.5, "decay_rate": 0.01, "recovery_rate": 0.08},
+	  "social_fatigue": {"current": 0.2, "decay_rate": 0.02, "recovery_rate": 0.05}
+	}
   },
   
 
   
   "inventory": {
-    "money": 150,
-    "items": ["fishing_rod", "nets", "bait", "weather_gear"],
-    "clothing": ["fisherman_jacket", "waterproof_boots", "work_pants"],
-    "tools": ["fishing_boat", "repair_tools", "navigation_charts"]
+	"money": 150,
+	"items": ["fishing_rod", "nets", "bait", "weather_gear"],
+	"clothing": ["fisherman_jacket", "waterproof_boots", "work_pants"],
+	"tools": ["fishing_boat", "repair_tools", "navigation_charts"]
   },
   
   "schedule": {
-    "sleep_time": {"start": 22, "end": 5},
-    "work_time": {"start": 4, "end": 18},
-    "meal_times": [6, 12, 19],
-    "preferences": {
-      "morning_activity": "fishing",
-      "afternoon_activity": "fishing",
-      "evening_activity": "family"
-    }
+	"sleep_time": {"start": 22, "end": 5},
+	"work_time": {"start": 4, "end": 18},
+	"meal_times": [6, 12, 19],
+	"preferences": {
+	  "morning_activity": "fishing",
+	  "afternoon_activity": "fishing",
+	  "evening_activity": "family"
+	}
   },
   
   "relationships": {
-    "maren_thorn": {"affection": 0.9, "trust": 0.8, "last_interaction": "2024-01-15T19:00:00"},
-    "orin_pike": {"affection": 0.7, "trust": 0.8, "last_interaction": "2024-01-15T16:30:00"},
-    "niko_wynn": {"affection": 0.6, "trust": 0.7, "last_interaction": "2024-01-15T14:00:00"}
+	"maren_thorn": {"affection": 0.9, "trust": 0.8, "last_interaction": "2024-01-15T19:00:00"},
+	"orin_pike": {"affection": 0.7, "trust": 0.8, "last_interaction": "2024-01-15T16:30:00"},
+	"niko_wynn": {"affection": 0.6, "trust": 0.7, "last_interaction": "2024-01-15T14:00:00"}
   },
   
   "memories": [
-    {
-      "type": "conversation",
-      "content": "Discussed boat upgrades with Orin Pike",
-      "timestamp": "2024-01-15T16:30:00",
-      "emotional_impact": 0.4
-    },
-    {
-      "type": "work",
-      "content": "Caught a large tuna, good day's work",
-      "timestamp": "2024-01-15T12:00:00",
-      "emotional_impact": 0.6
-    }
+	{
+	  "type": "conversation",
+	  "content": "Discussed boat upgrades with Orin Pike",
+	  "timestamp": "2024-01-15T16:30:00",
+	  "emotional_impact": 0.4
+	},
+	{
+	  "type": "work",
+	  "content": "Caught a large tuna, good day's work",
+	  "timestamp": "2024-01-15T12:00:00",
+	  "emotional_impact": 0.6
+	}
   ],
   
   "goals": [
-    {
-      "type": "economic",
-      "target": "boat_upgrade",
-      "description": "Upgrade fishing boat for better catches",
-      "priority": 0.8,
-      "progress": 0.3,
-      "requires_money": 500
-    }
+	{
+	  "type": "economic",
+	  "target": "boat_upgrade",
+	  "description": "Upgrade fishing boat for better catches",
+	  "priority": 0.8,
+	  "progress": 0.3,
+	  "requires_money": 500
+	}
   ],
   
   "current_action": null,

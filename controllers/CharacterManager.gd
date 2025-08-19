@@ -25,6 +25,7 @@ var base_template: Dictionary = {}
 var status_components: Dictionary = {}
 var action_planners: Dictionary = {}
 var environmental_sensors: Dictionary = {}
+var memory_components: Dictionary = {}
 
 # Population management
 var max_population: int = 50
@@ -194,11 +195,44 @@ func merge_needs(base_needs: Dictionary, template_needs: Dictionary):
 
 func create_character_components(character_id: String, character_data: Dictionary):
 	"""Create and attach necessary components to a character"""
-	# This would typically be called when a character node is created
-	# For now, we'll just track that components should exist
-	status_components[character_id] = null  # Placeholder for StatusComponent reference
-	action_planners[character_id] = null    # Placeholder for ActionPlanner reference
-	environmental_sensors[character_id] = null  # Placeholder for EnvironmentalSensor reference
+	# Create a container node for this character's components
+	var character_container = Node.new()
+	character_container.name = "Character_" + character_id
+	add_child(character_container)
+	
+	# Create StatusComponent
+	var status_component = StatusComponent.new()
+	status_component.name = "StatusComponent"
+	status_component.npc_id = character_id
+	status_components[character_id] = status_component
+	character_container.add_child(status_component)
+	
+	# Create ActionPlanner
+	var action_planner = ActionPlanner.new()
+	action_planner.name = "ActionPlanner"
+	action_planner.npc_id = character_id
+	action_planners[character_id] = action_planner
+	character_container.add_child(action_planner)
+	
+	# Create EnvironmentalSensor
+	var environmental_sensor = EnvironmentalSensor.new()
+	environmental_sensor.name = "EnvironmentalSensor"
+	environmental_sensor.character_id = character_id
+	environmental_sensors[character_id] = environmental_sensor
+	character_container.add_child(environmental_sensor)
+	
+	# Create MemoryComponent
+	var memory_component = MemoryComponent.new()
+	memory_component.name = "MemoryComponent"
+	memory_component.initialize(character_id, status_component)
+	memory_components[character_id] = memory_component
+	character_container.add_child(memory_component)
+	
+	# Set up component integration
+	environmental_sensor.set_status_component(status_component)
+	environmental_sensor.set_character_manager(self)
+	
+	print("✅ Character components created for: " + character_id)
 
 func get_character(character_id: String) -> Dictionary:
 	"""Get character data by ID"""
@@ -281,6 +315,7 @@ func delete_character(character_id: String) -> bool:
 	status_components.erase(character_id)
 	action_planners.erase(character_id)
 	environmental_sensors.erase(character_id)
+	memory_components.erase(character_id)
 	
 	# Delete save file
 	var save_path = SAVE_DIR_PATH + character_id + ".json"
@@ -432,6 +467,10 @@ func set_environmental_sensor(character_id: String, sensor: EnvironmentalSensor)
 func get_environmental_sensor(character_id: String) -> EnvironmentalSensor:
 	"""Get the EnvironmentalSensor component for a character"""
 	return environmental_sensors.get(character_id, null)
+
+func get_memory_component(character_id: String) -> MemoryComponent:
+	"""Get the MemoryComponent for a character"""
+	return memory_components.get(character_id, null)
 
 func _exit_tree():
 	"""Save all characters when shutting down"""

@@ -114,6 +114,16 @@ func _initialize_commands():
 			"usage": "time <command> [args...]",
 			"function": _cmd_time
 		},
+		"context": {
+			"description": "Analyze environmental context and behavior patterns",
+			"usage": "context <command> [args...]",
+			"function": _cmd_context
+		},
+		"behavior": {
+			"description": "View and analyze character behavior patterns",
+			"usage": "behavior <command> [args...]",
+			"function": _cmd_behavior
+		},
 		"status_component": {
 			"description": "Manage NPC status and needs",
 			"usage": "status_component <npc_id> <command> [args...]",
@@ -585,7 +595,7 @@ func _cmd_population(args: Array) -> Dictionary:
 			var message = "Population Summary:\n"
 			message += "Total: " + str(summary.total_count) + "\n"
 			message += "By Location:\n"
-			for location in summary.by_location:
+			for location in summary.by_location.keys():
 				message += "  " + location + ": " + str(summary.by_location[location]) + "\n"
 			message += "Urgent Needs:\n"
 			message += "  Physical: " + str(summary.by_need_status.urgent_physical) + "\n"
@@ -859,6 +869,186 @@ func _cmd_time(args: Array) -> Dictionary:
 		
 		_:
 			return {"success": false, "message": "Unknown time command: " + command}
+
+func _cmd_context(args: Array) -> Dictionary:
+	"""Handle context analysis commands"""
+	if args.size() < 1:
+		return {"success": false, "message": "Usage: context <command> [args...]"}
+	
+	var command = args[0]
+	var command_args = args.slice(1)
+	
+	match command:
+		"summary":
+			if command_args.size() < 1:
+				return {"success": false, "message": "Usage: context summary <character_id>"}
+			
+			var character_id = command_args[0]
+			var character_manager = get_node("/root/CharacterManager")
+			var sensor = character_manager.get_environmental_sensor(character_id)
+			if not sensor:
+				return {"success": false, "message": "Character " + character_id + " has no EnvironmentalSensor"}
+			
+			var summary = sensor.get_context_summary()
+			var message = "=== Context Summary for " + character_id + " ===\n"
+			message += "Location: " + summary.location + "\n"
+			message += "Weather: " + summary.weather + " (" + str(summary.temperature) + "°C)\n"
+			message += "Time Period: " + summary.time_period + "\n"
+			message += "Season: " + summary.season + "\n"
+			message += "Context Score: " + str(summary.context_score) + "\n"
+			message += "Available Resources: " + str(summary.available_resources) + "\n"
+			return {"success": true, "message": message}
+		
+		"action_score":
+			if command_args.size() < 2:
+				return {"success": false, "message": "Usage: context action_score <character_id> <action_id>"}
+			
+			var character_id = command_args[0]
+			var action_id = command_args[1]
+			var character_manager = get_node("/root/CharacterManager")
+			var sensor = character_manager.get_environmental_sensor(character_id)
+			if not sensor:
+				return {"success": false, "message": "Character " + character_id + " has no EnvironmentalSensor"}
+			
+			var score = sensor.get_context_score_for_action(action_id)
+			var message = "=== Action Context Score ===\n"
+			message += "Character: " + character_id + "\n"
+			message += "Action: " + action_id + "\n"
+			message += "Context Score: " + str(score) + "\n"
+			return {"success": true, "message": message}
+		
+		"location_effects":
+			if command_args.size() < 1:
+				return {"success": false, "message": "Usage: context location_effects <character_id>"}
+			
+			var character_id = command_args[0]
+			var character_manager = get_node("/root/CharacterManager")
+			var sensor = character_manager.get_environmental_sensor(character_id)
+			if not sensor:
+				return {"success": false, "message": "Character " + character_id + " has no EnvironmentalSensor"}
+			
+			var effects = sensor.get_location_effects()
+			var location = sensor.current_location
+			var message = "=== Location Effects for " + character_id + " ===\n"
+			message += "Location: " + location + "\n"
+			message += "Effects: " + str(effects) + "\n"
+			return {"success": true, "message": message}
+		
+		"compare":
+			if command_args.size() < 3:
+				return {"success": false, "message": "Usage: context compare <action_id> [character_ids...]"}
+			
+			var action_id = command_args[0]
+			var character_ids = command_args.slice(1)
+			var character_manager = get_node("/root/CharacterManager")
+			var message = "=== Action Context Comparison ===\n"
+			message += "Action: " + action_id + "\n\n"
+			
+			for character_id in character_ids:
+				var sensor = character_manager.get_environmental_sensor(character_id)
+				if sensor:
+					var score = sensor.get_context_score_for_action(action_id)
+					var context = sensor.get_context_summary()
+					message += character_id + ":\n"
+					message += "  Context Score: " + str(score) + "\n"
+					message += "  Location: " + context.location + "\n"
+					message += "  Weather: " + context.weather + "\n"
+					message += "  Time: " + context.time_period + "\n\n"
+			
+			return {"success": true, "message": message}
+		
+		_:
+			return {"success": false, "message": "Unknown context command: " + command}
+
+func _cmd_behavior(args: Array) -> Dictionary:
+	"""Handle behavior pattern analysis commands"""
+	if args.size() < 1:
+		return {"success": false, "message": "Usage: behavior <command> [args...]"}
+	
+	var command = args[0]
+	var command_args = args.slice(1)
+	
+	match command:
+		"patterns":
+			if command_args.size() < 1:
+				return {"success": false, "message": "Usage: behavior patterns <character_id>"}
+			
+			var character_id = command_args[0]
+			var character_manager = get_node("/root/CharacterManager")
+			var sensor = character_manager.get_environmental_sensor(character_id)
+			if not sensor:
+				return {"success": false, "message": "Character " + character_id + " has no EnvironmentalSensor"}
+			
+			var patterns = sensor.get_behavior_patterns()
+			var message = "=== Behavior Patterns for " + character_id + " ===\n"
+			message += "Patterns: " + str(patterns) + "\n"
+			return {"success": true, "message": message}
+		
+		"location_preference":
+			if command_args.size() < 1:
+				return {"success": false, "message": "Usage: behavior location_preference <character_id>"}
+			
+			var character_id = command_args[0]
+			var character_manager = get_node("/root/CharacterManager")
+			var sensor = character_manager.get_environmental_sensor(character_id)
+			if not sensor:
+				return {"success": false, "message": "Character " + character_id + " has no EnvironmentalSensor"}
+			
+			var patterns = sensor.get_behavior_patterns()
+			var location_prefs = patterns.get("location_preference", {})
+			
+			# Sort by preference count
+			var sorted_locations = []
+			for location in location_prefs.keys():
+				sorted_locations.append({"location": location, "count": location_prefs[location]})
+			sorted_locations.sort_custom(func(a, b): return a.count > b.count)
+			
+			var message = "=== Location Preferences for " + character_id + " ===\n"
+			for location_data in sorted_locations:
+				message += location_data.location + ": " + str(location_data.count) + " visits\n"
+			
+			return {"success": true, "message": message}
+		
+		"weather_tolerance":
+			if command_args.size() < 1:
+				return {"success": false, "message": "Usage: behavior weather_tolerance <character_id>"}
+			
+			var character_id = command_args[0]
+			var character_manager = get_node("/root/CharacterManager")
+			var sensor = character_manager.get_environmental_sensor(character_id)
+			if not sensor:
+				return {"success": false, "message": "Character " + character_id + " has no EnvironmentalSensor"}
+			
+			var patterns = sensor.get_behavior_patterns()
+			var weather_tolerance = patterns.get("weather_tolerance", {})
+			
+			# Sort by tolerance count
+			var sorted_weather = []
+			for weather in weather_tolerance.keys():
+				sorted_weather.append({"weather": weather, "count": weather_tolerance[weather]})
+			sorted_weather.sort_custom(func(a, b): return a.count > b.count)
+			
+			var message = "=== Weather Tolerance for " + character_id + " ===\n"
+			for weather_data in sorted_weather:
+				message += weather_data.weather + ": " + str(weather_data.count) + " occurrences\n"
+			
+			return {"success": true, "message": message}
+		
+		"analyze_all":
+			var character_manager = get_node("/root/CharacterManager")
+			var message = "=== All Character Behavior Analysis ===\n\n"
+			
+			for character_id in character_manager.active_characters.keys():
+				var sensor = character_manager.get_environmental_sensor(character_id)
+				if sensor:
+					var patterns = sensor.get_behavior_patterns()
+					message += character_id + ":\n"
+					message += "  Patterns: " + str(patterns) + "\n\n"
+			
+			return {"success": true, "message": message}
+		
+		_:
+			return {"success": false, "message": "Unknown behavior command: " + command}
 
 func _cmd_clear(args: Array) -> Dictionary:
 	output_panel.clear()

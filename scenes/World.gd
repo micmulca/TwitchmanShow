@@ -74,7 +74,7 @@ func _simulation_tick():
 
 func _update_status_display():
 	var llm_status = "Healthy" if LLMClient.is_available() else "Unhealthy"
-	var event_count = EventBus.get_event_history().size()
+	var event_count = EventBus.get_event_history(EventBus.EventCategory.CONVERSATION).size()
 	var pending_requests = LLMClient.get_pending_request_count()
 	
 	status_label.text = "LLM: " + llm_status + " | Events: " + str(event_count) + " | Pending: " + str(pending_requests)
@@ -109,7 +109,7 @@ func get_simulation_stats() -> Dictionary:
 		"running": simulation_running,
 		"fps": 1.0 / (frame_times[-1] if frame_times.size() > 0 else 0.016),
 		"llm_healthy": LLMClient.is_available(),
-		"event_count": EventBus.get_event_history().size()
+		"event_count": EventBus.get_event_history(EventBus.EventCategory.CONVERSATION).size()
 	}
 
 func pause_simulation():

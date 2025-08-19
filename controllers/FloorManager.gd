@@ -29,7 +29,7 @@ var conversation_group: Node = null
 
 func _ready():
 	# Initialize timing
-	turn_start_time = Time.get_time()
+	turn_start_time = _get_current_time_seconds()
 	last_interrupt_time = -interrupt_cooldown
 
 func set_conversation_group(group: Node) -> void:
@@ -57,7 +57,7 @@ func start_turn(speaker: String, topic: String = "") -> bool:
 	
 	# Start new turn
 	current_speaker = speaker
-	turn_start_time = Time.get_time()
+	turn_start_time = _get_current_time_seconds()
 	turn_duration = 0.0
 	
 	# Emit signal
@@ -72,7 +72,7 @@ func end_turn(reason: String = "natural_end") -> void:
 		return
 	
 	var speaker = current_speaker
-	var duration = Time.get_time() - turn_start_time
+	var duration = _get_current_time_seconds() - turn_start_time
 	
 	# Update turn duration
 	turn_duration = duration
@@ -126,7 +126,7 @@ func request_interrupt(interrupter: String, reason: String = "natural_interrupt"
 		return false
 	
 	# Check interrupt cooldown
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	if current_time - last_interrupt_time < interrupt_cooldown:
 		print("[FloorManager] Interrupt cooldown active")
 		return false
@@ -164,7 +164,7 @@ func process_interrupts() -> bool:
 	
 	# Grant the interrupt
 	if grant_interrupt(interrupter, reason):
-		last_interrupt_time = Time.get_time()
+		last_interrupt_time = _get_current_time_seconds()
 		return true
 	
 	return false
@@ -214,7 +214,7 @@ func _update_speaking_order() -> void:
 
 func _is_interrupt_appropriate(interrupter: String, reason: String) -> bool:
 	# Determine if an interrupt is appropriate
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	var turn_elapsed = current_time - turn_start_time
 	
 	# Don't allow interrupts too early in a turn
@@ -299,7 +299,7 @@ func _process(delta: float) -> void:
 	
 	# Check for turn timeout
 	if current_speaker != "":
-		var current_time = Time.get_time()
+		var current_time = _get_current_time_seconds()
 		var turn_elapsed = current_time - turn_start_time
 		
 		if turn_elapsed > max_turn_duration:
@@ -317,7 +317,7 @@ func get_current_speaker() -> String:
 func get_turn_elapsed() -> float:
 	if current_speaker == "":
 		return 0.0
-	return Time.get_time() - turn_start_time
+	return _get_current_time_seconds() - turn_start_time
 
 func get_speaking_order() -> Array[String]:
 	return speaking_order.duplicate()
@@ -332,7 +332,7 @@ func can_interrupt(npc_id: String) -> bool:
 	if current_speaker == "" or npc_id == current_speaker:
 		return false
 	
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	return current_time - last_interrupt_time >= interrupt_cooldown
 
 func get_floor_stats() -> Dictionary:
@@ -343,3 +343,9 @@ func get_floor_stats() -> Dictionary:
 		"interrupt_queue_size": interrupt_queue.size(),
 		"round_robin_enabled": round_robin_enabled
 	}
+
+
+# Helper function to get current time in seconds
+func _get_current_time_seconds() -> float:
+	var time_dict = Time.get_time_dict_from_system()
+	return time_dict.hour * 3600 + time_dict.minute * 60 + time_dict.second

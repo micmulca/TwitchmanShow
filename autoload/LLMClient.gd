@@ -4,6 +4,7 @@ extends Node
 # Includes retry logic, timeouts, and fallback responses when LLM is unavailable
 
 signal llm_response_received(request_id: String, response: Dictionary)
+# @warning_ignore:unused_signal
 signal llm_request_failed(request_id: String, error: String)
 signal llm_health_changed(is_healthy: bool)
 
@@ -31,9 +32,14 @@ func _ready():
 	check_health()
 
 func check_health():
+	# Don't run health check if one is already in progress
+	if pending_requests.has("health_check"):
+		print("[LLMClient] Health check already in progress, skipping...")
+		return
+	
 	# Simple health check - try to connect to LM Studio
 	var test_request = {
-		"model": "local-model",
+		"model": "TheBloke/OpenHermes-2.5-Mistral-7B-GGUF",
 		"messages": [{"role": "user", "content": "Hello"}],
 		"temperature": 0.1,
 		"max_tokens": 10
@@ -42,13 +48,33 @@ func check_health():
 	var headers = ["Content-Type: application/json"]
 	var json_string = JSON.stringify(test_request)
 	
-	http_client.request(lm_studio_url + "/v1/chat/completions", headers, HTTPClient.METHOD_POST, json_string)
+	# Store health check request with special ID
+	var health_request_id = "health_check"
+	pending_requests[health_request_id] = {
+		"data": test_request,
+		"context": {},
+		"retry_count": 0,
+		"timestamp": Time.get_time_dict_from_system(),
+		"is_health_check": true
+	}
+	
+	var result = http_client.request(lm_studio_url + "/v1/chat/completions", headers, HTTPClient.METHOD_POST, json_string)
+	
+	if result != OK:
+		print("[LLMClient] Health check request failed to send: ", result)
+		_set_health_status(false)
+		# Clean up failed health check
+		pending_requests.erase(health_request_id)
+		return
 	
 	# Set a timeout for health check
 	var timer = get_tree().create_timer(5.0)
 	timer.timeout.connect(func(): 
 		if not is_healthy:
 			_set_health_status(false)
+			# Clean up health check request
+			if pending_requests.has(health_request_id):
+				pending_requests.erase(health_request_id)
 	)
 
 func _set_health_status(healthy: bool):
@@ -63,7 +89,7 @@ func send_request(prompt: String, context: Dictionary, temperature: float = 0.7)
 	
 	# Build the request payload
 	var request_data = {
-		"model": "local-model",
+		"model": "TheBloke/OpenHermes-2.5-Mistral-7B-GGUF",
 		"messages": [
 			{
 				"role": "system",
@@ -106,7 +132,7 @@ func _send_http_request(request_id: String, request_data: Dictionary):
 	if result != OK:
 		_handle_request_error(request_id, "Failed to send HTTP request: " + str(result))
 
-func _on_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray):
+func _on_request_completed(result: int, response_code: int, _headers: PackedStringArray, body: PackedByteArray):
 	if result != HTTPRequest.RESULT_SUCCESS:
 		_handle_request_error("", "HTTP request failed: " + str(result))
 		return
@@ -134,7 +160,7 @@ func _on_request_completed(result: int, response_code: int, headers: PackedStrin
 	# Process the response
 	_process_llm_response(request_id, response_data)
 
-func _find_request_by_response(response_data: Dictionary) -> String:
+func _find_request_by_response(_response_data: Dictionary) -> String:
 	# This is a simplified approach - in a real implementation,
 	# you'd want to track request-response mapping more carefully
 	for request_id in pending_requests.keys():
@@ -144,6 +170,14 @@ func _find_request_by_response(response_data: Dictionary) -> String:
 func _process_llm_response(request_id: String, response_data: Dictionary):
 	var request_info = pending_requests.get(request_id)
 	if not request_info:
+		return
+	
+	# Check if this is a health check response
+	if request_info.has("is_health_check") and request_info.is_health_check:
+		# This is a health check response - mark as healthy
+		_set_health_status(true)
+		pending_requests.erase(request_id)
+		print("[LLMClient] Health check successful - LLM is now healthy")
 		return
 	
 	# Extract the response content
@@ -197,7 +231,7 @@ func _handle_fallback_response(request_id: String, original_request: Dictionary)
 
 func _generate_fallback_response(original_request: Dictionary) -> Dictionary:
 	# Generate a simple fallback response when LLM is unavailable
-	var context = original_request.get("context", {})
+	var _context = original_request.get("context", {})
 	
 	return {
 		"utterance": "I'm not feeling very talkative right now.",
@@ -211,6 +245,9 @@ func _handle_request_error(request_id: String, error: String):
 	if request_id.is_empty():
 		print("[LLMClient] Request error: ", error)
 		return
+	
+	# Emit signal for error handling
+	llm_request_failed.emit(request_id, error)
 	
 	var request_info = pending_requests.get(request_id)
 	if not request_info:

@@ -9,6 +9,8 @@ signal weather_changed(old_weather: Dictionary, new_weather: Dictionary)
 signal time_period_changed(old_period: String, new_period: String)
 signal resource_availability_changed(location: String, resources: Array)
 signal environmental_modifier_applied(character_id: String, need_type: String, modifier: float, reason: String)
+signal context_behavior_triggered(character_id: String, behavior_type: String, context: Dictionary)
+signal seasonal_action_modifier(season: String, action_id: String, modifier: float)
 
 # Character reference
 var character_id: String = ""
@@ -48,7 +50,7 @@ var time_periods: Dictionary = {
 
 var current_period: String = "afternoon"
 
-# Location effects system
+# Enhanced location effects system with context-aware behaviors
 var location_effects: Dictionary = {
 	"home": {
 		"comfort": 0.02,
@@ -106,6 +108,27 @@ var location_effects: Dictionary = {
 	}
 }
 
+# Context-aware need interaction modifiers
+var need_interaction_modifiers: Dictionary = {
+	"kitchen": {
+		"hunger_thirst": 0.8,  # Hunger and thirst interact more strongly
+		"comfort_energy": 1.2   # Comfort and energy boost each other
+	},
+	"bedroom": {
+		"energy_sleep_quality": 1.5,  # Energy and sleep quality strongly linked
+		"comfort_energy": 1.3          # Comfort enhances energy recovery
+	},
+	"workshop": {
+		"achievement_need_energy": 0.7,  # Achievement need drains energy faster
+		"curiosity_energy": 1.1          # Curiosity slightly boosts energy
+	},
+	"outdoors": {
+		"temp_comfort_energy": 0.6,     # Temperature discomfort drains energy
+		"curiosity_energy": 1.2,        # Curiosity boosts energy outdoors
+		"cleanliness_comfort": 0.8      # Dirt reduces comfort more outdoors
+	}
+}
+
 # Resource availability system
 var resource_availability: Dictionary = {
 	"kitchen": ["food", "water", "cooking_tools"],
@@ -118,13 +141,98 @@ var resource_availability: Dictionary = {
 	"inn_common_room": ["social_contact", "entertainment", "comfort"]
 }
 
-# Seasonal effects
+# Enhanced seasonal effects with action availability
 var current_season: String = "summer"
 var seasons: Dictionary = {
-	"spring": {"temperature_mod": -5.0, "growth_mod": 0.2, "mood_mod": 0.1},
-	"summer": {"temperature_mod": 5.0, "growth_mod": 0.0, "mood_mod": 0.0},
-	"autumn": {"temperature_mod": -2.0, "growth_mod": -0.1, "mood_mod": -0.05},
-	"winter": {"temperature_mod": -10.0, "growth_mod": -0.3, "mood_mod": -0.1}
+	"spring": {
+		"temperature_mod": -5.0, 
+		"growth_mod": 0.2, 
+		"mood_mod": 0.1,
+		"action_modifiers": {
+			"farming": 1.3,      # Better farming in spring
+			"outdoor_activities": 1.2,  # Pleasant outdoor conditions
+			"fishing": 1.1,      # Fish are more active
+			"indoor_crafts": 0.9  # Less time spent indoors
+		}
+	},
+	"summer": {
+		"temperature_mod": 5.0, 
+		"growth_mod": 0.0, 
+		"mood_mod": 0.0,
+		"action_modifiers": {
+			"outdoor_activities": 1.0,  # Normal outdoor conditions
+			"fishing": 1.0,      # Normal fishing
+			"indoor_crafts": 1.0, # Normal indoor activities
+			"farming": 1.0       # Normal farming
+		}
+	},
+	"autumn": {
+		"temperature_mod": -2.0, 
+		"growth_mod": -0.1, 
+		"mood_mod": -0.05,
+		"action_modifiers": {
+			"harvesting": 1.4,   # Harvest season
+			"indoor_crafts": 1.2, # More time indoors
+			"outdoor_activities": 0.8, # Cooler weather
+			"fishing": 0.9       # Fish less active
+		}
+	},
+	"winter": {
+		"temperature_mod": -10.0, 
+		"growth_mod": -0.3, 
+		"mood_mod": -0.1,
+		"action_modifiers": {
+			"indoor_crafts": 1.3, # Much more time indoors
+			"outdoor_activities": 0.5, # Harsh outdoor conditions
+			"fishing": 0.6,      # Ice fishing only
+			"farming": 0.3       # Minimal farming
+		}
+	}
+}
+
+# Context-aware behavior triggers
+var behavior_triggers: Dictionary = {
+	"weather": {
+		"rain": {
+			"indoor_preference": 1.5,    # Prefer indoor activities
+			"movement_speed": 0.7,       # Move slower in rain
+			"social_need": 0.8           # Less social in bad weather
+		},
+		"storm": {
+			"indoor_preference": 2.0,    # Strongly prefer indoor activities
+			"movement_speed": 0.5,       # Move much slower
+			"security_need": 1.3         # Feel less secure
+		},
+		"sunny": {
+			"outdoor_preference": 1.4,   # Prefer outdoor activities
+			"energy": 1.2,               # More energetic
+			"social_need": 1.1           # More social in good weather
+		}
+	},
+	"time": {
+		"dawn": {
+			"energy": 0.8,               # Lower energy at dawn
+			"indoor_preference": 1.2,    # Prefer indoor activities
+			"social_need": 0.7           # Less social early
+		},
+		"night": {
+			"energy": 0.6,               # Much lower energy at night
+			"indoor_preference": 2.0,    # Strongly prefer indoor activities
+			"security_need": 1.2         # Feel less secure at night
+		}
+	},
+	"location": {
+		"workshop": {
+			"achievement_focus": 1.3,    # More focused on achievement
+			"social_need": 0.8,          # Less social in workshop
+			"energy_efficiency": 1.2     # More efficient energy use
+		},
+		"outdoors": {
+			"curiosity": 1.4,            # More curious outdoors
+			"energy_drain": 1.1,         # Energy drains faster
+			"comfort_sensitivity": 1.3   # More sensitive to comfort
+		}
+	}
 }
 
 # Update intervals
@@ -134,6 +242,11 @@ var last_update_time: float = 0.0
 # Integration with other systems
 var status_component: StatusComponent = null
 var character_manager: CharacterManager = null
+
+# Context tracking for behavior analysis
+var context_history: Array = []
+var max_context_history: int = 100
+var behavior_patterns: Dictionary = {}
 
 func _ready():
 	if character_id.is_empty():
@@ -148,7 +261,7 @@ func _ready():
 	print("[EnvironmentalSensor] Initialized for character: ", character_id)
 
 func _process(delta: float):
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	if current_time - last_update_time >= update_interval:
 		_update_environment(delta)
 		last_update_time = current_time
@@ -163,6 +276,12 @@ func _update_environment(delta: float):
 	# Apply environmental modifiers to character needs
 	if status_component:
 		_apply_environmental_modifiers(delta)
+	
+	# Update context history
+	_update_context_history()
+	
+	# Check for behavior triggers
+	_check_behavior_triggers()
 
 func _update_time():
 	current_time = Time.get_time_dict_from_system()
@@ -231,10 +350,85 @@ func set_location(new_location: String):
 		
 		# Check for resource availability changes
 		_check_resource_availability()
+		
+		# Check for location-specific behavior triggers
+		_check_location_behavior_triggers()
 
 func _check_resource_availability():
 	var available_resources = resource_availability.get(current_location, [])
 	resource_availability_changed.emit(current_location, available_resources)
+
+func _check_location_behavior_triggers():
+	var location_triggers = behavior_triggers.get("location", {}).get(current_location, {})
+	
+	for behavior_type in location_triggers.keys():
+		var modifier = location_triggers[behavior_type]
+		context_behavior_triggered.emit(character_id, behavior_type, {
+			"location": current_location,
+			"modifier": modifier,
+			"type": "location"
+		})
+
+func _check_behavior_triggers():
+	# Check weather-based triggers
+	var weather_triggers = behavior_triggers.get("weather", {}).get(current_weather.type, {})
+	for behavior_type in weather_triggers.keys():
+		var modifier = weather_triggers[behavior_type]
+		context_behavior_triggered.emit(character_id, behavior_type, {
+			"weather": current_weather.type,
+			"modifier": modifier,
+			"type": "weather"
+		})
+	
+	# Check time-based triggers
+	var time_triggers = behavior_triggers.get("time", {}).get(current_period, {})
+	for behavior_type in time_triggers.keys():
+		var modifier = time_triggers[behavior_type]
+		context_behavior_triggered.emit(character_id, behavior_type, {
+			"time_period": current_period,
+			"modifier": modifier,
+			"type": "time"
+		})
+
+func _update_context_history():
+	var context_snapshot = {
+		"timestamp": _get_current_time_seconds(),
+		"location": current_location,
+		"weather": current_weather.type,
+		"time_period": current_period,
+		"season": current_season,
+		"temperature": current_weather.temperature
+	}
+	
+	context_history.append(context_snapshot)
+	
+	# Keep history within limits
+	if context_history.size() > max_context_history:
+		context_history.pop_front()
+	
+	# Analyze patterns (simplified)
+	_analyze_behavior_patterns()
+
+func _analyze_behavior_patterns():
+	# Simple pattern analysis - could be much more sophisticated
+	var recent_contexts = context_history.slice(-10)  # Last 10 contexts
+	
+	# Count location preferences
+	var location_counts = {}
+	for context in recent_contexts:
+		var loc = context.location
+		location_counts[loc] = location_counts.get(loc, 0) + 1
+	
+	# Update behavior patterns
+	behavior_patterns["location_preference"] = location_counts
+	
+	# Weather tolerance analysis
+	var weather_counts = {}
+	for context in recent_contexts:
+		var weather = context.weather
+		weather_counts[weather] = weather_counts.get(weather, 0) + 1
+	
+	behavior_patterns["weather_tolerance"] = weather_counts
 
 func _apply_environmental_modifiers(delta: float):
 	if not status_component:
@@ -243,15 +437,16 @@ func _apply_environmental_modifiers(delta: float):
 	# Get location effects
 	var location_data = location_effects.get(current_location, {})
 	
-	# Apply each modifier
+	# Apply each modifier with context-aware interactions
 	for need_type in location_data.keys():
-		var modifier = location_data[need_type] * delta
+		var base_modifier = location_data[need_type] * delta
+		var final_modifier = _apply_context_modifiers(need_type, base_modifier, delta)
 		
 		# Apply the modifier through StatusComponent
-		status_component.modify_need(need_type, modifier)
+		status_component.modify_need(need_type, final_modifier)
 		
 		# Emit signal for debugging
-		environmental_modifier_applied.emit(character_id, need_type, modifier, "location: " + current_location)
+		environmental_modifier_applied.emit(character_id, need_type, final_modifier, "location: " + current_location)
 	
 	# Apply weather effects
 	_apply_weather_modifiers(delta)
@@ -261,6 +456,34 @@ func _apply_environmental_modifiers(delta: float):
 	
 	# Apply seasonal effects
 	_apply_seasonal_modifiers(delta)
+
+func _apply_context_modifiers(need_type: String, base_modifier: float, delta: float) -> float:
+	var final_modifier = base_modifier
+	
+	# Get need interaction modifiers for current location
+	var interaction_data = need_interaction_modifiers.get(current_location, {})
+	
+	# Apply interaction effects between related needs
+	for interaction_key in interaction_data.keys():
+		var needs = interaction_key.split("_")
+		if need_type in needs:
+			var modifier = interaction_data[interaction_key]
+			final_modifier *= modifier
+	
+	# Apply seasonal context modifiers
+	var season_data = seasons.get(current_season, {})
+	var action_modifiers = season_data.get("action_modifiers", {})
+	
+	# Check if current location suggests certain activities
+	var location_tags = get_location_tags()
+	if "outdoors" in location_tags:
+		var outdoor_modifier = action_modifiers.get("outdoor_activities", 1.0)
+		final_modifier *= outdoor_modifier
+	elif "workshop" in location_tags:
+		var workshop_modifier = action_modifiers.get("indoor_crafts", 1.0)
+		final_modifier *= workshop_modifier
+	
+	return final_modifier
 
 func _apply_weather_modifiers(delta: float):
 	var weather_type = current_weather.type
@@ -321,7 +544,7 @@ func _apply_seasonal_modifiers(delta: float):
 	if mood_mod != 0.0:
 		status_component.modify_need("social_need", mood_mod * 0.001 * delta)
 
-# Public API functions
+# Enhanced public API functions for context system
 func get_location_effects() -> Dictionary:
 	return location_effects.get(current_location, {})
 
@@ -337,13 +560,8 @@ func get_season() -> String:
 func get_available_resources() -> Array:
 	return resource_availability.get(current_location, [])
 
-func is_location_suitable_for_action(action_id: String) -> bool:
-	# Check if current location supports the action
-	# This would integrate with the action system
-	return true  # Placeholder
-
-func get_environmental_score_for_action(action_id: String) -> float:
-	# Calculate how suitable the current environment is for an action
+func get_context_score_for_action(action_id: String) -> float:
+	"""Calculate how suitable the current context is for an action"""
 	var base_score = 1.0
 	
 	# Weather effects
@@ -362,7 +580,47 @@ func get_environmental_score_for_action(action_id: String) -> float:
 		if "outdoors" in get_location_tags():
 			base_score *= 0.7  # Night reduces outdoor action suitability
 	
+	# Seasonal effects
+	var season_data = seasons.get(current_season, {})
+	var action_modifiers = season_data.get("action_modifiers", {})
+	
+	# Check if action has seasonal modifiers
+	for action_type in action_modifiers.keys():
+		if action_id.contains(action_type) or action_id.contains(action_type.replace("_", "")):
+			base_score *= action_modifiers[action_type]
+			seasonal_action_modifier.emit(current_season, action_id, action_modifiers[action_type])
+	
+	# Location-specific effects
+	var location_tags = get_location_tags()
+	if "indoor" in location_tags and "outdoor" in action_id:
+		base_score *= 0.6  # Indoor location for outdoor action
+	elif "outdoors" in location_tags and "indoor" in action_id:
+		base_score *= 0.8  # Outdoor location for indoor action
+	
 	return base_score
+
+func get_behavior_patterns() -> Dictionary:
+	"""Get analyzed behavior patterns for this character"""
+	return behavior_patterns.duplicate()
+
+func get_context_summary() -> Dictionary:
+	"""Get comprehensive context summary for decision making"""
+	return {
+		"location": current_location,
+		"weather": current_weather.type,
+		"time_period": current_period,
+		"season": current_season,
+		"temperature": current_weather.temperature,
+		"location_effects": get_location_effects(),
+		"available_resources": get_available_resources(),
+		"behavior_patterns": get_behavior_patterns(),
+		"context_score": get_context_score_for_action("general")
+	}
+
+func is_location_suitable_for_action(action_id: String) -> bool:
+	# Enhanced location suitability check
+	var context_score = get_context_score_for_action(action_id)
+	return context_score > 0.5  # Action is suitable if context score > 50%
 
 func get_location_tags() -> Array:
 	# Return location tags for the current location
@@ -386,7 +644,7 @@ func get_location_tags() -> Array:
 	
 	return tags
 
-# Console commands for debugging
+# Enhanced console commands for context system debugging
 func console_command(command: String, args: Array) -> Dictionary:
 	match command:
 		"weather":
@@ -399,6 +657,17 @@ func console_command(command: String, args: Array) -> Dictionary:
 			return {"success": true, "data": {"current": current_season, "effects": seasons.get(current_season, {})}}
 		"resources":
 			return {"success": true, "data": {"location": current_location, "resources": get_available_resources()}}
+		"context":
+			return {"success": true, "data": get_context_summary()}
+		"patterns":
+			return {"success": true, "data": get_behavior_patterns()}
+		"action_score":
+			if args.size() >= 1:
+				var action_id = args[0]
+				var score = get_context_score_for_action(action_id)
+				return {"success": true, "data": {"action": action_id, "context_score": score}}
+			else:
+				return {"success": false, "error": "Usage: action_score <action_id>"}
 		"set_weather":
 			if args.size() >= 1:
 				var new_type = args[0]
@@ -437,3 +706,9 @@ func set_status_component(component: StatusComponent):
 
 func set_character_manager(manager: CharacterManager):
 	character_manager = manager
+
+
+# Helper function to get current time in seconds
+func _get_current_time_seconds() -> float:
+	var time_dict = Time.get_time_dict_from_system()
+	return time_dict.hour * 3600 + time_dict.minute * 60 + time_dict.second

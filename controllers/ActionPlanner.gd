@@ -51,7 +51,7 @@ func _ready():
 	_load_available_actions()
 
 func _process(delta: float):
-	var current_time = Time.get_time()
+	var current_time = _get_current_time_seconds()
 	if current_time - last_planning_time >= planning_interval:
 		_plan_next_action()
 		last_planning_time = current_time
@@ -296,3 +296,8 @@ func console_command(command: String, args: Array) -> Dictionary:
 		
 		_:
 			return {"success": false, "message": "Unknown command: " + command}
+
+# Helper function to get current time in seconds
+func _get_current_time_seconds() -> float:
+	var time_dict = Time.get_time_dict_from_system()
+	return time_dict.hour * 3600 + time_dict.minute * 60 + time_dict.second

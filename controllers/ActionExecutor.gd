@@ -49,6 +49,8 @@ var inventory_changes_cache: Dictionary = {}
 # Dependencies
 var status_component: StatusComponent
 var action_planner: ActionPlanner
+var action_randomizer: ActionRandomizer
+var memory_component: MemoryComponent
 
 func _ready():
 	# Initialize progress timer
@@ -61,6 +63,7 @@ func _ready():
 	# Get dependencies
 	status_component = get_parent().get_node_or_null("StatusComponent")
 	action_planner = get_parent().get_node_or_null("ActionPlanner")
+	action_randomizer = get_parent().get_node_or_null("ActionRandomizer")
 
 # Start executing an action
 func start_action(action_data: Dictionary, npc_identifier: String) -> Dictionary:
@@ -277,6 +280,28 @@ func console_command(command: String, args: Array) -> Dictionary:
 		"progress":
 			return {"success": true, "data": {"progress": action_progress}}
 		
+		"memory":
+			if not memory_component:
+				return {"success": false, "message": "MemoryComponent not available"}
+			
+			if args.size() < 1:
+				return {"success": false, "message": "Usage: memory <command> [args...]"}
+			
+			var memory_command = args[0]
+			var memory_args = args.slice(1)
+			return memory_component.console_command(memory_command, memory_args)
+		
+		"randomize":
+			if not action_randomizer:
+				return {"success": false, "message": "ActionRandomizer not available"}
+			
+			if args.size() < 1:
+				return {"success": false, "message": "Usage: randomize <command> [args...]"}
+			
+			var randomize_command = args[0]
+			var randomize_args = args.slice(1)
+			return action_randomizer.console_command(randomize_command, randomize_args)
+		
 		_:
 			return {"success": false, "message": "Unknown command: " + command}
 
@@ -332,21 +357,46 @@ func _apply_action_costs():
 func _apply_completion_effects() -> Dictionary:
 	var results = {}
 	
-	# Apply need satisfaction
+	# Generate randomized action result if randomizer is available
+	var action_result = {}
+	if action_randomizer:
+		action_result = action_randomizer.generate_action_result(current_action, npc_id)
+		results["action_result"] = action_result
+		
+		# Apply result-based modifiers
+		var need_satisfaction_modifier = action_result.get("need_satisfaction_modifier", 1.0)
+		var skill_gain_modifier = action_result.get("skill_gain_modifier", 1.0)
+		var duration_modifier = action_result.get("duration_modifier", 1.0)
+		
+		# Store modifiers for later use
+		results["modifiers"] = {
+			"need_satisfaction": need_satisfaction_modifier,
+			"skill_gain": skill_gain_modifier,
+			"duration": duration_modifier
+		}
+	else:
+		# Fallback to default modifiers
+		action_result = {"result_type": "average", "quality": "standard"}
+		results["action_result"] = action_result
+		results["modifiers"] = {"need_satisfaction": 1.0, "skill_gain": 1.0, "duration": 1.0}
+	
+			# Apply need satisfaction with modifiers
 	if status_component:
 		var satisfies_needs = current_action.get("satisfies_needs", {})
 		for need_type in satisfies_needs:
-			var amount = satisfies_needs[need_type]
-			status_component.modify_need(need_type, amount)
-			need_satisfaction_cache[need_type] = amount
+			var base_amount = satisfies_needs[need_type]
+			var modified_amount = int(base_amount * results["modifiers"]["need_satisfaction"])
+			status_component.modify_need(need_type, modified_amount)
+			need_satisfaction_cache[need_type] = modified_amount
 		
 		results["needs_satisfied"] = need_satisfaction_cache
 	
-	# Apply skill gains
+	# Apply skill gains with modifiers
 	var skill_gains = current_action.get("skill_gains", {})
 	for skill in skill_gains:
-		var amount = skill_gains[skill]
-		skill_gain_cache[skill] = amount
+		var base_amount = skill_gains[skill]
+		var modified_amount = int(base_amount * results["modifiers"]["skill_gain"])
+		skill_gain_cache[skill] = modified_amount
 		results["skills_gained"] = skill_gain_cache
 	
 	# Apply inventory changes
@@ -355,6 +405,10 @@ func _apply_completion_effects() -> Dictionary:
 		var change = inventory_changes[item]
 		inventory_changes_cache[item] = change
 		results["inventory_changes"] = inventory_changes_cache
+	
+	# Apply wealth changes from action result
+	if action_result.has("wealth_change"):
+		results["wealth_change"] = action_result["wealth_change"]
 	
 	# Apply other effects
 	var effects = current_action.get("effects", {})

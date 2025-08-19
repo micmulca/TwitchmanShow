@@ -1,5 +1,11 @@
 extends Node
 
+# Class references - will be loaded at runtime to avoid circular dependencies
+var TopicManager: GDScript
+var ContextPacker: GDScript
+var ConversationGroup: GDScript
+var FloorManager: GDScript
+
 # ConversationController - Orchestrates all conversation groups and manages the conversation system
 # Enforces participation invariant, manages group lifecycle, and coordinates conversation flow
 
@@ -38,6 +44,12 @@ func _ready():
 	print("[ConversationController] Initialized with max ", max_active_groups, " groups")
 
 func _initialize_components():
+	# Load required classes at runtime
+	TopicManager = load("res://controllers/TopicManager.gd")
+	ContextPacker = load("res://controllers/ContextPacker.gd")
+	ConversationGroup = load("res://controllers/ConversationGroup.gd")
+	FloorManager = load("res://controllers/FloorManager.gd")
+	
 	# Initialize TopicManager
 	topic_manager = TopicManager.new()
 	add_child(topic_manager)
@@ -233,13 +245,14 @@ func _process_group_turn(group: Node) -> void:
 	var group_id = group.group_id
 	
 	# Check cooldown
-	var current_time = Time.get_time()
+	var current_time = Time.get_time_dict_from_system()
+	var current_seconds = current_time.hour * 3600 + current_time.minute * 60 + current_time.second
 	var last_activity = group_cooldowns.get(group_id, 0.0)
-	if current_time - last_activity < group_cooldown_duration:
+	if current_seconds - last_activity < group_cooldown_duration:
 		return
 	
 	# Update cooldown
-	group_cooldowns[group_id] = current_time
+	group_cooldowns[group_id] = current_seconds
 	
 	# Get next speaker
 	var floor_manager = group.get_node("FloorManager")
