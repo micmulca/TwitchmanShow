@@ -258,9 +258,15 @@ func _cleanup_old_memories():
 	
 	# Remove weakest 10% of memories
 	var remove_count = max(1, memories.size() / 10)
-	for i in range(remove_count):
-		if i < sorted_memories.size():
-			delete_memory(sorted_memories[i]["id"])
+	var memories_to_remove = []
+	
+	# Collect memories to remove first to avoid modification during iteration
+	for i in range(min(remove_count, sorted_memories.size())):
+		memories_to_remove.append(sorted_memories[i]["id"])
+	
+	# Remove memories after iteration is complete
+	for memory_id in memories_to_remove:
+		delete_memory(memory_id)
 
 # Utility Methods
 

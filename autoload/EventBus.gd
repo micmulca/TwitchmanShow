@@ -107,8 +107,10 @@ func clear_event_history():
 
 func get_event_stats() -> Dictionary:
 	var stats = {}
-	for category in EventCategory.values():
-		stats[EventCategory.keys()[category]] = 0
+	var category_values = EventCategory.values()
+	var category_keys = EventCategory.keys()
+	for i in range(category_values.size()):
+		stats[category_keys[i]] = 0
 	
 	for event in event_history:
 		var category_name = EventCategory.keys()[event.category]
