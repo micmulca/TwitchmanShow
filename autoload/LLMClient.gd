@@ -76,6 +76,8 @@ func check_health():
 			if pending_requests.has(health_request_id):
 				pending_requests.erase(health_request_id)
 	)
+	# Store timer reference to prevent memory leak
+	timer.tree_exiting.connect(func(): timer.queue_free())
 
 func _set_health_status(healthy: bool):
 	if is_healthy != healthy:

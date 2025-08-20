@@ -289,8 +289,11 @@ func _get_personality_modifier(need_type: String) -> float:
 			return 1.0
 
 func _get_need_category(need_type: String) -> String:
+	if not needs:
+		return ""
+	
 	for category in needs.keys():
-		if needs[category].has(need_type):
+		if needs[category] and needs[category].has(need_type):
 			return category
 	return ""
 

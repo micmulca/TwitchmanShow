@@ -69,17 +69,25 @@ func _process(delta: float):
 
 func _process_conversations():
 	# Process all active conversations
-	for group_id in active_groups.keys():
+	var groups_to_process = active_groups.keys()
+	var groups_to_cleanup = []
+	
+	# First pass: identify groups to clean up
+	for group_id in groups_to_process:
 		var group = active_groups[group_id]
 		if not group or not group.is_active:
-			_cleanup_group(group_id)
+			groups_to_cleanup.append(group_id)
 			continue
 		
 		# Check if group should be active
 		if _should_group_continue(group):
 			_process_group_turn(group)
 		else:
-			_end_group(group, "natural_end")
+			groups_to_cleanup.append(group_id)
+	
+	# Second pass: clean up groups after iteration is complete
+	for group_id in groups_to_cleanup:
+		_cleanup_group(group_id)
 
 func start_conversation(participants: Array[String], initial_topic: String = "general_chat") -> String:
 	# Start a new conversation with the given participants

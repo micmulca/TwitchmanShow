@@ -64,6 +64,18 @@ func _ready():
 	status_component = get_parent().get_node_or_null("StatusComponent")
 	action_planner = get_parent().get_node_or_null("ActionPlanner")
 	action_randomizer = get_parent().get_node_or_null("ActionRandomizer")
+	
+	# Verify timer was created successfully
+	if not progress_timer:
+		push_error("[ActionExecutor] Failed to create progress timer")
+		return
+
+func _exit_tree():
+	# Clean up timer when node is removed
+	if progress_timer:
+		progress_timer.stop()
+		progress_timer.queue_free()
+		progress_timer = null
 
 # Start executing an action
 func start_action(action_data: Dictionary, npc_identifier: String) -> Dictionary:
@@ -72,6 +84,11 @@ func start_action(action_data: Dictionary, npc_identifier: String) -> Dictionary
 	
 	if not _validate_action(action_data):
 		return {"success": false, "message": "Invalid action data"}
+	
+	# Check if timer is available
+	if not progress_timer:
+		push_error("[ActionExecutor] Progress timer not initialized")
+		return {"success": false, "message": "Timer not initialized"}
 	
 	# Set up action execution
 	current_action = action_data.duplicate()
@@ -94,7 +111,11 @@ func start_action(action_data: Dictionary, npc_identifier: String) -> Dictionary
 	action_started.emit(current_action, npc_id)
 	
 	# Start progress tracking
-	progress_timer.start()
+	if progress_timer:
+		progress_timer.start()
+	else:
+		push_error("[ActionExecutor] Progress timer not initialized")
+		return {"success": false, "message": "Timer not initialized"}
 	
 	# Apply initial costs
 	_apply_action_costs()
@@ -113,7 +134,8 @@ func pause_action() -> Dictionary:
 		return {"success": false, "message": "Action already paused"}
 	
 	is_paused = true
-	progress_timer.stop()
+	if progress_timer:
+		progress_timer.stop()
 	_change_state(ActionState.PAUSED)
 	
 	return {"success": true, "message": "Action paused"}
@@ -127,7 +149,8 @@ func resume_action() -> Dictionary:
 		return {"success": false, "message": "Action not paused"}
 	
 	is_paused = false
-	progress_timer.start()
+	if progress_timer:
+		progress_timer.start()
 	_change_state(ActionState.EXECUTING)
 	
 	return {"success": true, "message": "Action resumed"}
@@ -144,7 +167,8 @@ func interrupt_action(reason: String, priority: int = 0) -> Dictionary:
 		return {"success": false, "message": "Insufficient priority to interrupt"}
 	
 	# Stop execution
-	progress_timer.stop()
+	if progress_timer:
+		progress_timer.stop()
 	is_executing = false
 	is_paused = false
 	interruption_reason = reason
@@ -166,7 +190,8 @@ func complete_action() -> Dictionary:
 		return {"success": false, "message": "No action to complete"}
 	
 	# Stop progress tracking
-	progress_timer.stop()
+	if progress_timer:
+		progress_timer.stop()
 	is_executing = false
 	is_paused = false
 	
@@ -193,7 +218,8 @@ func fail_action(error: String) -> Dictionary:
 		return {"success": false, "message": "No action to fail"}
 	
 	# Stop progress tracking
-	progress_timer.stop()
+	if progress_timer:
+		progress_timer.stop()
 	is_executing = false
 	is_paused = false
 	
@@ -308,16 +334,30 @@ func console_command(command: String, args: Array) -> Dictionary:
 # Private methods
 
 func _validate_action(action_data: Dictionary) -> bool:
+	# Check if action_data is valid
+	if not action_data or action_data.is_empty():
+		return false
+	
 	var required_fields = ["id", "name", "duration"]
 	for field in required_fields:
 		if not action_data.has(field):
 			return false
+	
+	# Validate duration is positive
+	var duration = action_data.get("duration", 0.0)
+	if duration <= 0.0:
+		return false
+	
 	return true
 
 func _change_state(new_state: ActionState):
 	current_state = new_state
 
 func _reset_state():
+	# Stop and cleanup timer
+	if progress_timer:
+		progress_timer.stop()
+	
 	current_action.clear()
 	npc_id = ""
 	action_start_time = 0.0
@@ -331,8 +371,18 @@ func _on_progress_timer_timeout():
 	if not is_executing or is_paused:
 		return
 	
+	# Safety check for current_action
+	if current_action.is_empty():
+		push_error("[ActionExecutor] Timer timeout but no current action")
+		return
+	
 	# Calculate progress increment based on action duration
 	var duration = current_action.get("duration", 1.0)
+	# Validate duration is positive to avoid division by zero
+	if duration <= 0.0:
+		push_error("[ActionExecutor] Invalid action duration: " + str(duration))
+		return
+	
 	var increment = progress_update_interval / duration
 	
 	# Update progress
@@ -349,13 +399,26 @@ func _apply_action_costs():
 	if not status_component:
 		return
 	
+	if current_action.is_empty():
+		push_error("[ActionExecutor] Cannot apply costs to empty action")
+		return
+	
 	var costs = current_action.get("costs", {})
 	for need_type in costs:
 		var amount = costs[need_type]
-		status_component.modify_need(need_type, -amount)
+		# Validate amount is numeric
+		if typeof(amount) == TYPE_FLOAT or typeof(amount) == TYPE_INT:
+			status_component.modify_need(need_type, -amount)
+		else:
+			push_error("[ActionExecutor] Invalid cost amount for " + need_type + ": " + str(amount))
 
 func _apply_completion_effects() -> Dictionary:
 	var results = {}
+	
+	# Safety check for current_action
+	if current_action.is_empty():
+		push_error("[ActionExecutor] Cannot apply completion effects to empty action")
+		return results
 	
 	# Generate randomized action result if randomizer is available
 	var action_result = {}
@@ -385,9 +448,13 @@ func _apply_completion_effects() -> Dictionary:
 		var satisfies_needs = current_action.get("satisfies_needs", {})
 		for need_type in satisfies_needs:
 			var base_amount = satisfies_needs[need_type]
-			var modified_amount = int(base_amount * results["modifiers"]["need_satisfaction"])
-			status_component.modify_need(need_type, modified_amount)
-			need_satisfaction_cache[need_type] = modified_amount
+			# Validate base_amount is numeric
+			if typeof(base_amount) == TYPE_FLOAT or typeof(base_amount) == TYPE_INT:
+				var modified_amount = int(base_amount * results["modifiers"]["need_satisfaction"])
+				status_component.modify_need(need_type, modified_amount)
+				need_satisfaction_cache[need_type] = modified_amount
+			else:
+				push_error("[ActionExecutor] Invalid need satisfaction amount for " + need_type + ": " + str(base_amount))
 		
 		results["needs_satisfied"] = need_satisfaction_cache
 	
@@ -395,20 +462,33 @@ func _apply_completion_effects() -> Dictionary:
 	var skill_gains = current_action.get("skill_gains", {})
 	for skill in skill_gains:
 		var base_amount = skill_gains[skill]
-		var modified_amount = int(base_amount * results["modifiers"]["skill_gain"])
-		skill_gain_cache[skill] = modified_amount
-		results["skills_gained"] = skill_gain_cache
+		# Validate base_amount is numeric
+		if typeof(base_amount) == TYPE_FLOAT or typeof(base_amount) == TYPE_INT:
+			var modified_amount = int(base_amount * results["modifiers"]["skill_gain"])
+			skill_gain_cache[skill] = modified_amount
+			results["skills_gained"] = skill_gain_cache
+		else:
+			push_error("[ActionExecutor] Invalid skill gain amount for " + skill + ": " + str(base_amount))
 	
 	# Apply inventory changes
 	var inventory_changes = current_action.get("inventory_changes", {})
 	for item in inventory_changes:
 		var change = inventory_changes[item]
-		inventory_changes_cache[item] = change
-		results["inventory_changes"] = inventory_changes_cache
+		# Validate change is valid
+		if change != null:
+			inventory_changes_cache[item] = change
+			results["inventory_changes"] = inventory_changes_cache
+		else:
+			push_error("[ActionExecutor] Invalid inventory change for item: " + str(item))
 	
 	# Apply wealth changes from action result
 	if action_result.has("wealth_change"):
-		results["wealth_change"] = action_result["wealth_change"]
+		var wealth_change = action_result["wealth_change"]
+		# Validate wealth_change is numeric
+		if typeof(wealth_change) == TYPE_FLOAT or typeof(wealth_change) == TYPE_INT:
+			results["wealth_change"] = wealth_change
+		else:
+			push_error("[ActionExecutor] Invalid wealth change: " + str(wealth_change))
 	
 	# Apply other effects
 	var effects = current_action.get("effects", {})
@@ -417,17 +497,36 @@ func _apply_completion_effects() -> Dictionary:
 	return results
 
 func _apply_interruption_effects():
+	# Safety check for current_action
+	if current_action.is_empty():
+		push_error("[ActionExecutor] Cannot apply interruption effects to empty action")
+		return
+	
 	# Apply partial need satisfaction based on progress
 	if status_component and action_progress > 0:
 		var satisfies_needs = current_action.get("satisfies_needs", {})
 		for need_type in satisfies_needs:
-			var amount = satisfies_needs[need_type] * action_progress
-			status_component.modify_need(need_type, amount)
+			var base_amount = satisfies_needs[need_type]
+			# Validate base_amount is numeric
+			if typeof(base_amount) == TYPE_FLOAT or typeof(base_amount) == TYPE_INT:
+				var amount = base_amount * action_progress
+				status_component.modify_need(need_type, amount)
+			else:
+				push_error("[ActionExecutor] Invalid need satisfaction amount for " + need_type + ": " + str(base_amount))
 
 func _apply_failure_effects():
+	# Safety check for current_action
+	if current_action.is_empty():
+		push_error("[ActionExecutor] Cannot apply failure effects to empty action")
+		return
+	
 	# Apply failure penalties
 	if status_component:
 		var failure_penalties = current_action.get("failure_penalties", {})
 		for need_type in failure_penalties:
 			var amount = failure_penalties[need_type]
-			status_component.modify_need(need_type, -amount)
+			# Validate amount is numeric
+			if typeof(amount) == TYPE_FLOAT or typeof(amount) == TYPE_INT:
+				status_component.modify_need(need_type, -amount)
+			else:
+				push_error("[ActionExecutor] Invalid failure penalty amount for " + need_type + ": " + str(amount))
