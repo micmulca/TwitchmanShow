@@ -1,12 +1,14 @@
 extends Node
 
 # ConversationGroup - Manages a single conversation with multiple participants
+# Enhanced for Phase 3: Integrates with Agent system, enhanced memory, and dialogue tracking
 # Handles join/leave logic, topic management, and conversation memory
 
 signal participant_joined(npc_id: String, group_id: String)
 signal participant_left(npc_id: String, group_id: String, reason: String)
 signal topic_changed(old_topic: String, new_topic: String, reason: String)
 signal conversation_ended(group_id: String, reason: String, summary: String)
+signal dialogue_added(speaker_id: String, dialogue: String, turn: int)
 
 # Group identification
 var group_id: String
@@ -24,6 +26,10 @@ var current_topic: String = "general_chat"
 var topic_history: Array[Dictionary] = []
 var conversation_memory: Array[Dictionary] = []
 var max_memory_size: int = 50
+
+# Dialogue tracking
+var dialogue_history: Array[Dictionary] = []  # New: Track all dialogue entries
+var max_dialogue_history: int = 100
 
 # Social dynamics
 var group_mood: Dictionary = {"valence": 0.0, "arousal": 0.0}
@@ -107,7 +113,8 @@ func change_topic(new_topic: String, reason: String = "natural_progression") -> 
 		"topic": old_topic,
 		"duration": _calculate_topic_duration(),
 		"participants": participants.duplicate(),
-		"reason": reason
+		"reason": reason,
+		"turn": turn_count
 	})
 	
 	# Update current topic
@@ -135,6 +142,45 @@ func add_conversation_memory(memory_entry: Dictionary) -> void:
 	
 	# Update group mood based on memory
 	_update_group_mood(memory_entry)
+
+func add_dialogue_entry(speaker_id: String, dialogue: String, source: String = "llm_generated") -> void:
+	# Add a dialogue entry to the conversation history
+	var dialogue_entry = {
+		"speaker_id": speaker_id,
+		"dialogue": dialogue,
+		"source": source,
+		"timestamp": Time.get_time_dict_from_system(),
+		"turn": turn_count,
+		"topic": current_topic,
+		"participants": participants.duplicate()
+	}
+	
+	dialogue_history.append(dialogue_entry)
+	
+	# Trim history if it gets too long
+	if dialogue_history.size() > max_dialogue_history:
+		dialogue_history.pop_front()
+	
+	# Create conversation memory from dialogue
+	var memory_entry = {
+		"type": "dialogue",
+		"speaker_id": speaker_id,
+		"content": dialogue,
+		"topic": current_topic,
+		"mood_shift": _calculate_dialogue_mood_shift(dialogue, speaker_id),
+		"relationship_effects": _calculate_dialogue_relationship_effects(dialogue, speaker_id),
+		"summary_note": _generate_dialogue_summary(dialogue, speaker_id)
+	}
+	
+	add_conversation_memory(memory_entry)
+	
+	# Update last speaker
+	last_speaker = speaker_id
+	
+	# Emit signal
+	dialogue_added.emit(speaker_id, dialogue, turn_count)
+	
+	print("[ConversationGroup] Added dialogue from ", speaker_id, " in group ", group_id)
 
 func get_next_speaker() -> String:
 	# Get the next speaker from the queue
@@ -166,6 +212,7 @@ func get_conversation_summary() -> Dictionary:
 		"topics_discussed": topic_history.size(),
 		"current_topic": current_topic,
 		"turn_count": turn_count,
+		"dialogue_count": dialogue_history.size(),
 		"group_mood": group_mood.duplicate(),
 		"social_cohesion": social_cohesion,
 		"duration": _calculate_conversation_duration(),
@@ -173,6 +220,20 @@ func get_conversation_summary() -> Dictionary:
 	}
 	
 	return summary
+
+func get_conversation_history() -> Array:
+	# Get the conversation history for context building
+	var history = []
+	
+	for entry in dialogue_history:
+		history.append({
+			"speaker": entry.speaker_id,
+			"text": entry.dialogue,
+			"turn": entry.turn,
+			"topic": entry.topic
+		})
+	
+	return history
 
 func end_conversation(reason: String = "natural_end") -> void:
 	# End the conversation
@@ -183,6 +244,21 @@ func end_conversation(reason: String = "natural_end") -> void:
 	
 	var summary = get_conversation_summary()
 	var summary_text = _generate_summary_text(summary)
+	
+	# Create final conversation memory
+	var final_memory = {
+		"type": "conversation_end",
+		"reason": reason,
+		"summary": summary_text,
+		"participants": participants.duplicate(),
+		"duration": _calculate_conversation_duration(),
+		"topics_discussed": topic_history.size(),
+		"dialogue_count": dialogue_history.size()
+	}
+	
+	# Add to all participants' memories
+	for participant_id in participants:
+		MemoryStore.add_memory(participant_id, final_memory)
 	
 	# Emit signal
 	conversation_ended.emit(group_id, reason, summary_text)
@@ -336,6 +412,48 @@ func _describe_mood(mood: Dictionary) -> String:
 	else:
 		return "neutral"
 
+func _calculate_dialogue_mood_shift(dialogue: String, speaker_id: String) -> Dictionary:
+	# Calculate mood shift from dialogue using Agent system
+	var mood_shift = {"valence": 0.0, "arousal": 0.0}
+	
+	# Try to get from Agent system
+	var agent = Agent.get_agent(speaker_id)
+	if agent:
+		mood_shift = agent.analyze_dialogue_mood_impact(dialogue)
+	
+	return mood_shift
+
+func _calculate_dialogue_relationship_effects(dialogue: String, speaker_id: String) -> Array:
+	# Calculate relationship effects from dialogue
+	var effects = []
+	
+	# Analyze dialogue for relationship implications
+	var dialogue_lower = dialogue.to_lower()
+	
+	# Simple keyword analysis
+	if dialogue_lower.contains("thank") or dialogue_lower.contains("appreciate"):
+		effects.append({"type": "gratitude", "target": "all", "strength": 0.1})
+	elif dialogue_lower.contains("sorry") or dialogue_lower.contains("apologize"):
+		effects.append({"type": "apology", "target": "all", "strength": -0.1})
+	elif dialogue_lower.contains("agree") or dialogue_lower.contains("yes"):
+		effects.append({"type": "agreement", "target": "all", "strength": 0.05})
+	elif dialogue_lower.contains("disagree") or dialogue_lower.contains("no"):
+		effects.append({"type": "disagreement", "target": "all", "strength": -0.05})
+	
+	return effects
+
+func _generate_dialogue_summary(dialogue: String, speaker_id: String) -> String:
+	# Generate a summary note for the dialogue
+	var summary = speaker_id + " said: "
+	
+	# Truncate long dialogue
+	if dialogue.length() > 100:
+		summary += dialogue.substr(0, 97) + "..."
+	else:
+		summary += dialogue
+	
+	return summary
+
 # Utility functions for external systems
 func get_participant_count() -> int:
 	return participants.size()
@@ -353,7 +471,25 @@ func get_conversation_stats() -> Dictionary:
 		"turn_count": turn_count,
 		"topic_count": topic_history.size(),
 		"memory_size": conversation_memory.size(),
+		"dialogue_count": dialogue_history.size(),
 		"group_mood": group_mood,
 		"social_cohesion": social_cohesion,
 		"is_active": is_active
+	}
+
+func get_dialogue_stats() -> Dictionary:
+	# Get statistics about dialogue in the conversation
+	var speaker_counts = {}
+	var total_words = 0
+	
+	for entry in dialogue_history:
+		var speaker = entry.speaker_id
+		speaker_counts[speaker] = speaker_counts.get(speaker, 0) + 1
+		total_words += entry.dialogue.split(" ").size()
+	
+	return {
+		"total_dialogue_entries": dialogue_history.size(),
+		"total_words": total_words,
+		"speaker_counts": speaker_counts,
+		"average_words_per_entry": total_words / max(dialogue_history.size(), 1)
 	}

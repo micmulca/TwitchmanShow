@@ -107,7 +107,7 @@ func create_memory(memory_data: Dictionary) -> Dictionary:
 	return memory
 
 func create_action_memory(action_data: Dictionary, action_result: Dictionary, participants: Array = []) -> Dictionary:
-	"""Create a memory from an action result"""
+	"""Create a comprehensive memory from an action result"""
 	var memory_data = {
 		"memory_type": MemoryType.EPISODIC,
 		"title": "Action: " + action_data.get("name", "Unknown Action"),
@@ -121,7 +121,73 @@ func create_action_memory(action_data: Dictionary, action_result: Dictionary, pa
 		"economic_impact": action_result.get("wealth_change", 0),
 		"social_significance": _calculate_action_social_significance(action_data, action_result),
 		"source_type": "action",
-		"source_id": action_data.get("id", "")
+		"source_id": action_data.get("id", ""),
+		
+		# Enhanced action-specific data
+		"action_outcome": action_result.get("result_type", "average"),
+		"action_quality": action_result.get("quality", "standard"),
+		"need_satisfaction": action_result.get("needs_satisfied", {}),
+		"failure_reason": action_result.get("failure_reason", ""),
+		"interruption_progress": action_result.get("interruption_progress", 0.0),
+		"action_duration": action_data.get("duration", 1.0),
+		"action_category": action_data.get("category", "General"),
+		"action_difficulty": action_data.get("difficulty", 1.0)
+	}
+	
+	return create_memory(memory_data)
+
+func create_action_failure_memory(action_data: Dictionary, failure_data: Dictionary, participants: Array = []) -> Dictionary:
+	"""Create a memory specifically for action failures"""
+	var memory_data = {
+		"memory_type": MemoryType.EPISODIC,
+		"title": "Failed Action: " + action_data.get("name", "Unknown Action"),
+		"description": _generate_failure_memory_description(action_data, failure_data),
+		"participants": participants,
+		"location": action_data.get("location_tags", [""])[0] if action_data.get("location_tags", []).size() > 0 else "",
+		"strength": _calculate_failure_memory_strength(failure_data),
+		"tags": _generate_failure_memory_tags(action_data, failure_data),
+		"emotional_impact": _calculate_failure_emotional_impact(failure_data),
+		"relationship_changes": {},
+		"economic_impact": failure_data.get("economic_penalty", 0),
+		"social_significance": _calculate_failure_social_significance(action_data, failure_data),
+		"source_type": "action_failure",
+		"source_id": action_data.get("id", ""),
+		
+		# Failure-specific data
+		"failure_type": failure_data.get("failure_type", "general"),
+		"failure_reason": failure_data.get("reason", "Unknown failure"),
+		"failure_severity": failure_data.get("severity", "minor"),
+		"need_penalties": failure_data.get("need_penalties", {}),
+		"recovery_suggestions": failure_data.get("recovery_suggestions", [])
+	}
+	
+	return create_memory(memory_data)
+
+func create_action_pattern_memory(action_data: Dictionary, pattern_data: Dictionary) -> Dictionary:
+	"""Create a memory for learning action patterns and strategies"""
+	var memory_data = {
+		"memory_type": MemoryType.SEMANTIC,
+		"title": "Action Strategy: " + action_data.get("name", "Unknown Action"),
+		"description": _generate_pattern_memory_description(action_data, pattern_data),
+		"participants": [character_id],  # Self-learning
+		"location": action_data.get("location_tags", [""])[0] if action_data.get("location_tags", []).size() > 0 else "",
+		"strength": _calculate_pattern_memory_strength(pattern_data),
+		"tags": _generate_pattern_memory_tags(action_data, pattern_data),
+		"emotional_impact": {"confidence": 0.2, "satisfaction": 0.1},
+		"relationship_changes": {},
+		"economic_impact": 0,
+		"social_significance": 0.1,
+		"source_type": "action_pattern",
+		"source_id": action_data.get("id", ""),
+		
+		# Pattern-specific data
+		"pattern_type": pattern_data.get("pattern_type", "efficiency"),
+		"success_rate": pattern_data.get("success_rate", 0.0),
+		"optimal_conditions": pattern_data.get("optimal_conditions", []),
+		"avoid_conditions": pattern_data.get("avoid_conditions", []),
+		"need_balance": pattern_data.get("need_balance", {}),
+		"time_of_day_preference": pattern_data.get("time_of_day_preference", ""),
+		"seasonal_effectiveness": pattern_data.get("seasonal_effectiveness", {})
 	}
 	
 	return create_memory(memory_data)
@@ -186,6 +252,53 @@ func get_memories_by_location(location_id: String) -> Array:
 func get_memories_by_tag(tag: String) -> Array:
 	"""Get memories with a specific tag"""
 	return get_memories({"tags": tag})
+
+# Enhanced Action Memory Retrieval Methods
+
+func get_action_memories(action_id: String = "", outcome_filter: String = "") -> Array:
+	"""Get memories related to specific actions or outcomes"""
+	var filter_criteria = {"source_type": "action"}
+	
+	if action_id != "":
+		filter_criteria["source_id"] = action_id
+	
+	if outcome_filter != "":
+		filter_criteria["action_outcome"] = outcome_filter
+	
+	return get_memories(filter_criteria)
+
+func get_failure_memories(action_category: String = "") -> Array:
+	"""Get memories of action failures for learning"""
+	var filter_criteria = {"source_type": "action_failure"}
+	
+	if action_category != "":
+		filter_criteria["action_category"] = action_category
+	
+	return get_memories(filter_criteria)
+
+func get_success_patterns(action_category: String = "") -> Array:
+	"""Get successful action patterns for strategy learning"""
+	var filter_criteria = {"source_type": "action_pattern"}
+	
+	if action_category != "":
+		filter_criteria["action_category"] = action_category
+	
+	return get_memories(filter_criteria)
+
+func get_memories_by_action_category(category: String) -> Array:
+	"""Get all memories related to a specific action category"""
+	var filter_criteria = {"action_category": category}
+	return get_memories(filter_criteria)
+
+func get_memories_by_outcome(outcome: String) -> Array:
+	"""Get all memories with a specific action outcome"""
+	var filter_criteria = {"action_outcome": outcome}
+	return get_memories(filter_criteria)
+
+func get_memories_by_failure_severity(severity: String) -> Array:
+	"""Get failure memories by severity level"""
+	var filter_criteria = {"failure_severity": severity}
+	return get_memories(filter_criteria)
 
 # Memory Recall and Reinforcement
 
@@ -321,78 +434,89 @@ func _apply_emotional_impact(memory: Dictionary):
 
 func _generate_action_memory_description(action_data: Dictionary, action_result: Dictionary) -> String:
 	"""Generate a description for an action-based memory"""
-	var action_name = action_data.get("name", "Unknown Action")
-	var result_type = action_result.get("result_type", "unknown")
+	var action_name = action_data.get("name", "an action")
+	var result_type = action_result.get("result_type", "average")
 	var quality = action_result.get("quality", "standard")
 	
+	var description = "Performed " + action_name + " with " + result_type + " results. "
+	
 	match result_type:
 		"excellent":
-			return "Successfully completed " + action_name + " with exceptional results. The quality was " + quality + " and everything went perfectly."
+			description += "The outcome was exceptional and highly satisfying."
 		"good":
-			return "Successfully completed " + action_name + " with good results. The quality was " + quality + " and the work was satisfying."
+			description += "The outcome was good and met expectations."
 		"average":
-			return "Completed " + action_name + " with average results. The quality was " + quality + " and the work was adequate."
+			description += "The outcome was satisfactory and adequate."
 		"poor":
-			return "Struggled with " + action_name + " and got poor results. The quality was " + quality + " and the work was disappointing."
+			description += "The outcome was disappointing but not disastrous."
 		"failure":
-			return "Failed to complete " + action_name + " properly. The attempt resulted in " + quality + " and was a setback."
-		_:
-			return "Completed " + action_name + " with " + quality + " results."
+			description += "The action failed completely and was frustrating."
+	
+	return description
 
 func _calculate_action_memory_strength(action_result: Dictionary) -> float:
-	"""Calculate memory strength based on action result"""
-	var result_type = action_result.get("result_type", "average")
-	var base_strength = 0.5
+	"""Calculate memory strength for action memories"""
+	var base_strength = 0.6
 	
+	# Result type affects strength
+	var result_type = action_result.get("result_type", "average")
 	match result_type:
 		"excellent":
-			return base_strength + 0.3
+			base_strength += 0.3
 		"good":
-			return base_strength + 0.2
+			base_strength += 0.2
 		"average":
-			return base_strength
+			base_strength += 0.0
 		"poor":
-			return base_strength + 0.1
+			base_strength += 0.1
 		"failure":
-			return base_strength + 0.2  # Failures are memorable
-		_:
-			return base_strength
+			base_strength += 0.2  # Failures are memorable
+	
+	# Quality affects strength
+	var quality = action_result.get("quality", "standard")
+	match quality:
+		"exceptional":
+			base_strength += 0.1
+		"high":
+			base_strength += 0.05
+	
+	return min(base_strength, 1.0)
 
 func _generate_action_memory_tags(action_data: Dictionary, action_result: Dictionary) -> Array:
-	"""Generate tags for action-based memories"""
-	var tags = []
+	"""Generate tags for action memories"""
+	var tags = ["action", action_result.get("result_type", "average")]
 	
-	# Add action category
-	tags.append(action_data.get("category", "unknown").to_lower())
+	# Add action category tag
+	var category = action_data.get("category", "General")
+	tags.append("category_" + category.to_lower().replace(" ", "_"))
 	
-	# Add result type
-	tags.append(action_result.get("result_type", "unknown"))
+	# Add quality tag
+	var quality = action_result.get("quality", "standard")
+	tags.append("quality_" + quality.to_lower().replace(" ", "_"))
 	
-	# Add quality
-	tags.append(action_result.get("quality", "standard"))
-	
-	# Add location if available
-	if action_data.has("location_tags") and action_data["location_tags"].size() > 0:
-		tags.append(action_data["location_tags"][0])
+	# Add location tags
+	var location_tags = action_data.get("location_tags", [])
+	for location in location_tags:
+		tags.append("location_" + location.to_lower().replace(" ", "_"))
 	
 	return tags
 
 func _calculate_action_emotional_impact(action_result: Dictionary) -> Dictionary:
 	"""Calculate emotional impact of action result"""
-	var result_type = action_result.get("result_type", "average")
 	var emotional_impact = {}
 	
+	var result_type = action_result.get("result_type", "average")
 	match result_type:
 		"excellent":
-			emotional_impact = {"happiness": 0.4, "excitement": 0.3, "achievement": 0.5}
+			emotional_impact = {"happiness": 0.4, "satisfaction": 0.3, "confidence": 0.2}
 		"good":
-			emotional_impact = {"happiness": 0.3, "satisfaction": 0.4}
+			emotional_impact = {"happiness": 0.3, "satisfaction": 0.2}
 		"average":
-			emotional_impact = {"contentment": 0.2}
+			emotional_impact = {"contentment": 0.1}
 		"poor":
-			emotional_impact = {"disappointment": 0.3, "frustration": 0.2}
+			emotional_impact = {"disappointment": 0.2, "frustration": 0.1}
 		"failure":
-			emotional_impact = {"frustration": 0.4, "disappointment": 0.3, "fear": 0.2}
+			emotional_impact = {"frustration": 0.3, "disappointment": 0.2, "anger": 0.1}
 	
 	return emotional_impact
 
@@ -413,6 +537,160 @@ func _calculate_action_social_significance(action_data: Dictionary, action_resul
 		base_significance += 0.2
 	
 	return min(base_significance, 1.0)
+
+# Action Failure Memory Generation
+
+func _generate_failure_memory_description(action_data: Dictionary, failure_data: Dictionary) -> String:
+	"""Generate a description for an action failure memory"""
+	var action_name = action_data.get("name", "an action")
+	var failure_reason = failure_data.get("reason", "unknown reasons")
+	var severity = failure_data.get("severity", "minor")
+	
+	var description = "Failed to complete " + action_name + " due to " + failure_reason + ". "
+	
+	match severity:
+		"minor":
+			description += "The failure was minor and easily recoverable."
+		"moderate":
+			description += "The failure was significant but not catastrophic."
+		"major":
+			description += "The failure was major and had serious consequences."
+		"catastrophic":
+			description += "The failure was catastrophic and caused major setbacks."
+	
+	return description
+
+func _calculate_failure_memory_strength(failure_data: Dictionary) -> float:
+	"""Calculate memory strength for failure memories"""
+	var base_strength = 0.7  # Failures are more memorable
+	
+	# Severity affects strength
+	var severity = failure_data.get("severity", "minor")
+	match severity:
+		"minor":
+			base_strength += 0.1
+		"moderate":
+			base_strength += 0.2
+		"major":
+			base_strength += 0.3
+		"catastrophic":
+			base_strength += 0.4
+	
+	return min(base_strength, 1.0)
+
+func _generate_failure_memory_tags(action_data: Dictionary, failure_data: Dictionary) -> Array:
+	"""Generate tags for failure memories"""
+	var tags = ["action_failure", failure_data.get("failure_type", "general"), failure_data.get("severity", "minor")]
+	
+	# Add action category tag
+	var category = action_data.get("category", "General")
+	tags.append("category_" + category.to_lower().replace(" ", "_"))
+	
+	# Add failure type tag
+	var failure_type = failure_data.get("failure_type", "general")
+	tags.append("failure_" + failure_type.to_lower().replace(" ", "_"))
+	
+	return tags
+
+func _calculate_failure_emotional_impact(failure_data: Dictionary) -> Dictionary:
+	"""Calculate emotional impact of action failure"""
+	var emotional_impact = {}
+	
+	var severity = failure_data.get("severity", "minor")
+	match severity:
+		"minor":
+			emotional_impact = {"frustration": 0.2, "disappointment": 0.1}
+		"moderate":
+			emotional_impact = {"frustration": 0.3, "disappointment": 0.2, "worry": 0.1}
+		"major":
+			emotional_impact = {"frustration": 0.4, "disappointment": 0.3, "worry": 0.2, "anger": 0.1}
+		"catastrophic":
+			emotional_impact = {"frustration": 0.5, "disappointment": 0.4, "worry": 0.3, "anger": 0.2, "fear": 0.1}
+	
+	return emotional_impact
+
+func _calculate_failure_social_significance(action_data: Dictionary, failure_data: Dictionary) -> float:
+	"""Calculate social significance of action failure"""
+	var base_significance = 0.2  # Failures have higher social impact
+	
+	# Severity affects significance
+	var severity = failure_data.get("severity", "minor")
+	match severity:
+		"minor":
+			base_significance += 0.1
+		"moderate":
+			base_significance += 0.2
+		"major":
+			base_significance += 0.3
+		"catastrophic":
+			base_significance += 0.4
+	
+	# Social actions have higher failure significance
+	if action_data.get("category") == "Social":
+		base_significance += 0.2
+	
+	return min(base_significance, 1.0)
+
+# Action Pattern Memory Generation
+
+func _generate_pattern_memory_description(action_data: Dictionary, pattern_data: Dictionary) -> String:
+	"""Generate a description for an action pattern memory"""
+	var action_name = action_data.get("name", "an action")
+	var pattern_type = pattern_data.get("pattern_type", "efficiency")
+	var success_rate = pattern_data.get("success_rate", 0.0)
+	
+	var description = "Learned " + pattern_type + " strategy for " + action_name + ". "
+	
+	if success_rate > 0.8:
+		description += "This approach has proven highly effective."
+	elif success_rate > 0.6:
+		description += "This approach has proven effective."
+	elif success_rate > 0.4:
+		description += "This approach has mixed results."
+	else:
+		description += "This approach needs refinement."
+	
+	return description
+
+func _calculate_pattern_memory_strength(pattern_data: Dictionary) -> float:
+	"""Calculate memory strength for pattern memories"""
+	var base_strength = 0.5
+	
+	# Success rate affects strength
+	var success_rate = pattern_data.get("success_rate", 0.0)
+	if success_rate > 0.8:
+		base_strength += 0.3
+	elif success_rate > 0.6:
+		base_strength += 0.2
+	elif success_rate > 0.4:
+		base_strength += 0.1
+	
+	return min(base_strength, 1.0)
+
+func _generate_pattern_memory_tags(action_data: Dictionary, pattern_data: Dictionary) -> Array:
+	"""Generate tags for pattern memories"""
+	var tags = ["action_pattern", pattern_data.get("pattern_type", "efficiency")]
+	
+	# Add action category tag
+	var category = action_data.get("category", "General")
+	tags.append("category_" + category.to_lower().replace(" ", "_"))
+	
+	# Add pattern type tag
+	var pattern_type = pattern_data.get("pattern_type", "efficiency")
+	tags.append("pattern_" + pattern_type.to_lower().replace(" ", "_"))
+	
+	# Add success rate tag
+	var success_rate = pattern_data.get("success_rate", 0.0)
+	if success_rate > 0.8:
+		tags.append("high_success")
+	elif success_rate > 0.6:
+		tags.append("good_success")
+	elif success_rate > 0.4:
+		tags.append("mixed_success")
+	else:
+		tags.append("low_success")
+	
+	return tags
 
 # Conversation Memory Generation
 
@@ -570,6 +848,52 @@ func console_command(command: String, args: Array) -> Dictionary:
 			
 			var success = delete_memory(args[0])
 			return {"success": success, "message": "Memory deleted" if success else "Memory not found"}
+		
+		# NEW: Enhanced action memory commands
+		"action":
+			if args.size() < 1:
+				return {"success": false, "message": "Usage: action <command> [args...]"}
+			
+			var action_command = args[0]
+			var action_args = args.slice(1)
+			
+			match action_command:
+				"list":
+					var action_id = action_args[0] if action_args.size() > 0 else ""
+					var outcome = action_args[1] if action_args.size() > 1 else ""
+					var memories = get_action_memories(action_id, outcome)
+					return {"success": true, "memories": memories, "count": memories.size()}
+				
+				"failures":
+					var category = action_args[0] if action_args.size() > 0 else ""
+					var memories = get_failure_memories(category)
+					return {"success": true, "failures": memories, "count": memories.size()}
+				
+				"patterns":
+					var category = action_args[0] if action_args.size() > 0 else ""
+					var memories = get_success_patterns(category)
+					return {"success": true, "patterns": memories, "count": memories.size()}
+				
+				"category":
+					if action_args.size() < 1:
+						return {"success": false, "message": "Usage: action category <category_name>"}
+					var memories = get_memories_by_action_category(action_args[0])
+					return {"success": true, "memories": memories, "count": memories.size()}
+				
+				"outcome":
+					if action_args.size() < 1:
+						return {"success": false, "message": "Usage: action outcome <outcome_type>"}
+					var memories = get_memories_by_outcome(action_args[0])
+					return {"success": true, "memories": memories, "count": memories.size()}
+				
+				"severity":
+					if action_args.size() < 1:
+						return {"success": false, "message": "Usage: action severity <severity_level>"}
+					var memories = get_memories_by_failure_severity(action_args[0])
+					return {"success": true, "memories": memories, "count": memories.size()}
+				
+				_:
+					return {"success": false, "message": "Unknown action command: " + action_command}
 		
 		"stats":
 			var stats = {

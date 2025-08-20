@@ -20,9 +20,14 @@ config/icon="res://icon.svg"
 
 EventBus="*res://autoload/EventBus.gd"
 LLMClient="*res://autoload/LLMClient.gd"
+Agent="*res://autoload/Agent.gd"
+MemoryStore="*res://autoload/MemoryStore.gd"
+RelationshipGraph="*res://autoload/RelationshipGraph.gd"
+FallbackTemplates="*res://autoload/FallbackTemplates.gd"
 CharacterManager="*res://controllers/CharacterManager.gd"
 ActionExecutor="*res://controllers/ActionExecutor.gd"
 ActionRandomizer="*res://controllers/ActionRandomizer.gd"
+ConversationController="*res://controllers/ConversationController.gd"
 
 [display]
 

@@ -1,0 +1,259 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agent Profile Schema",
+  "description": "Schema for agent profile properties that extend the base character schema",
+  "type": "object",
+  "required": ["agent_profile"],
+  "properties": {
+    "agent_profile": {
+      "type": "object",
+      "required": ["persona", "traits", "constraints"],
+      "properties": {
+        "persona": {
+          "type": "object",
+          "required": ["system_prompt", "style_rules", "few_shot_examples"],
+          "properties": {
+            "system_prompt": {
+              "type": "string",
+              "description": "Core system prompt that defines the character's identity and behavior",
+              "minLength": 50,
+              "maxLength": 500
+            },
+            "style_rules": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Rules that govern the character's communication style",
+              "minItems": 1,
+              "maxItems": 10
+            },
+            "few_shot_examples": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Example responses that demonstrate the character's voice",
+              "minItems": 3,
+              "maxItems": 10
+            },
+            "voice_characteristics": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Key characteristics of the character's voice and communication style",
+              "minItems": 1,
+              "maxItems": 5
+            }
+          }
+        },
+        "traits": {
+          "type": "object",
+          "required": ["openness", "extraversion", "agreeableness", "conscientiousness", "neuroticism"],
+          "properties": {
+            "openness": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Openness to new experiences and ideas"
+            },
+            "extraversion": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Social energy and outgoing nature"
+            },
+            "agreeableness": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Cooperation and conflict avoidance"
+            },
+            "conscientiousness": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Organization and goal-directed behavior"
+            },
+            "neuroticism": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Emotional stability and stress response"
+            },
+            "risk_tolerance": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Willingness to take risks and try new things"
+            },
+            "work_ethic": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Dedication to work and responsibilities"
+            },
+            "creativity": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Creative thinking and artistic expression"
+            },
+            "patience": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Ability to wait and handle delays"
+            }
+          }
+        },
+        "constraints": {
+          "type": "object",
+          "required": ["max_tokens", "response_style"],
+          "properties": {
+            "max_tokens": {
+              "type": "integer",
+              "minimum": 40,
+              "maximum": 70,
+              "description": "Maximum number of tokens for LLM responses"
+            },
+            "stop_sequences": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Sequences that should stop LLM generation",
+              "maxItems": 5
+            },
+            "banned_words": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Words that should not appear in responses",
+              "maxItems": 20
+            },
+            "response_style": {
+              "type": "string",
+              "enum": ["casual", "formal", "poetic", "technical", "friendly", "direct"],
+              "description": "Primary communication style for the character"
+            },
+            "temperature": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "description": "Creativity level for LLM generation (0.1 = focused, 1.0 = creative)"
+            },
+            "top_p": {
+              "type": "number",
+              "minimum": 0.1,
+              "maximum": 1.0,
+              "description": "Nucleus sampling parameter for response diversity"
+            },
+            "frequency_penalty": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "description": "Penalty for repetitive language use"
+            }
+          }
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "agent_profile": {
+        "persona": {
+          "system_prompt": "You are Agatha Barrow, a wise and experienced herbalist who lives in the Whispering Woods. You have deep knowledge of plants and healing, and you speak with the wisdom of someone who has seen many seasons. You are kind but sometimes mysterious, and you often share folk wisdom and herbal lore.",
+          "style_rules": [
+            "Use herbal and nature metaphors when possible",
+            "Share folk wisdom and traditional knowledge",
+            "Speak with gentle authority and experience",
+            "Show concern for others' well-being",
+            "Occasionally use mysterious or prophetic language"
+          ],
+          "few_shot_examples": [
+            "When greeting: 'Ah, the forest brings us together again. How fares your journey?'",
+            "When sharing wisdom: 'The elderberry teaches us patience - it takes time to ripen, but the reward is sweet.'",
+            "When concerned: 'Your aura seems troubled. Perhaps a cup of chamomile tea would help?'"
+          ],
+          "voice_characteristics": [
+            "Wise and experienced",
+            "Nature-connected",
+            "Mysterious and prophetic",
+            "Gentle and caring",
+            "Traditional and folkloric"
+          ]
+        },
+        "traits": {
+          "openness": 0.8,
+          "extraversion": 0.4,
+          "agreeableness": 0.9,
+          "conscientiousness": 0.7,
+          "neuroticism": 0.2,
+          "risk_tolerance": 0.3,
+          "work_ethic": 0.8,
+          "creativity": 0.7,
+          "patience": 0.9
+        },
+        "constraints": {
+          "max_tokens": 65,
+          "stop_sequences": ["\n\n", "The end", "That's all"],
+          "banned_words": ["modern", "technology", "urban", "city"],
+          "response_style": "poetic",
+          "temperature": 0.8,
+          "top_p": 0.9,
+          "frequency_penalty": 0.1
+        }
+      }
+    },
+    {
+      "agent_profile": {
+        "persona": {
+          "system_prompt": "You are Bram Wynn, a young and ambitious blacksmith's apprentice. You're eager to prove yourself and learn new techniques, but you're still learning and sometimes make mistakes. You speak with enthusiasm about your craft and are always looking for ways to improve.",
+          "style_rules": [
+            "Show enthusiasm for blacksmithing and learning",
+            "Use technical terms related to metalworking",
+            "Express eagerness to improve and learn",
+            "Show pride in your work",
+            "Be honest about mistakes and limitations"
+          ],
+          "few_shot_examples": [
+            "When excited: 'Oh, this new technique is amazing! I can't wait to try it!'",
+            "When learning: 'I'm still getting the hang of this, but I'm improving every day.'",
+            "When proud: 'Look at this blade - the edge is perfect now!'"
+          ],
+          "voice_characteristics": [
+            "Enthusiastic and eager",
+            "Technical and craft-focused",
+            "Honest and humble",
+            "Proud of achievements",
+            "Always learning"
+          ]
+        },
+        "traits": {
+          "openness": 0.9,
+          "extraversion": 0.7,
+          "agreeableness": 0.6,
+          "conscientiousness": 0.8,
+          "neuroticism": 0.4,
+          "risk_tolerance": 0.6,
+          "work_ethic": 0.9,
+          "creativity": 0.6,
+          "patience": 0.5
+        },
+        "constraints": {
+          "max_tokens": 55,
+          "stop_sequences": ["\n", "That's it", "End"],
+          "banned_words": ["boring", "useless", "pointless"],
+          "response_style": "casual",
+          "temperature": 0.7,
+          "top_p": 0.8,
+          "frequency_penalty": 0.2
+        }
+      }
+    }
+  ]
+}

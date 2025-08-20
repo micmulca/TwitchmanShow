@@ -1,6 +1,7 @@
 extends Node
 
 # FloorManager - Manages speaking order and turn-taking in conversations
+# Enhanced for Phase 3: Integrates with Agent system for intelligent turn management
 # Handles interrupts, speaking time limits, and natural conversation flow
 
 signal speaker_changed(previous_speaker: String, new_speaker: String, reason: String)
@@ -24,6 +25,10 @@ var speaking_order: Array[String] = []
 var speaking_index: int = 0
 var round_robin_enabled: bool = true
 
+# Agent-aware turn management
+var agent_turn_preferences: Dictionary = {}  # npc_id -> turn preference data
+var dynamic_speaking_order: bool = true  # Allow dynamic reordering based on agent states
+
 # Conversation group reference
 var conversation_group: Node = null
 
@@ -41,6 +46,7 @@ func set_conversation_group(group: Node) -> void:
 		conversation_group.participant_joined.connect(_on_participant_joined)
 		conversation_group.participant_left.connect(_on_participant_left)
 		conversation_group.topic_changed.connect(_on_topic_changed)
+		conversation_group.dialogue_added.connect(_on_dialogue_added)
 		
 		# Initialize speaking order
 		_update_speaking_order()
@@ -59,6 +65,9 @@ func start_turn(speaker: String, topic: String = "") -> bool:
 	current_speaker = speaker
 	turn_start_time = _get_current_time_seconds()
 	turn_duration = 0.0
+	
+	# Update agent turn preferences
+	_update_agent_turn_preferences(speaker)
 	
 	# Emit signal
 	speaker_changed.emit("", speaker, "turn_started")
@@ -92,24 +101,84 @@ func end_turn(reason: String = "natural_end") -> void:
 		advance_to_next_speaker()
 
 func advance_to_next_speaker() -> String:
-	# Advance to the next speaker in the round-robin order
+	# Advance to the next speaker using intelligent selection
 	if not conversation_group or speaking_order.is_empty():
 		return ""
 	
-	# Find current speaker index
-	var current_index = speaking_order.find(current_speaker)
-	if current_index == -1:
-		current_index = speaking_index
-	
-	# Move to next speaker
-	speaking_index = (current_index + 1) % speaking_order.size()
-	var next_speaker = speaking_order[speaking_index]
-	
-	# Start turn for next speaker
-	if start_turn(next_speaker):
-		return next_speaker
+	# Use intelligent speaker selection if enabled
+	if dynamic_speaking_order:
+		var next_speaker = _select_intelligent_next_speaker()
+		if next_speaker != "":
+			# Start turn for next speaker
+			if start_turn(next_speaker):
+				return next_speaker
+	else:
+		# Use traditional round-robin
+		var current_index = speaking_order.find(current_speaker)
+		if current_index == -1:
+			current_index = speaking_index
+		
+		# Move to next speaker
+		speaking_index = (current_index + 1) % speaking_order.size()
+		var next_speaker = speaking_order[speaking_index]
+		
+		# Start turn for next speaker
+		if start_turn(next_speaker):
+			return next_speaker
 	
 	return ""
+
+func _select_intelligent_next_speaker() -> String:
+	# Select the next speaker based on agent states and conversation flow
+	var candidates = []
+	
+	for npc_id in speaking_order:
+		if npc_id == current_speaker:
+			continue
+		
+		var agent = Agent.get_agent(npc_id)
+		if agent:
+			var score = _calculate_speaker_score(npc_id, agent)
+			candidates.append({"npc_id": npc_id, "score": score})
+	
+	# Sort by score (highest first)
+	candidates.sort_custom(func(a, b): return a.score > b.score)
+	
+	if candidates.size() > 0:
+		return candidates[0].npc_id
+	
+	return ""
+
+func _calculate_speaker_score(npc_id: String, agent: Node) -> float:
+	# Calculate a score for how suitable this NPC is to speak next
+	var score = 0.0
+	
+	# Base score from extroversion
+	var extroversion = agent.get_extroversion()
+	score += extroversion * 0.3
+	
+	# Bonus for social need
+	var social_need = agent.get_social_need()
+	score += social_need * 0.2
+	
+	# Penalty for social fatigue
+	var social_fatigue = agent.get_social_fatigue()
+	score -= social_fatigue * 0.3
+	
+	# Bonus for recent activity (avoid long silences)
+	var last_activity = agent.get_last_activity_time()
+	var time_since_activity = _get_current_time_seconds() - last_activity
+	var activity_bonus = min(time_since_activity / 60.0, 1.0)  # Max 1.0 bonus after 1 minute
+	score += activity_bonus * 0.2
+	
+	# Bonus for topic relevance
+	var topic_interest = agent.get_topic_interest(conversation_group.current_topic)
+	score += topic_interest * 0.2
+	
+	# Random variation to avoid predictable patterns
+	score += randf_range(-0.1, 0.1)
+	
+	return max(score, 0.0)  # Ensure non-negative
 
 func request_interrupt(interrupter: String, reason: String = "natural_interrupt") -> bool:
 	# Request an interrupt from another participant
@@ -207,10 +276,46 @@ func _update_speaking_order() -> void:
 	speaking_order = conversation_group.participants.duplicate()
 	speaking_index = 0
 	
-	# Shuffle for natural variation
-	speaking_order.shuffle()
+	# Apply intelligent ordering if enabled
+	if dynamic_speaking_order:
+		_apply_intelligent_ordering()
+	else:
+		# Shuffle for natural variation
+		speaking_order.shuffle()
 	
 	print("[FloorManager] Updated speaking order: ", speaking_order)
+
+func _apply_intelligent_ordering() -> void:
+	# Apply intelligent ordering based on agent states
+	var ordered_participants = []
+	var scores = []
+	
+	for npc_id in speaking_order:
+		var agent = Agent.get_agent(npc_id)
+		if agent:
+			var score = _calculate_speaker_score(npc_id, agent)
+			scores.append({"npc_id": npc_id, "score": score})
+		else:
+			scores.append({"npc_id": npc_id, "score": 0.5})
+	
+	# Sort by score (highest first)
+	scores.sort_custom(func(a, b): return a.score > b.score)
+	
+	# Rebuild speaking order
+	speaking_order.clear()
+	for score_data in scores:
+		speaking_order.append(score_data.npc_id)
+
+func _update_agent_turn_preferences(speaker_id: String) -> void:
+	# Update turn preferences for the current speaker
+	var agent = Agent.get_agent(speaker_id)
+	if agent:
+		agent_turn_preferences[speaker_id] = {
+			"last_turn_time": _get_current_time_seconds(),
+			"turn_count": agent_turn_preferences.get(speaker_id, {}).get("turn_count", 0) + 1,
+			"preferred_topics": agent.get_preferred_topics(),
+			"conversation_style": agent.get_conversation_style()
+		}
 
 func _is_interrupt_appropriate(interrupter: String, reason: String) -> bool:
 	# Determine if an interrupt is appropriate
@@ -230,6 +335,16 @@ func _is_interrupt_appropriate(interrupter: String, reason: String) -> bool:
 	var natural_reasons = ["agreement", "disagreement", "related_story", "question"]
 	if reason in natural_reasons and turn_elapsed > min_turn_duration * 2:
 		return true
+	
+	# Check agent personality for interrupt appropriateness
+	var agent = Agent.get_agent(interrupter)
+	if agent:
+		var extroversion = agent.get_extroversion()
+		var social_confidence = agent.get_social_confidence()
+		
+		# More extroverted and confident agents can interrupt more easily
+		if extroversion > 0.7 and social_confidence > 0.6:
+			return true
 	
 	return false
 
@@ -262,6 +377,13 @@ func _calculate_interrupt_priority(interrupter: String, reason: String) -> float
 		var relationship_strength = participant_data.get("relationship_strength", 0.5)
 		priority += relationship_strength * 2.0
 	
+	# Adjust by agent personality
+	var agent = Agent.get_agent(interrupter)
+	if agent:
+		var extroversion = agent.get_extroversion()
+		var social_confidence = agent.get_social_confidence()
+		priority += (extroversion + social_confidence) * 1.0
+	
 	return priority
 
 func _on_participant_joined(npc_id: String, group_id: String) -> void:
@@ -282,6 +404,9 @@ func _on_participant_left(npc_id: String, group_id: String, reason: String) -> v
 	
 	# Remove from interrupt queue
 	interrupt_queue = interrupt_queue.filter(func(interrupt): return interrupt.interrupter != npc_id)
+	
+	# Clean up agent preferences
+	agent_turn_preferences.erase(npc_id)
 
 func _on_topic_changed(old_topic: String, new_topic: String, reason: String) -> void:
 	# Handle topic changes
@@ -291,6 +416,43 @@ func _on_topic_changed(old_topic: String, new_topic: String, reason: String) -> 
 	# If there's a current speaker, consider ending their turn
 	if current_speaker != "" and reason == "forced_change":
 		end_turn("topic_change")
+
+func _on_dialogue_added(speaker_id: String, dialogue: String, turn: int) -> void:
+	# Handle dialogue being added to the conversation
+	# This can influence turn management decisions
+	
+	# Update agent turn preferences
+	if speaker_id == current_speaker:
+		_update_agent_turn_preferences(speaker_id)
+	
+	# Check if this dialogue suggests a natural turn transition
+	if _should_transition_turn(dialogue, speaker_id):
+		advance_to_next_speaker()
+
+func _should_transition_turn(dialogue: String, speaker_id: String) -> bool:
+	# Determine if dialogue suggests a natural turn transition
+	var dialogue_lower = dialogue.to_lower()
+	
+	# Check for question indicators
+	if dialogue_lower.contains("?") or dialogue_lower.contains("what do you think"):
+		return true
+	
+	# Check for invitation to respond
+	if dialogue_lower.contains("what about you") or dialogue_lower.contains("your thoughts"):
+		return true
+	
+	# Check for natural conversation endings
+	if dialogue_lower.contains("anyway") or dialogue_lower.contains("so"):
+		return true
+	
+	# Check agent personality for turn-taking style
+	var agent = Agent.get_agent(speaker_id)
+	if agent:
+		var conversation_style = agent.get_conversation_style()
+		if conversation_style == "collaborative" or conversation_style == "inclusive":
+			return true
+	
+	return false
 
 func _process(delta: float) -> void:
 	# Process floor management logic
@@ -341,9 +503,21 @@ func get_floor_stats() -> Dictionary:
 		"turn_elapsed": get_turn_elapsed(),
 		"speaking_order": speaking_order.duplicate(),
 		"interrupt_queue_size": interrupt_queue.size(),
-		"round_robin_enabled": round_robin_enabled
+		"round_robin_enabled": round_robin_enabled,
+		"dynamic_ordering": dynamic_speaking_order,
+		"agent_preferences": agent_turn_preferences.size()
 	}
 
+func set_dynamic_ordering(enabled: bool) -> void:
+	# Enable or disable dynamic speaking order
+	dynamic_speaking_order = enabled
+	if enabled:
+		_apply_intelligent_ordering()
+	print("[FloorManager] Dynamic ordering ", "enabled" if enabled else "disabled")
+
+func get_agent_turn_preferences(npc_id: String) -> Dictionary:
+	# Get turn preferences for a specific agent
+	return agent_turn_preferences.get(npc_id, {})
 
 # Helper function to get current time in seconds
 func _get_current_time_seconds() -> float:

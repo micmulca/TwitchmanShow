@@ -64,6 +64,10 @@ func _ready():
 	status_component = get_parent().get_node_or_null("StatusComponent")
 	action_planner = get_parent().get_node_or_null("ActionPlanner")
 	action_randomizer = get_parent().get_node_or_null("ActionRandomizer")
+	memory_component = get_parent().get_node_or_null("MemoryComponent")
+	
+	# Connect memory signals
+	_connect_memory_signals()
 
 # Start executing an action
 func start_action(action_data: Dictionary, npc_identifier: String) -> Dictionary:
@@ -431,3 +435,124 @@ func _apply_failure_effects():
 		for need_type in failure_penalties:
 			var amount = failure_penalties[need_type]
 			status_component.modify_need(need_type, -amount)
+
+func _connect_memory_signals():
+	"""Connect action signals to memory system"""
+	if memory_component:
+		action_completed.connect(_on_action_completed_memory)
+		action_failed.connect(_on_action_failed_memory)
+		action_interrupted.connect(_on_action_interrupted_memory)
+
+func _on_action_completed_memory(action_data: Dictionary, npc_id: String, results: Dictionary):
+	"""Create memory when action completes successfully"""
+	if memory_component:
+		var participants = [npc_id]
+		if results.has("other_participants"):
+			participants.append_array(results["other_participants"])
+		
+		# Create comprehensive action memory
+		memory_component.create_action_memory(action_data, results, participants)
+		
+		# Create pattern memory if this was a successful action
+		if results.get("result_type") in ["excellent", "good"]:
+			var pattern_data = _generate_pattern_data(action_data, results)
+			memory_component.create_action_pattern_memory(action_data, pattern_data)
+
+func _on_action_failed_memory(action_data: Dictionary, npc_id: String, error: String):
+	"""Create memory when action fails"""
+	if memory_component:
+		var failure_data = {
+			"failure_type": "execution",
+			"reason": error,
+			"severity": _determine_failure_severity(action_data, error),
+			"need_penalties": current_action.get("failure_penalties", {}),
+			"recovery_suggestions": _generate_recovery_suggestions(action_data, error)
+		}
+		
+		memory_component.create_action_failure_memory(action_data, failure_data, [npc_id])
+
+func _on_action_interrupted_memory(action_data: Dictionary, npc_id: String, reason: String):
+	"""Create memory when action is interrupted"""
+	if memory_component:
+		var interruption_data = {
+			"failure_type": "interruption",
+			"reason": reason,
+			"severity": "minor",
+			"interruption_progress": action_progress,
+			"recovery_suggestions": ["Resume action when conditions improve"]
+		}
+		
+		memory_component.create_action_failure_memory(action_data, interruption_data, [npc_id])
+
+func _determine_failure_severity(action_data: Dictionary, error: String) -> String:
+	"""Determine the severity of an action failure"""
+	# Check if it's a critical action
+	if action_data.get("category") == "Critical" or action_data.get("critical", false):
+		return "major"
+	
+	# Check error type for severity
+	if "fatal" in error.to_lower() or "critical" in error.to_lower():
+		return "catastrophic"
+	elif "major" in error.to_lower() or "serious" in error.to_lower():
+		return "major"
+	elif "minor" in error.to_lower() or "slight" in error.to_lower():
+		return "minor"
+	else:
+		return "moderate"
+
+func _generate_recovery_suggestions(action_data: Dictionary, error: String) -> Array:
+	"""Generate recovery suggestions based on action and error"""
+	var suggestions = []
+	
+	# Basic recovery suggestions
+	suggestions.append("Wait and try again later")
+	suggestions.append("Check if conditions have improved")
+	
+	# Category-specific suggestions
+	var category = action_data.get("category", "")
+	match category:
+		"Social":
+			suggestions.append("Apologize and explain the situation")
+			suggestions.append("Try a different approach or location")
+		"Work":
+			suggestions.append("Gather better tools or resources")
+			suggestions.append("Ask for help from others")
+		"Physical":
+			suggestions.append("Rest and recover strength")
+			suggestions.append("Use proper technique next time")
+	
+	# Error-specific suggestions
+	if "interrupted" in error.to_lower():
+		suggestions.append("Complete the action when not interrupted")
+	elif "failed" in error.to_lower():
+		suggestions.append("Learn from the failure and adapt")
+	elif "timeout" in error.to_lower():
+		suggestions.append("Plan for longer duration next time")
+	
+	return suggestions
+
+func _generate_pattern_data(action_data: Dictionary, results: Dictionary) -> Dictionary:
+	"""Generate pattern data for successful actions"""
+	var pattern_data = {
+		"pattern_type": "efficiency",
+		"success_rate": 0.8,  # High success for excellent/good results
+		"optimal_conditions": [],
+		"avoid_conditions": [],
+		"need_balance": {},
+		"time_of_day_preference": "",
+		"seasonal_effectiveness": {}
+	}
+	
+	# Analyze optimal conditions based on action data
+	if action_data.has("location_tags"):
+		pattern_data["optimal_conditions"].append("Location: " + action_data["location_tags"][0])
+	
+	if action_data.has("time_restrictions"):
+		pattern_data["time_of_day_preference"] = action_data["time_restrictions"]
+	
+	# Analyze need balance from results
+	var needs_satisfied = results.get("needs_satisfied", {})
+	if needs_satisfied.size() > 0:
+		pattern_data["need_balance"] = needs_satisfied
+	
+	return pattern_data

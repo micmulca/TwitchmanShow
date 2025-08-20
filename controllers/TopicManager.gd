@@ -1,6 +1,7 @@
 extends Node
 
 # TopicManager - Handles topic switching, event injection, and topic relevance
+# Enhanced for Phase 3: Integrates with Agent system for intelligent topic management
 # Maps world events to conversation topics and manages topic transitions
 
 signal topic_suggested(group_id: String, topic: String, relevance: float, source: String)
@@ -16,6 +17,10 @@ var topic_blacklist: Array[String] = []  # Topics to avoid
 # Event topic mappings
 var event_topic_mappings: Dictionary = {}
 var topic_decay_rates: Dictionary = {}
+
+# Agent-aware topic management
+var agent_topic_preferences: Dictionary = {}  # npc_id -> topic preferences
+var topic_agent_affinity: Dictionary = {}  # topic -> agent affinity scores
 
 # Configuration
 var max_active_topics: int = 10
@@ -175,7 +180,7 @@ func _add_topic_suggestion(suggestion: Dictionary) -> void:
 	print("[TopicManager] Added topic suggestion: ", topic, " (relevance: ", relevance, ")")
 
 func suggest_topics_for_group(group_id: String, current_topic: String = "", participant_count: int = 2) -> Array[Dictionary]:
-	# Suggest relevant topics for a conversation group
+	# Suggest relevant topics for a conversation group using Agent system
 	var suggestions = []
 	var current_time = _get_current_time_seconds()
 	
@@ -201,6 +206,10 @@ func suggest_topics_for_group(group_id: String, current_topic: String = "", part
 		# Adjust relevance based on current topic
 		relevance = _adjust_relevance_for_topic_transition(relevance, current_topic, topic)
 		
+		# Adjust relevance based on agent preferences (if group_id is provided)
+		if group_id != "":
+			relevance = _adjust_relevance_for_agent_preferences(relevance, topic, group_id)
+		
 		if relevance > topic_relevance_threshold:
 			suggestions.append({
 				"topic": topic,
@@ -217,6 +226,33 @@ func suggest_topics_for_group(group_id: String, current_topic: String = "", part
 		suggestions = suggestions.slice(0, 5)
 	
 	return suggestions
+
+func _adjust_relevance_for_agent_preferences(base_relevance: float, topic: String, group_id: String) -> float:
+	# Adjust topic relevance based on agent preferences in the group
+	var adjusted_relevance = base_relevance
+	
+	# Try to get group participants from ConversationController
+	var conversation_controller = get_node_or_null("/root/ConversationController")
+	if conversation_controller:
+		var group = conversation_controller.get_active_groups().get(group_id)
+		if group:
+			var participants = group.participants
+			var total_preference = 0.0
+			var participant_count = 0
+			
+			for npc_id in participants:
+				var agent = Agent.get_agent(npc_id)
+				if agent:
+					var topic_interest = agent.get_topic_interest(topic)
+					total_preference += topic_interest
+					participant_count += 1
+			
+			if participant_count > 0:
+				var average_preference = total_preference / participant_count
+				# Boost relevance if agents are interested in this topic
+				adjusted_relevance += average_preference * 0.3
+	
+	return clamp(adjusted_relevance, 0.0, 1.0)
 
 func inject_topic(group_id: String, topic: String, reason: String = "external_injection") -> bool:
 	# Inject a topic into a conversation (for console commands or system events)
@@ -402,7 +438,8 @@ func get_topic_stats() -> Dictionary:
 		"topic_suggestions": topic_suggestions.size(),
 		"blacklisted_topics": topic_blacklist.size(),
 		"max_active_topics": max_active_topics,
-		"relevance_threshold": topic_relevance_threshold
+		"relevance_threshold": topic_relevance_threshold,
+		"agent_preferences": agent_topic_preferences.size()
 	}
 
 func get_active_topics() -> Dictionary:
@@ -414,6 +451,79 @@ func get_topic_suggestions() -> Array[Dictionary]:
 func get_blacklisted_topics() -> Array[String]:
 	return topic_blacklist.duplicate()
 
+func update_agent_topic_preferences(npc_id: String, preferences: Dictionary) -> void:
+	# Update topic preferences for a specific agent
+	agent_topic_preferences[npc_id] = preferences
+	print("[TopicManager] Updated topic preferences for ", npc_id)
+
+func get_agent_topic_preferences(npc_id: String) -> Dictionary:
+	# Get topic preferences for a specific agent
+	return agent_topic_preferences.get(npc_id, {})
+
+func calculate_topic_agent_affinity(topic: String, npc_id: String) -> float:
+	# Calculate how much an agent is interested in a specific topic
+	var affinity = 0.5  # Base affinity
+	
+	var agent = Agent.get_agent(npc_id)
+	if agent:
+		# Get agent's interest in this topic
+		affinity = agent.get_topic_interest(topic)
+		
+		# Adjust based on agent's personality traits
+		var personality_traits = agent.persona.get("personality_traits", [])
+		if "curious" in personality_traits:
+			affinity += 0.1
+		if "shy" in personality_traits:
+			affinity -= 0.1
+		if "outgoing" in personality_traits:
+			affinity += 0.1
+	
+	return clamp(affinity, 0.0, 1.0)
+
+func suggest_personalized_topics(npc_id: String, current_topic: String = "") -> Array[Dictionary]:
+	# Suggest topics personalized for a specific agent
+	var suggestions = []
+	var current_time = _get_current_time_seconds()
+	
+	for topic in active_topics.keys():
+		# Skip current topic
+		if topic == current_topic:
+			continue
+		
+		# Check cooldown
+		var last_used = topic_cooldowns.get(topic, 0.0)
+		if current_time - last_used < topic_suggestion_cooldown:
+			continue
+		
+		# Check if topic is blacklisted
+		if topic in topic_blacklist:
+			continue
+		
+		var base_relevance = active_topics[topic]
+		var personalized_relevance = base_relevance
+		
+		# Adjust based on agent preferences
+		var agent_affinity = calculate_topic_agent_affinity(topic, npc_id)
+		personalized_relevance += agent_affinity * 0.3
+		
+		if personalized_relevance > topic_relevance_threshold:
+			suggestions.append({
+				"topic": topic,
+				"relevance": personalized_relevance,
+				"base_relevance": base_relevance,
+				"agent_affinity": agent_affinity,
+				"source": "personalized",
+				"npc_id": npc_id
+			})
+	
+	# Sort by personalized relevance
+	suggestions.sort_custom(func(a, b): return a.relevance > b.relevance)
+	
+	# Limit suggestions
+	if suggestions.size() > 3:
+		suggestions = suggestions.slice(0, 3)
+	
+	return suggestions
 
 # Helper function to get current time in seconds
 func _get_current_time_seconds() -> float:

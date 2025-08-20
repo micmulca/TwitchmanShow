@@ -7,12 +7,17 @@ var ConversationGroup: GDScript
 var FloorManager: GDScript
 
 # ConversationController - Orchestrates all conversation groups and manages the conversation system
+# Enhanced for Phase 3: Integrates with Agent system, streaming LLM responses, and enhanced context
 # Enforces participation invariant, manages group lifecycle, and coordinates conversation flow
 
 signal conversation_started(group_id: String, participants: Array, topic: String)
 signal conversation_ended(group_id: String, reason: String, summary: String)
 signal participant_moved(group_id: String, npc_id: String, reason: String)
 signal group_merged(group1_id: String, group2_id: String, new_group_id: String)
+signal dialogue_generated(speaker_id: String, group_id: String, dialogue: String, context: Dictionary)
+signal dialogue_streaming_started(speaker_id: String, group_id: String)
+signal dialogue_streaming_chunk(speaker_id: String, group_id: String, chunk: String)
+signal dialogue_streaming_completed(speaker_id: String, group_id: String, full_dialogue: String)
 
 # Active conversation groups
 var active_groups: Dictionary = {}  # group_id -> ConversationGroup
@@ -33,6 +38,10 @@ var last_tick_time: float = 0.0
 var group_cooldowns: Dictionary = {}  # group_id -> last_activity_time
 var group_cooldown_duration: float = 30.0  # Seconds between group activities
 
+# Streaming and LLM integration
+var streaming_conversations: Dictionary = {}  # group_id -> streaming state
+var dialogue_requests: Dictionary = {}  # request_id -> request data
+
 func _ready():
 	# Initialize system components
 	_initialize_components()
@@ -40,6 +49,11 @@ func _ready():
 	# Connect to EventBus signals
 	EventBus.world_event_triggered.connect(_on_world_event)
 	EventBus.npc_action_performed.connect(_on_npc_action)
+	
+	# Connect to LLMClient streaming signals
+	LLMClient.llm_stream_started.connect(_on_llm_stream_started)
+	LLMClient.llm_stream_chunk.connect(_on_llm_stream_chunk)
+	LLMClient.llm_stream_completed.connect(_on_llm_stream_completed)
 	
 	print("[ConversationController] Initialized with max ", max_active_groups, " groups")
 
@@ -269,42 +283,150 @@ func _process_group_turn(group: Node) -> void:
 		_generate_dialogue_for_speaker(group, next_speaker)
 
 func _generate_dialogue_for_speaker(group: Node, speaker_id: String) -> void:
-	# Generate dialogue for a speaker using LLM
+	# Generate dialogue for a speaker using enhanced LLM system
 	var group_id = group.group_id
 	var participants = group.participants.duplicate()
 	participants.erase(speaker_id)  # Remove speaker from targets
 	
-	# Build context for the speaker
+	# Build enhanced context for the speaker
 	var context = context_packer.build_context_for_npc(speaker_id, participants, group_id)
 	
-	# Get current topic
+	# Get current topic and conversation history
 	var current_topic = group.current_topic
+	var conversation_history = group.get_conversation_history()
 	
-	# Build prompt
-	var prompt = _build_dialogue_prompt(speaker_id, current_topic, participants, context)
+	# Build enhanced prompt
+	var prompt = context_packer.build_enhanced_prompt(speaker_id, context, conversation_history)
 	
-	# Send to LLM
-	var request_id = LLMClient.send_request(prompt, context)
+	# Add topic-specific instructions
+	prompt += "\n\nCurrent conversation topic: " + current_topic
+	prompt += "\nRespond naturally as your character, considering the topic and conversation flow."
 	
-	# Store request for response handling
-	# In a real implementation, you'd track this request and handle the response
+	# Send to LLM using async generation with streaming
+	var request_id = LLMClient.generate_async(context, func(response: Dictionary): _on_dialogue_generated(speaker_id, group_id, response), 30.0)
 	
-	print("[ConversationController] Generated dialogue for ", speaker_id, " in group ", group_id)
+	# Store request for tracking
+	dialogue_requests[request_id] = {
+		"speaker_id": speaker_id,
+		"group_id": group_id,
+		"context": context,
+		"prompt": prompt,
+		"timestamp": Time.get_time_dict_from_system()
+	}
+	
+	# Start streaming state
+	streaming_conversations[group_id] = {
+		"speaker_id": speaker_id,
+		"chunks": [],
+		"is_streaming": true
+	}
+	
+	# Emit streaming started signal
+	dialogue_streaming_started.emit(speaker_id, group_id)
+	
+	print("[ConversationController] Started dialogue generation for ", speaker_id, " in group ", group_id)
 
-func _build_dialogue_prompt(speaker_id: String, topic: String, targets: Array, context: Dictionary) -> String:
-	# Build a prompt for dialogue generation
-	var prompt = "You are " + speaker_id + " in a conversation about '" + topic + "' with "
+func _on_dialogue_generated(speaker_id: String, group_id: String, response: Dictionary) -> void:
+	# Handle completed dialogue generation
+	var dialogue = response.get("content", "")
+	var success = response.get("success", false)
 	
-	if targets.size() == 1:
-		prompt += targets[0]
-	elif targets.size() == 2:
-		prompt += targets[0] + " and " + targets[1]
+	if success and not dialogue.is_empty():
+		# Add dialogue to conversation group
+		var group = active_groups.get(group_id)
+		if group:
+			group.add_dialogue_entry(speaker_id, dialogue, "llm_generated")
+			
+			# Create memory of this dialogue
+			_create_dialogue_memory(speaker_id, group_id, dialogue, group.participants)
+			
+			# Emit dialogue generated signal
+			dialogue_generated.emit(speaker_id, group_id, dialogue, {})
+			
+			print("[ConversationController] Dialogue generated for ", speaker_id, " in group ", group_id)
+		else:
+			print("[ConversationController] Group ", group_id, " not found for dialogue completion")
 	else:
-		prompt += targets[0] + " and " + str(targets.size() - 1) + " others"
+		print("[ConversationController] Dialogue generation failed for ", speaker_id, " in group ", group_id)
 	
-	prompt += ". What do you want to say? Consider your mood, relationships, and the current topic."
+	# Clean up streaming state
+	streaming_conversations.erase(group_id)
 	
-	return prompt
+	# Clean up request
+	var request_id = _find_request_by_speaker_and_group(speaker_id, group_id)
+	if request_id != "":
+		dialogue_requests.erase(request_id)
+
+func _on_llm_stream_started(request_id: String) -> void:
+	# Handle LLM streaming started
+	var request_data = dialogue_requests.get(request_id, {})
+	if not request_data.is_empty():
+		var speaker_id = request_data.speaker_id
+		var group_id = request_data.group_id
+		
+		# Emit streaming started signal
+		dialogue_streaming_started.emit(speaker_id, group_id)
+		print("[ConversationController] LLM streaming started for ", speaker_id, " in group ", group_id)
+
+func _on_llm_stream_chunk(request_id: String, chunk: String) -> void:
+	# Handle LLM streaming chunk
+	var request_data = dialogue_requests.get(request_id, {})
+	if not request_data.is_empty():
+		var speaker_id = request_data.speaker_id
+		var group_id = request_data.group_id
+		
+		# Add chunk to streaming state
+		if streaming_conversations.has(group_id):
+			streaming_conversations[group_id].chunks.append(chunk)
+		
+		# Emit streaming chunk signal
+		dialogue_streaming_chunk.emit(speaker_id, group_id, chunk)
+		print("[ConversationController] LLM chunk received for ", speaker_id, " in group ", group_id, ": ", chunk)
+
+func _on_llm_stream_completed(request_id: String, full_response: String) -> void:
+	# Handle LLM streaming completed
+	var request_data = dialogue_requests.get(request_id, {})
+	if not request_data.is_empty():
+		var speaker_id = request_data.speaker_id
+		var group_id = request_data.group_id
+		
+		# Emit streaming completed signal
+		dialogue_streaming_completed.emit(speaker_id, group_id, full_response)
+		
+		# Process the completed dialogue
+		_on_dialogue_generated(speaker_id, group_id, {"content": full_response, "success": true})
+		
+		print("[ConversationController] LLM streaming completed for ", speaker_id, " in group ", group_id)
+
+func _create_dialogue_memory(speaker_id: String, group_id: String, dialogue: String, participants: Array) -> void:
+	# Create a memory of the generated dialogue
+	var memory_data = {
+		"type": "dialogue",
+		"speaker_id": speaker_id,
+		"group_id": group_id,
+		"dialogue": dialogue,
+		"participants": participants,
+		"timestamp": Time.get_time_dict_from_system(),
+		"category": "conversation",
+		"emotional_impact": 0.3,  # Moderate emotional impact
+		"social_significance": 0.4  # Moderate social significance
+	}
+	
+	# Add to MemoryStore
+	MemoryStore.add_memory(speaker_id, memory_data)
+	
+	# Add to all participants' memories
+	for participant_id in participants:
+		if participant_id != speaker_id:
+			MemoryStore.add_memory(participant_id, memory_data)
+
+func _find_request_by_speaker_and_group(speaker_id: String, group_id: String) -> String:
+	# Find request ID by speaker and group
+	for request_id in dialogue_requests.keys():
+		var request_data = dialogue_requests[request_id]
+		if request_data.speaker_id == speaker_id and request_data.group_id == group_id:
+			return request_id
+	return ""
 
 func _should_group_continue(group: Node) -> bool:
 	# Determine if a group should continue
@@ -325,6 +447,10 @@ func _should_group_continue(group: Node) -> bool:
 	if group_mood.valence < -0.8:  # Very negative mood
 		return false
 	
+	# Check if any participants are streaming
+	if streaming_conversations.has(group.group_id):
+		return true  # Don't end while streaming
+	
 	return true
 
 func _end_group(group: Node, reason: String) -> void:
@@ -334,6 +460,7 @@ func _end_group(group: Node, reason: String) -> void:
 	# Remove from active groups
 	active_groups.erase(group_id)
 	group_cooldowns.erase(group_id)
+	streaming_conversations.erase(group_id)
 	
 	# Remove participants from index
 	for npc_id in group.participants:
@@ -346,12 +473,20 @@ func _cleanup_group(group_id: String) -> void:
 	# Clean up a group that's no longer active
 	active_groups.erase(group_id)
 	group_cooldowns.erase(group_id)
+	streaming_conversations.erase(group_id)
 	print("[ConversationController] Cleaned up group ", group_id)
 
 func _get_npc_conversation_data(npc_id: String) -> Dictionary:
-	# Get conversation-related data for an NPC
-	if npc_conversation_data.has(npc_id):
-		return npc_conversation_data[npc_id]
+	# Get conversation-related data for an NPC using Agent system
+	var agent = Agent.get_agent(npc_id)
+	if agent:
+		return {
+			"social_need": agent.get_social_need(),
+			"social_fatigue": agent.get_social_fatigue(),
+			"extroversion": agent.get_extroversion(),
+			"relationship_strength": agent.get_average_relationship_strength(),
+			"conversation_style": agent.get_conversation_style()
+		}
 	
 	# Return default data
 	return {
@@ -437,6 +572,7 @@ func get_conversation_stats() -> Dictionary:
 		"active_groups": active_groups.size(),
 		"max_active_groups": max_active_groups,
 		"total_participants": participant_index.size(),
+		"streaming_conversations": streaming_conversations.size(),
 		"group_details": {}
 	}
 	
@@ -453,3 +589,25 @@ func set_max_active_groups(max_groups: int) -> void:
 func set_max_participants_per_group(max_participants: int) -> void:
 	max_participants_per_group = max_participants
 	print("[ConversationController] Max participants per group set to ", max_participants)
+
+func get_streaming_status(group_id: String) -> Dictionary:
+	# Get streaming status for a conversation group
+	return streaming_conversations.get(group_id, {})
+
+func force_dialogue_generation(speaker_id: String, group_id: String) -> bool:
+	# Force dialogue generation for a specific speaker in a group
+	if not active_groups.has(group_id):
+		return false
+	
+	var group = active_groups[group_id]
+	if not group.is_participant(speaker_id):
+		return false
+	
+	# Force speaker change and generate dialogue
+	var floor_manager = group.get_node("FloorManager")
+	if floor_manager:
+		floor_manager.force_speaker_change(speaker_id, "forced_generation")
+		_generate_dialogue_for_speaker(group, speaker_id)
+		return true
+	
+	return false
