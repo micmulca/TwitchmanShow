@@ -116,16 +116,14 @@ func _cmd_help(args: Array) -> Dictionary:
 	if args.is_empty():
 		_print_to_console("Available commands:")
 		for cmd_name in commands.keys():
-			var cmd = commands[cmd_name]
-			_print_to_console("  " + cmd_name + " - " + cmd.description)
+			_print_to_console("  " + cmd_name + " - Console command")
 		return {"success": true, "message": "Help displayed"}
 	else:
 		var cmd_name = args[0].to_lower()
 		if commands.has(cmd_name):
-			var cmd = commands[cmd_name]
 			_print_to_console("Command: " + cmd_name)
-			_print_to_console("Description: " + cmd.description)
-			_print_to_console("Usage: " + cmd.usage)
+			_print_to_console("Description: Console command")
+			_print_to_console("Usage: " + cmd_name + " [args...]")
 			return {"success": true, "message": "Help for " + cmd_name + " displayed"}
 		else:
 			return {"success": false, "message": "Unknown command: " + cmd_name}
@@ -234,7 +232,7 @@ func _cmd_mute(args: Array) -> Dictionary:
 	
 	return {"success": true, "message": npc_id + " " + ("muted" if muted else "unmuted")}
 
-func _cmd_conversation(args: Array):
+func _cmd_conversation(args: Array) -> Dictionary:
 	if args.size() == 0:
 		_print_help("conversation", [
 			"conversation status - Show conversation system status",
@@ -245,54 +243,55 @@ func _cmd_conversation(args: Array):
 			"conversation force <group_id> <npc> - Force NPC to speak",
 			"conversation stats <group_id> - Show conversation statistics"
 		])
-		return
+		return {"success": true, "message": "Conversation help displayed"}
 	
 	match args[0]:
 		"status":
 			_show_conversation_status()
+			return {"success": true, "message": "Conversation status displayed"}
 		"start":
 			if args.size() < 3:
-				print("Usage: conversation start <npc1> <npc2> [topic]")
-				return
+				return {"success": false, "message": "Usage: conversation start <npc1> <npc2> [topic]"}
 			var npc1 = args[1]
 			var npc2 = args[2]
 			var topic = args[3] if args.size() > 3 else "general_chat"
 			_start_conversation(npc1, npc2, topic)
+			return {"success": true, "message": "Conversation started between " + npc1 + " and " + npc2}
 		"join":
 			if args.size() < 3:
-				print("Usage: conversation join <npc> <group_id>")
-				return
+				return {"success": false, "message": "Usage: conversation join <npc> <group_id>"}
 			var npc = args[1]
 			var group_id = args[2]
 			_join_conversation(npc, group_id)
+			return {"success": true, "message": "NPC " + npc + " joined conversation " + group_id}
 		"leave":
 			if args.size() < 2:
-				print("Usage: conversation leave <npc>")
-				return
+				return {"success": false, "message": "Usage: conversation leave <npc>"}
 			var npc = args[1]
 			_leave_conversation(npc)
+			return {"success": true, "message": "NPC " + npc + " left conversation"}
 		"topic":
 			if args.size() < 3:
-				print("Usage: conversation topic <group_id> <topic>")
-				return
+				return {"success": false, "message": "Usage: conversation topic <group_id> <topic>"}
 			var group_id = args[1]
 			var topic = args[2]
 			_change_conversation_topic(group_id, topic)
+			return {"success": true, "message": "Topic changed to " + topic}
 		"force":
 			if args.size() < 3:
-				print("Usage: conversation force <group_id> <npc>")
-				return
+				return {"success": false, "message": "Usage: conversation force <group_id> <npc>"}
 			var group_id = args[1]
 			var npc = args[2]
 			_force_speaker_change(group_id, npc)
+			return {"success": true, "message": "Forced " + npc + " to speak"}
 		"stats":
 			if args.size() < 2:
-				print("Usage: conversation stats <group_id>")
-				return
+				return {"success": false, "message": "Usage: conversation stats <group_id>"}
 			var group_id = args[1]
 			_show_conversation_stats(group_id)
+			return {"success": true, "message": "Conversation stats displayed"}
 		_:
-			print("Unknown conversation command: ", args[0])
+			return {"success": false, "message": "Unknown conversation command: " + args[0]}
 
 func _cmd_status(args: Array) -> Dictionary:
 	var detail_level = args[0] if args.size() > 0 else "basic"
@@ -805,39 +804,39 @@ func _cmd_time(args: Array) -> Dictionary:
 		_:
 			return {"success": false, "message": "Unknown time command: " + command}
 
-func _cmd_context(args: Array):
+func _cmd_context(args: Array) -> Dictionary:
 	if args.size() == 0:
 		_print_help("context", [
 			"context build <npc> [targets...] - Build context for NPC",
 			"context prompt <npc> [targets...] - Build enhanced prompt for NPC",
 			"context validate <npc> [targets...] - Validate context for NPC"
 		])
-		return
+		return {"success": true, "message": "Context help displayed"}
 	
 	match args[0]:
 		"build":
 			if args.size() < 2:
-				print("Usage: context build <npc> [targets...]")
-				return
+				return {"success": false, "message": "Usage: context build <npc> [targets...]"}
 			var npc = args[1]
 			var targets = args.slice(2) if args.size() > 2 else []
 			_build_context(npc, targets)
+			return {"success": true, "message": "Context built for " + npc}
 		"prompt":
 			if args.size() < 2:
-				print("Usage: context prompt <npc> [targets...]")
-				return
+				return {"success": false, "message": "Usage: context prompt <npc> [targets...]"}
 			var npc = args[1]
 			var targets = args.slice(2) if args.size() > 2 else []
 			_build_enhanced_prompt(npc, targets)
+			return {"success": true, "message": "Enhanced prompt built for " + npc}
 		"validate":
 			if args.size() < 2:
-				print("Usage: context validate <npc> [targets...]")
-				return
+				return {"success": false, "message": "Usage: context validate <npc> [targets...]"}
 			var npc = args[1]
 			var targets = args.slice(2) if args.size() > 2 else []
 			_validate_context(npc, targets)
+			return {"success": true, "message": "Context validated for " + npc}
 		_:
-			print("Unknown context command: ", args[0])
+			return {"success": false, "message": "Unknown context command: " + args[0]}
 
 func _cmd_behavior(args: Array) -> Dictionary:
 	"""Handle behavior pattern analysis commands"""
@@ -933,6 +932,12 @@ func _cmd_clear(args: Array) -> Dictionary:
 	output_panel.clear()
 	return {"success": true, "message": "Console cleared"}
 
+func _print_help(command: String, help_lines: Array):
+	"""Print help information for a command"""
+	_print_to_console("=== Help for " + command + " ===")
+	for line in help_lines:
+		_print_to_console(line)
+
 # Input handling for command history
 func _input(event):
 	if event.is_action_pressed("ui_up") and command_input.has_focus():
@@ -964,15 +969,13 @@ func _navigate_history(direction: int):
 # Agent System Commands
 func _add_agent_commands():
     """Add agent system console commands"""
-    add_command("agent", "agent <npc_id> <command> [args...]", "Manage NPC agents")
-    add_command("memory", "memory <npc_id> <command> [args...]", "Manage memory store")
-    add_command("relationship", "relationship <npc_id> <command> [args...]", "Manage relationships")
-    add_command("fallback", "fallback <command> [args...]", "Manage fallback templates")
+    # These commands are already added in _initialize_commands()
+    pass
 
 func _execute_agent_command(args: Array):
     """Execute agent system commands"""
     if args.size() < 2:
-        print("Usage: agent <npc_id> <command> [args...]")
+        _print_to_console("Usage: agent <npc_id> <command> [args...]")
         return
     
     var npc_id = args[0]
@@ -999,13 +1002,13 @@ func _execute_agent_command(args: Array):
         "ready":
             _check_agent_ready(npc_id)
         _:
-            print("Unknown agent command: ", command)
-            print("Available commands: status, personality, traits, constraints, context, update_trait, test_response, consistency, ready")
+            _print_to_console("Unknown agent command: " + command)
+            _print_to_console("Available commands: status, personality, traits, constraints, context, update_trait, test_response, consistency, ready")
 
 func _execute_memory_command(args: Array):
     """Execute memory store commands"""
     if args.size() < 2:
-        print("Usage: memory <npc_id> <command> [args...]")
+        _print_to_console("Usage: memory <npc_id> <command> [args...]")
         return
     
     var npc_id = args[0]
@@ -1026,8 +1029,8 @@ func _execute_memory_command(args: Array):
         "clear":
             _clear_memories(npc_id)
         _:
-            print("Unknown memory command: ", command)
-            print("Available commands: status, add, retrieve, compress, stats, clear")
+            _print_to_console("Unknown memory command: " + command)
+            _print_to_console("Available commands: status, add, retrieve, compress, stats, clear")
 
 func _execute_relationship_command(args: Array):
     """Execute relationship graph commands"""
@@ -1090,116 +1093,116 @@ func _execute_fallback_command(args: Array):
 func _show_agent_status(npc_id: String):
     """Show agent status and readiness"""
     if not Agent or not Agent.is_ready():
-        print("Agent system not ready")
+        _print_to_console("Agent system not ready")
         return
     
     # This would check if the specific agent exists and show its status
-    print("Agent system ready")
-    print("Agent ", npc_id, " status: ", "Ready" if Agent.is_ready() else "Not Ready")
+    _print_to_console("Agent system ready")
+    _print_to_console("Agent " + npc_id + " status: " + ("Ready" if Agent.is_ready() else "Not Ready"))
 
 func _show_agent_personality(npc_id: String):
     """Show agent personality summary"""
     if not Agent or not Agent.is_ready():
-        print("Agent system not ready")
+        _print_to_console("Agent system not ready")
         return
     
     # This would get the agent's personality summary
-    print("Agent personality summary for ", npc_id)
-    print("(Personality details would be displayed here)")
+    _print_to_console("Agent personality summary for " + npc_id)
+    _print_to_console("(Personality details would be displayed here)")
 
 func _show_agent_traits(npc_id: String):
     """Show agent personality traits"""
     if not Agent or not Agent.is_ready():
-        print("Agent system not ready")
+        _print_to_console("Agent system not ready")
         return
     
     # This would get the agent's traits
-    print("Agent traits for ", npc_id)
-    print("(Traits would be displayed here)")
+    _print_to_console("Agent traits for " + npc_id)
+    _print_to_console("(Traits would be displayed here)")
 
 func _show_agent_constraints(npc_id: String):
     """Show agent response constraints"""
     if not Agent or not Agent.is_ready():
-        print("Agent system not ready")
+        _print_to_console("Agent system not ready")
         return
     
     # This would get the agent's constraints
-    print("Agent constraints for ", npc_id)
-    print("(Constraints would be displayed here)")
+    _print_to_console("Agent constraints for " + npc_id)
+    _print_to_console("(Constraints would be displayed here)")
 
 func _show_agent_context(npc_id: String, args: Array):
     """Show agent context for a conversation"""
     if not Agent or not Agent.is_ready():
-        print("Agent system not ready")
+        _print_to_console("Agent system not ready")
         return
     
     # This would build and show the agent's context
-    print("Agent context for ", npc_id)
-    print("(Context would be displayed here)")
+    _print_to_console("Agent context for " + npc_id)
+    _print_to_console("(Context would be displayed here)")
 
 func _update_agent_trait(npc_id: String, args: Array):
     """Update an agent's personality trait"""
     if args.size() < 2:
-        print("Usage: agent <npc_id> update_trait <trait_name> <value>")
+        _print_to_console("Usage: agent <npc_id> update_trait <trait_name> <value>")
         return
     
     var trait_name = args[0]
     var value = float(args[1])
     
     if not Agent or not Agent.is_ready():
-        print("Agent system not ready")
+        _print_to_console("Agent system not ready")
         return
     
     # This would update the agent's trait
-    print("Updated trait ", trait_name, " to ", value, " for agent ", npc_id)
+    _print_to_console("Updated trait " + trait_name + " to " + str(value) + " for agent " + npc_id)
 
 func _test_agent_response(npc_id: String, args: Array):
     """Test agent response generation"""
     if not Agent or not Agent.is_ready():
-        print("Agent system not ready")
+        _print_to_console("Agent system not ready")
         return
     
     # This would test the agent's response generation
-    print("Testing agent response for ", npc_id)
-    print("(Response would be generated and displayed here)")
+    _print_to_console("Testing agent response for " + npc_id)
+    _print_to_console("(Response would be generated and displayed here)")
 
 func _check_agent_consistency(npc_id: String):
     """Check agent personality consistency"""
     if not Agent or not Agent.is_ready():
-        print("Agent system not ready")
+        _print_to_console("Agent system not ready")
         return
     
     # This would check the agent's personality consistency
-    print("Checking personality consistency for agent ", npc_id)
-    print("(Consistency score would be displayed here)")
+    _print_to_console("Checking personality consistency for agent " + npc_id)
+    _print_to_console("(Consistency score would be displayed here)")
 
 func _check_agent_ready(npc_id: String):
     """Check if agent is ready for use"""
     if not Agent or not Agent.is_ready():
-        print("Agent system not ready")
+        _print_to_console("Agent system not ready")
         return
     
     # This would check if the specific agent is ready
-    print("Agent ", npc_id, " ready status: ", "Ready" if Agent.is_ready() else "Not Ready")
+    _print_to_console("Agent " + npc_id + " ready status: " + ("Ready" if Agent.is_ready() else "Not Ready"))
 
 # Memory command implementations
 func _show_memory_status(npc_id: String):
     """Show memory store status for a character"""
     if not MemoryStore or not MemoryStore.is_ready():
-        print("MemoryStore not ready")
+        _print_to_console("MemoryStore not ready")
         return
     
     var stats = MemoryStore.get_memory_stats(npc_id)
-    print("Memory status for ", npc_id, ":")
-    print("  Short-term memories: ", stats.get("short_term_count", 0))
-    print("  Long-term summaries: ", stats.get("long_term_count", 0))
-    print("  Total memories: ", stats.get("total_memories", 0))
-    print("  Buffer utilization: ", "%.1f%%" % (stats.get("buffer_utilization", 0.0) * 100))
+    _print_to_console("Memory status for " + npc_id + ":")
+    _print_to_console("  Short-term memories: " + str(stats.get("short_term_count", 0)))
+    _print_to_console("  Long-term summaries: " + str(stats.get("long_term_count", 0)))
+    _print_to_console("  Total memories: " + str(stats.get("total_memories", 0)))
+    _print_to_console("  Buffer utilization: " + "%.1f%%" % (stats.get("buffer_utilization", 0.0) * 100))
 
 func _add_memory(npc_id: String, args: Array):
     """Add a memory to the memory store"""
     if args.size() < 2:
-        print("Usage: memory <npc_id> add <title> <description> [tags...]")
+        _print_to_console("Usage: memory <npc_id> add <title> <description> [tags...]")
         return
     
     var title = args[0]
@@ -1207,7 +1210,7 @@ func _add_memory(npc_id: String, args: Array):
     var tags = args.slice(2) if args.size() > 2 else []
     
     if not MemoryStore or not MemoryStore.is_ready():
-        print("MemoryStore not ready")
+        _print_to_console("MemoryStore not ready")
         return
     
     var memory = {
@@ -1219,82 +1222,82 @@ func _add_memory(npc_id: String, args: Array):
     }
     
     MemoryStore.add_memory(npc_id, memory)
-    print("Added memory '", title, "' for ", npc_id)
+    _print_to_console("Added memory '" + title + "' for " + npc_id)
 
 func _retrieve_memories(npc_id: String, args: Array):
     """Retrieve memories from the memory store"""
     if args.size() < 1:
-        print("Usage: memory <npc_id> retrieve <tags...>")
+        _print_to_console("Usage: memory <npc_id> retrieve <tags...>")
         return
     
     var tags = args
     
     if not MemoryStore or not MemoryStore.is_ready():
-        print("MemoryStore not ready")
+        _print_to_console("MemoryStore not ready")
         return
     
     var memories = MemoryStore.retrieve_memories(npc_id, tags)
-    print("Retrieved ", memories.size(), " memories for ", npc_id, " with tags: ", tags)
+    _print_to_console("Retrieved " + str(memories.size()) + " memories for " + npc_id + " with tags: " + str(tags))
     
     for i in range(min(memories.size(), 5)):  # Show first 5
         var memory = memories[i]
-        print("  ", i + 1, ". ", memory.get("title", "Untitled"), " - ", memory.get("description", "").substr(0, 50), "...")
+        _print_to_console("  " + str(i + 1) + ". " + memory.get("title", "Untitled") + " - " + memory.get("description", "").substr(0, 50) + "...")
 
 func _force_memory_compression(npc_id: String):
     """Force memory compression for a character"""
     if not MemoryStore or not MemoryStore.is_ready():
-        print("MemoryStore not ready")
+        _print_to_console("MemoryStore not ready")
         return
     
     MemoryStore.force_compression(npc_id)
-    print("Forced memory compression for ", npc_id)
+    _print_to_console("Forced memory compression for " + npc_id)
 
 func _show_memory_stats(npc_id: String):
     """Show detailed memory statistics"""
     if not MemoryStore or not MemoryStore.is_ready():
-        print("MemoryStore not ready")
+        _print_to_console("MemoryStore not ready")
         return
     
     var stats = MemoryStore.get_memory_stats(npc_id)
-    print("Memory statistics for ", npc_id, ":")
-    print("  Short-term: ", stats.get("short_term_count", 0))
-    print("  Long-term: ", stats.get("long_term_count", 0))
-    print("  Total: ", stats.get("total_memories", 0))
-    print("  Buffer: ", "%.1f%%" % (stats.get("buffer_utilization", 0.0) * 100))
+    _print_to_console("Memory statistics for " + npc_id + ":")
+    _print_to_console("  Short-term: " + str(stats.get("short_term_count", 0)))
+    _print_to_console("  Long-term: " + str(stats.get("long_term_count", 0)))
+    _print_to_console("  Total: " + str(stats.get("total_memories", 0)))
+    _print_to_console("  Buffer: " + "%.1f%%" % (stats.get("buffer_utilization", 0.0) * 100))
     
     var compression_stats = stats.get("compression_stats", {})
     if not compression_stats.is_empty():
-        print("  Compression ratio: ", "%.1f%%" % (compression_stats.get("compression_ratio", 0.0) * 100))
-        print("  Total compressed: ", compression_stats.get("total_compressed", 0))
+        _print_to_console("  Compression ratio: " + "%.1f%%" % (compression_stats.get("compression_ratio", 0.0) * 100))
+        _print_to_console("  Total compressed: " + str(compression_stats.get("total_compressed", 0)))
 
 func _clear_memories(npc_id: String):
     """Clear all memories for a character"""
     if not MemoryStore or not MemoryStore.is_ready():
-        print("MemoryStore not ready")
+        _print_to_console("MemoryStore not ready")
         return
     
     MemoryStore.clear_character_memories(npc_id)
-    print("Cleared all memories for ", npc_id)
+    _print_to_console("Cleared all memories for " + npc_id)
 
 # Relationship command implementations
 func _show_relationship_status(npc_id: String):
     """Show relationship status for a character"""
     if not RelationshipGraph or not RelationshipGraph.is_ready():
-        print("RelationshipGraph not ready")
+        _print_to_console("RelationshipGraph not ready")
         return
     
     var relationships = RelationshipGraph.get_all_relationships(npc_id)
-    print("Relationships for ", npc_id, ":")
-    print("  Total relationships: ", relationships.size())
+    _print_to_console("Relationships for " + npc_id + ":")
+    _print_to_console("  Total relationships: " + str(relationships.size()))
     
     for target_id in relationships.keys():
         var rel = relationships[target_id]
-        print("  ", target_id, ": ", RelationshipGraph._get_relationship_type_name(rel.type), " (strength: ", "%.2f" % rel.strength, ")")
+        _print_to_console("  " + target_id + ": " + RelationshipGraph._get_relationship_type_name(rel.type) + " (strength: " + "%.2f" % rel.strength + ")")
 
 func _create_relationship(npc_id: String, args: Array):
     """Create a new relationship"""
     if args.size() < 2:
-        print("Usage: relationship <npc_id> create <target_id> <type> [strength]")
+        _print_to_console("Usage: relationship <npc_id> create <target_id> <type> [strength]")
         return
     
     var target_id = args[0]
@@ -1302,23 +1305,23 @@ func _create_relationship(npc_id: String, args: Array):
     var strength = float(args[2]) if args.size() > 2 else -1.0
     
     if not RelationshipGraph or not RelationshipGraph.is_ready():
-        print("RelationshipGraph not ready")
+        _print_to_console("RelationshipGraph not ready")
         return
     
     # Convert type name to enum
     var rel_type = _get_relationship_type_from_name(type_name)
     if rel_type < 0:
-        print("Invalid relationship type: ", type_name)
-        print("Valid types: trust, friendship, rivalry, romantic, family, mentor, colleague, acquaintance")
+        _print_to_console("Invalid relationship type: " + type_name)
+        _print_to_console("Valid types: trust, friendship, rivalry, romantic, family, mentor, colleague, acquaintance")
         return
     
     RelationshipGraph.create_relationship(npc_id, target_id, rel_type, strength)
-    print("Created ", type_name, " relationship between ", npc_id, " and ", target_id)
+    _print_to_console("Created " + type_name + " relationship between " + npc_id + " and " + target_id)
 
 func _update_relationship(npc_id: String, args: Array):
     """Update an existing relationship"""
     if args.size() < 3:
-        print("Usage: relationship <npc_id> update <target_id> <type> <change> [reason]")
+        _print_to_console("Usage: relationship <npc_id> update <target_id> <type> <change> [reason]")
         return
     
     var target_id = args[0]
@@ -1327,71 +1330,71 @@ func _update_relationship(npc_id: String, args: Array):
     var reason = args[3] if args.size() > 3 else ""
     
     if not RelationshipGraph or not RelationshipGraph.is_ready():
-        print("RelationshipGraph not ready")
+        _print_to_console("RelationshipGraph not ready")
         return
     
     # Convert type name to enum
     var rel_type = _get_relationship_type_from_name(type_name)
     if rel_type < 0:
-        print("Invalid relationship type: ", type_name)
+        _print_to_console("Invalid relationship type: " + type_name)
         return
     
     RelationshipGraph.update_relationship(npc_id, target_id, rel_type, change, reason)
-    print("Updated relationship between ", npc_id, " and ", target_id, " by ", change)
+    _print_to_console("Updated relationship between " + npc_id + " and " + target_id + " by " + str(change))
 
 func _list_relationships(npc_id: String):
     """List all relationships for a character"""
     if not RelationshipGraph or not RelationshipGraph.is_ready():
-        print("RelationshipGraph not ready")
+        _print_to_console("RelationshipGraph not ready")
         return
     
     var relationships = RelationshipGraph.get_all_relationships(npc_id)
-    print("All relationships for ", npc_id, ":")
+    _print_to_console("All relationships for " + npc_id + ":")
     
     for target_id in relationships.keys():
         var rel = relationships[target_id]
-        print("  ", target_id, ":")
-        print("    Type: ", RelationshipGraph._get_relationship_type_name(rel.type))
-        print("    Strength: ", "%.2f" % rel.strength)
-        print("    Interactions: ", rel.interaction_count)
-        print("    Last interaction: ", rel.last_interaction)
+        _print_to_console("  " + target_id + ":")
+        _print_to_console("    Type: " + RelationshipGraph._get_relationship_type_name(rel.type))
+        _print_to_console("    Strength: " + "%.2f" % rel.strength)
+        _print_to_console("    Interactions: " + str(rel.interaction_count))
+        _print_to_console("    Last interaction: " + str(rel.last_interaction))
 
 func _show_relationship_summary(npc_id: String):
     """Show relationship summary for a character"""
     if not RelationshipGraph or not RelationshipGraph.is_ready():
-        print("RelationshipGraph not ready")
+        _print_to_console("RelationshipGraph not ready")
         return
     
     var summary = RelationshipGraph.get_relationship_summary(npc_id)
-    print("Relationship summary for ", npc_id, ":")
-    print("  Total: ", summary.get("total_relationships", 0))
+    _print_to_console("Relationship summary for " + npc_id + ":")
+    _print_to_console("  Total: " + str(summary.get("total_relationships", 0)))
     
     var types = summary.get("relationship_types", {})
     for type_name in types.keys():
-        print("    ", type_name, ": ", types[type_name])
+        _print_to_console("    " + type_name + ": " + str(types[type_name]))
 
 func _show_relationship_stats():
     """Show overall relationship statistics"""
     if not RelationshipGraph or not RelationshipGraph.is_ready():
-        print("RelationshipGraph not ready")
+        _print_to_console("RelationshipGraph not ready")
         return
     
     var stats = RelationshipGraph.get_relationship_statistics()
-    print("Overall relationship statistics:")
-    print("  Total relationships: ", stats.get("total_relationships", 0))
+    _print_to_console("Overall relationship statistics:")
+    _print_to_console("  Total relationships: " + str(stats.get("total_relationships", 0)))
     
     var types = stats.get("relationship_types", {})
     for type_name in types.keys():
-        print("    ", type_name, ": ", types[type_name])
+        _print_to_console("    " + type_name + ": " + str(types[type_name]))
 
 func _clear_relationships(npc_id: String):
     """Clear all relationships for a character"""
     if not RelationshipGraph or not RelationshipGraph.is_ready():
-        print("RelationshipGraph not ready")
+        _print_to_console("RelationshipGraph not ready")
         return
     
     RelationshipGraph.clear_character_relationships(npc_id)
-    print("Cleared all relationships for ", npc_id)
+    _print_to_console("Cleared all relationships for " + npc_id)
 
 # Fallback command implementations
 func _show_fallback_status() -> Dictionary:
@@ -1408,36 +1411,36 @@ func _show_fallback_status() -> Dictionary:
 func _show_fallback_quality(args: Array):
     """Show fallback response quality"""
     if not FallbackTemplates or not FallbackTemplates.is_ready():
-        print("FallbackTemplates not ready")
+        _print_to_console("FallbackTemplates not ready")
         return
     
     if args.size() > 0:
         var agent_id = args[0]
         var quality = FallbackTemplates.get_fallback_quality(agent_id)
-        print("Fallback quality for ", agent_id, ": ", "%.2f" % quality)
+        _print_to_console("Fallback quality for " + agent_id + ": " + "%.2f" % quality)
     else:
         var all_quality = FallbackTemplates.get_all_fallback_quality()
-        print("Fallback quality for all agents:")
+        _print_to_console("Fallback quality for all agents:")
         for agent_id in all_quality.keys():
-            print("  ", agent_id, ": ", "%.2f" % all_quality[agent_id])
+            _print_to_console("  " + agent_id + ": " + "%.2f" % all_quality[agent_id])
 
 func _show_fallback_templates(args: Array):
     """Show available fallback templates"""
     if not FallbackTemplates or not FallbackTemplates.is_ready():
-        print("FallbackTemplates not ready")
+        _print_to_console("FallbackTemplates not ready")
         return
     
     var stats = FallbackTemplates.get_template_statistics()
-    print("Available fallback templates:")
+    _print_to_console("Available fallback templates:")
     
     var categories = stats.get("templates_by_category", {})
     for category in categories.keys():
-        print("  ", category, ": ", categories[category], " templates")
+        _print_to_console("  " + category + ": " + str(categories[category]) + " templates")
 
 func _add_fallback_template(args: Array):
     """Add a custom fallback template"""
     if args.size() < 3:
-        print("Usage: fallback add <category> <style> <template>")
+        _print_to_console("Usage: fallback add <category> <style> <template>")
         return
     
     var category = args[0]
@@ -1445,16 +1448,16 @@ func _add_fallback_template(args: Array):
     var template = args[2]
     
     if not FallbackTemplates or not FallbackTemplates.is_ready():
-        print("FallbackTemplates not ready")
+        _print_to_console("FallbackTemplates not ready")
         return
     
     FallbackTemplates.add_custom_template(category, style, template)
-    print("Added custom template for ", category, " (", style, ")")
+    _print_to_console("Added custom template for " + category + " (" + style + ")")
 
 func _remove_fallback_template(args: Array):
     """Remove a custom fallback template"""
     if args.size() < 3:
-        print("Usage: fallback remove <category> <style> <template>")
+        _print_to_console("Usage: fallback remove <category> <style> <template>")
         return
     
     var category = args[0]
@@ -1462,26 +1465,26 @@ func _remove_fallback_template(args: Array):
     var template = args[2]
     
     if not FallbackTemplates or not FallbackTemplates.is_ready():
-        print("FallbackTemplates not ready")
+        _print_to_console("FallbackTemplates not ready")
         return
     
     FallbackTemplates.remove_custom_template(category, style, template)
-    print("Removed custom template for ", category, " (", style, ")")
+    _print_to_console("Removed custom template for " + category + " (" + style + ")")
 
 func _show_fallback_stats():
     """Show fallback system statistics"""
     if not FallbackTemplates or not FallbackTemplates.is_ready():
-        print("FallbackTemplates not ready")
+        _print_to_console("FallbackTemplates not ready")
         return
     
     var stats = FallbackTemplates.get_template_statistics()
-    print("Fallback system statistics:")
-    print("  Categories: ", stats.get("total_categories", 0))
-    print("  Templates: ", stats.get("total_templates", 0))
+    _print_to_console("Fallback system statistics:")
+    _print_to_console("  Categories: " + str(stats.get("total_categories", 0)))
+    _print_to_console("  Templates: " + str(stats.get("total_templates", 0)))
     
     var styles = stats.get("templates_by_style", {})
     for style in styles.keys():
-        print("    ", style, ": ", styles[style], " templates")
+        _print_to_console("    " + style + ": " + str(styles[style]) + " templates")
 
 func _test_fallback_system(args: Array) -> Dictionary:
 	"""Test the fallback system with a mock agent"""
@@ -1855,119 +1858,119 @@ func _test_persona_caching(args: Array) -> Dictionary:
 
 func _show_conversation_status():
 	var stats = ConversationController.get_conversation_stats()
-	print("=== Conversation System Status ===")
-	print("Active groups: ", stats.active_groups, "/", stats.max_active_groups)
-	print("Total participants: ", stats.total_participants)
-	print("Streaming conversations: ", stats.streaming_conversations)
+	_print_to_console("=== Conversation System Status ===")
+	_print_to_console("Active groups: " + str(stats.active_groups) + "/" + str(stats.max_active_groups))
+	_print_to_console("Total participants: " + str(stats.total_participants))
+	_print_to_console("Streaming conversations: " + str(stats.streaming_conversations))
 	
 	if stats.group_details.size() > 0:
-		print("\nGroup Details:")
+		_print_to_console("\nGroup Details:")
 		for group_id in stats.group_details.keys():
 			var group_stats = stats.group_details[group_id]
-			print("  ", group_id, ": ", group_stats.participant_count, " participants, ", group_stats.turn_count, " turns")
+			_print_to_console("  " + group_id + ": " + str(group_stats.participant_count) + " participants, " + str(group_stats.turn_count) + " turns")
 
 func _start_conversation(npc1: String, npc2: String, topic: String):
 	var participants = [npc1, npc2]
 	var group_id = ConversationController.start_conversation(participants, topic)
 	if group_id != "":
-		print("Started conversation ", group_id, " with topic: ", topic)
+		_print_to_console("Started conversation " + group_id + " with topic: " + topic)
 	else:
-		print("Failed to start conversation")
+		_print_to_console("Failed to start conversation")
 
 func _join_conversation(npc: String, group_id: String):
 	if ConversationController.add_participant_to_group(group_id, npc):
-		print("NPC ", npc, " joined conversation ", group_id)
+		_print_to_console("NPC " + npc + " joined conversation " + group_id)
 	else:
-		print("Failed to add NPC ", npc, " to conversation ", group_id)
+		_print_to_console("Failed to add NPC " + npc + " to conversation " + group_id)
 
 func _leave_conversation(npc: String):
 	var group_id = ConversationController.get_participant_location(npc)
 	if group_id != "":
 		if ConversationController.remove_participant_from_group(group_id, npc, "console_command"):
-			print("NPC ", npc, " left conversation ", group_id)
+			_print_to_console("NPC " + npc + " left conversation " + group_id)
 		else:
-			print("Failed to remove NPC ", npc, " from conversation ", group_id)
+			_print_to_console("Failed to remove NPC " + npc + " from conversation " + group_id)
 	else:
-		print("NPC ", npc, " is not in any conversation")
+		_print_to_console("NPC " + npc + " is not in any conversation")
 
 func _change_conversation_topic(group_id: String, topic: String):
 	if ConversationController.inject_topic_into_group(group_id, topic, "console_command"):
-		print("Changed topic to '", topic, "' in conversation ", group_id)
+		_print_to_console("Changed topic to '" + topic + "' in conversation " + group_id)
 	else:
-		print("Failed to change topic in conversation ", group_id)
+		_print_to_console("Failed to change topic in conversation " + group_id)
 
 func _force_speaker_change(group_id: String, npc: String):
 	if ConversationController.force_dialogue_generation(npc, group_id):
-		print("Forced ", npc, " to speak in conversation ", group_id)
+		_print_to_console("Forced " + npc + " to speak in conversation " + group_id)
 	else:
-		print("Failed to force ", npc, " to speak in conversation ", group_id)
+		_print_to_console("Failed to force " + npc + " to speak in conversation " + group_id)
 
 func _show_conversation_stats(group_id: String):
 	var active_groups = ConversationController.get_active_groups()
 	var group = active_groups.get(group_id)
 	if group:
 		var stats = group.get_conversation_stats()
-		print("=== Conversation ", group_id, " Statistics ===")
-		print("Participants: ", stats.participant_count)
-		print("Turns: ", stats.turn_count)
-		print("Topics: ", stats.topic_count)
-		print("Dialogue entries: ", stats.dialogue_count)
-		print("Group mood: ", stats.group_mood)
-		print("Social cohesion: ", stats.social_cohesion)
+		_print_to_console("=== Conversation " + group_id + " Statistics ===")
+		_print_to_console("Participants: " + str(stats.participant_count))
+		_print_to_console("Turns: " + str(stats.turn_count))
+		_print_to_console("Topics: " + str(stats.topic_count))
+		_print_to_console("Dialogue entries: " + str(stats.dialogue_count))
+		_print_to_console("Group mood: " + str(stats.group_mood))
+		_print_to_console("Social cohesion: " + str(stats.social_cohesion))
 		
 		var dialogue_stats = group.get_dialogue_stats()
-		print("Total words: ", dialogue_stats.total_words)
-		print("Average words per entry: ", dialogue_stats.average_words_per_entry)
+		_print_to_console("Total words: " + str(dialogue_stats.total_words))
+		_print_to_console("Average words per entry: " + str(dialogue_stats.average_words_per_entry))
 	else:
-		print("Conversation group ", group_id, " not found")
+		_print_to_console("Conversation group " + group_id + " not found")
 
 func _build_context(npc: String, targets: Array):
 	var context = ContextPacker.build_context_for_npc(npc, targets)
-	print("=== Context for ", npc, " ===")
-	print("Persona: ", context.persona.name, " (", context.persona.occupation, ")")
-	print("Mood: ", context.mood.description)
-	print("Location: ", context.location.name)
-	print("Recent topics: ", context.recent_topics.size())
-	print("Event hints: ", context.event_hints.size())
-	print("Memory context: ", context.memory_context.recent_memories.size(), " recent memories")
-	print("Action context: ", context.action_context.recent_actions.size(), " recent actions")
+	_print_to_console("=== Context for " + npc + " ===")
+	_print_to_console("Persona: " + context.persona.name + " (" + context.persona.occupation + ")")
+	_print_to_console("Mood: " + context.mood.description)
+	_print_to_console("Location: " + context.location.name)
+	_print_to_console("Recent topics: " + str(context.recent_topics.size()))
+	_print_to_console("Event hints: " + str(context.event_hints.size()))
+	_print_to_console("Memory context: " + str(context.memory_context.recent_memories.size()) + " recent memories")
+	_print_to_console("Action context: " + str(context.action_context.recent_actions.size()) + " recent actions")
 
 func _build_enhanced_prompt(npc: String, targets: Array):
 	var context = ContextPacker.build_context_for_npc(npc, targets)
 	var prompt = ContextPacker.build_enhanced_prompt(npc, context)
-	print("=== Enhanced Prompt for ", npc, " ===")
-	print(prompt)
+	_print_to_console("=== Enhanced Prompt for " + npc + " ===")
+	_print_to_console(prompt)
 
 func _validate_context(npc: String, targets: Array):
 	var context = ContextPacker.build_context_for_npc(npc, targets)
 	var is_valid = ContextPacker.validate_context(context)
 	if is_valid:
-		print("Context for ", npc, " is valid")
+		_print_to_console("Context for " + npc + " is valid")
 	else:
-		print("Context for ", npc, " is invalid")
+		_print_to_console("Context for " + npc + " is invalid")
 
 func _show_streaming_status():
 	var active_groups = ConversationController.get_active_groups()
-	print("=== Streaming Status ===")
+	_print_to_console("=== Streaming Status ===")
 	
 	for group_id in active_groups.keys():
 		var streaming_status = ConversationController.get_streaming_status(group_id)
 		if streaming_status.size() > 0:
-			print("Group ", group_id, ": Streaming for ", streaming_status.speaker_id)
-			print("  Chunks: ", streaming_status.chunks.size())
+			_print_to_console("Group " + group_id + ": Streaming for " + streaming_status.speaker_id)
+			_print_to_console("  Chunks: " + str(streaming_status.chunks.size()))
 		else:
-			print("Group ", group_id, ": Not streaming")
+			_print_to_console("Group " + group_id + ": Not streaming")
 
 func _test_streaming_dialogue(npc: String, group_id: String):
 	var active_groups = ConversationController.get_active_groups()
 	var group = active_groups.get(group_id)
 	if group and group.is_participant(npc):
 		if ConversationController.force_dialogue_generation(npc, group_id):
-			print("Started streaming dialogue generation for ", npc, " in group ", group_id)
+			_print_to_console("Started streaming dialogue generation for " + npc + " in group " + group_id)
 		else:
-			print("Failed to start streaming dialogue generation")
+			_print_to_console("Failed to start streaming dialogue generation")
 	else:
-		print("NPC ", npc, " is not in group ", group_id)
+		_print_to_console("NPC " + npc + " is not in group " + group_id)
 
 func _force_streaming_dialogue(npc: String, group_id: String):
 	_test_streaming_dialogue(npc, group_id)
